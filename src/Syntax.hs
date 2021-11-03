@@ -36,13 +36,9 @@ data Stmt
   | Pipe Name [Name] [Name] -- pipe name, input function names, output function names
   deriving (Show, Eq)
 
-data Lit
-  = Number Double  -- 34.23
-  | Ident String
-  deriving (Show, Eq)
-
 data Expr
-  = Literal Lit
+  = Number Double -- 34.23
+  | Ident String  -- arg1
   | Call Name [Expr]  -- add 12 45
   | BinOp Op Expr Expr  -- + 2 3
   deriving (Eq, Show)
@@ -68,9 +64,6 @@ parseOp = (word "==" $> Equal)
        <|> (char '*' $> Times)
        <|> (char '/' $> Divide)
 
-parseLit :: Parser Expr
-parseLit =  Literal . Number <$> number
-
 parseCall :: Parser Expr
 parseCall = liftA2 Call ident (zeroOrMore parseExpr)
 
@@ -78,13 +71,23 @@ parseBinOp :: Parser Expr
 parseBinOp = liftA3 BinOp parseOp parseExpr parseExpr
 
 parseExpr' :: Parser Expr
-parseExpr' =  parseLit
-          <|> parseCall
+parseExpr' =  parseCall
           <|> parseBinOp
+          <|> (Number <$> number)
+          <|> (Ident <$> ident)
 
 parseExpr :: Parser Expr
 parseExpr = spaces *> parseExpr'
 
+parseFunc :: Parser Stmt
+parseFunc = Function
+         <$> ident
+         <*> (spaces *> (zeroOrMore $ Var <$> (spaces *> ident)))
+         <*  (spaces *> (char '='))
+         <*> (spaces *> parseExpr)
+
+parseStmt :: Parser Stmt
+parseStmt = undefined
 
 {--
 fizzbuzz : W -> B
