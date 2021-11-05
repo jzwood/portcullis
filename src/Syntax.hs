@@ -1,7 +1,6 @@
 module Syntax where
 
 import Parser
-import Type
 import Data.Functor
 import Control.Applicative
 import Data.Char hiding (chr)
@@ -18,8 +17,7 @@ import Data.Char hiding (chr)
 -- TODO steal from this: https://blog.sumtypeofway.com/posts/introduction-to-recursion-schemes.html
 
 type Name = String
-type Type = String -- TODO replace type with actual type
--- | Pipe Name Name Name -- pipe name, function1 name, function2 name
+type Ident = String
 
 newtype Var = Var String
   deriving (Show, Eq)
@@ -30,22 +28,33 @@ newtype Var = Var String
   -- | FunType Name [Type]
   -- | Pipe Name [Name] [Name] -- pipe name, input function names, output function names
 
-data Pattern
-  = PVar Name -- x
-  -- | PCon Name  -- C x y
-  -- | PLit Literal -- 3
-  -- | PWild -- _
-  deriving (Show, Eq)
+-- NonZero = Real x where x /= 0
+
+data Predicate = Predicate (Double -> Bool)
+
+instance Show Predicate where
+  show p = "Num -> Bool"
+
+-- (a -> (a -> b) -> c) -> ((c -> a) -> a)
+-- [["a", ["a", "b"], "c"], [["c", "a"], "a"]
+-- -> a -> -> a b c -> -> c a a
+data Signature = LitType Ident | TS Ident Signature
+
+parseSignature :: Parser Expr
+parseSignature = liftA3 SigOp (word "->" $> Sig) parseSignature parseSignature
+
 
 data Stmt
-  = Function Name [Var] Expr
-  | Case Expr [(Pattern, Expr)]
-  deriving (Show, Eq)
+  = Type Name Predicate
+  | TypeSignature [Ident]
+  | Function Name [Var] Expr
+  deriving (Show)
 
 data Expr
   = Number Double -- 34.23
   | Ident String  -- arg
-  | Call Name [Expr]  -- add 12 45
+  | Call Name [Expr]  -- add 12 45 (function invocation)
+  | Guard [(Expr, Expr)]
   | BinOp Op Expr Expr  -- + 2 3
   deriving (Eq, Show)
 
