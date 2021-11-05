@@ -1,0 +1,7 @@
+maybe the only recursive structure is a tuple-tree. using [] to demark tuples. lists are just 2-tuples where [1, [2, [3, []]]]
+
+unfold :: (b -> Bool) -> (b -> [b]) -> b -> [b]  // 0D tuple tree aka value
+unfold :: (b -> Bool) -> (b -> [a, b]) -> b -> [a, [a, [a, ...]]  //1D tuple tree aka list
+unfold :: (b -> Bool) -> (b -> [a, b, b]) -> b -> [a, [a, []], [a, []]]  //2D tuple tree aka binary tree
+
+unfold terminates? coalgebra tuple-value

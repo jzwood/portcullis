@@ -92,3 +92,9 @@ spaces = zeroOrMore (satisfy isSpace)
 
 ident :: Parser String
 ident = (:) <$> (satisfy isLower) <*> zeroOrMore (satisfy isAlphaNum)
+
+paren :: Parser a -> Parser a
+paren p = char '(' *> p <* char ')'
+
+eatSpaces :: Parser a -> Parser a
+eatSpaces p = spaces *> p

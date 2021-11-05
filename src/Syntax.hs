@@ -1,6 +1,7 @@
 module Syntax where
 
 import Parser
+import Type
 import Data.Functor
 import Control.Applicative
 import Data.Char hiding (chr)
@@ -29,16 +30,21 @@ newtype Var = Var String
   -- | FunType Name [Type]
   -- | Pipe Name [Name] [Name] -- pipe name, input function names, output function names
 
+data Pattern
+  = PVar Name -- x
+  -- | PCon Name  -- C x y
+  -- | PLit Literal -- 3
+  -- | PWild -- _
+  deriving (Show, Eq)
+
 data Stmt
-  = Data Type
-  | Function Name [Var] Expr
-  | FunType Name [Type]
-  | Pipe Name [Name] [Name] -- pipe name, input function names, output function names
+  = Function Name [Var] Expr
+  | Case Expr [(Pattern, Expr)]
   deriving (Show, Eq)
 
 data Expr
   = Number Double -- 34.23
-  | Ident String  -- arg1
+  | Ident String  -- arg
   | Call Name [Expr]  -- add 12 45
   | BinOp Op Expr Expr  -- + 2 3
   deriving (Eq, Show)
@@ -70,6 +76,13 @@ parseCall = liftA2 Call ident (zeroOrMore parseExpr)
 parseBinOp :: Parser Expr
 parseBinOp = liftA3 BinOp parseOp parseExpr parseExpr
 
+parseFunc :: Parser Stmt
+parseFunc = Function
+         <$> ident
+         <*> eatSpaces (zeroOrMore $ Var <$> (eatSpaces ident))
+         <*  eatSpaces (char '=')
+         <*> eatSpaces parseExpr
+
 parseExpr' :: Parser Expr
 parseExpr' =  parseCall
           <|> parseBinOp
@@ -77,17 +90,10 @@ parseExpr' =  parseCall
           <|> (Ident <$> ident)
 
 parseExpr :: Parser Expr
-parseExpr = spaces *> parseExpr'
-
-parseFunc :: Parser Stmt
-parseFunc = Function
-         <$> ident
-         <*> (spaces *> (zeroOrMore $ Var <$> (spaces *> ident)))
-         <*  (spaces *> (char '='))
-         <*> (spaces *> parseExpr)
+parseExpr = eatSpaces parseExpr'
 
 parseStmt :: Parser Stmt
-parseStmt = undefined
+parseStmt = eatSpaces parseFunc
 
 {--
 fizzbuzz : W -> B
