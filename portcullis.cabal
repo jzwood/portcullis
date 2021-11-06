@@ -27,6 +27,7 @@ library
   exposed-modules:
       Parser
       Syntax
+      Util
   other-modules:
       Paths_portcullis
   hs-source-dirs:

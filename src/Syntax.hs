@@ -38,15 +38,14 @@ instance Show Predicate where
 -- (a -> (a -> b) -> c) -> ((c -> a) -> a)
 -- [["a", ["a", "b"], "c"], [["c", "a"], "a"]
 -- -> a -> -> a b c -> -> c a a
-data Signature = LitType Ident | TS Ident Signature
-
-parseSignature :: Parser Expr
-parseSignature = liftA3 SigOp (word "->" $> Sig) parseSignature parseSignature
-
+data TypeExpr
+  = LitType Ident
+  | Arrow TypeExpr TypeExpr
+  deriving (Show, Eq)
 
 data Stmt
   = Type Name Predicate
-  | TypeSignature [Ident]
+  | Signature TypeExpr
   | Function Name [Var] Expr
   deriving (Show)
 
@@ -58,6 +57,11 @@ data Expr
   | BinOp Op Expr Expr  -- + 2 3
   deriving (Eq, Show)
 
+data PredicateExpr
+  = X
+  | Real Double
+  | Binomial Op PredicateExpr PredicateExpr
+
 data Op
   = Plus
   | Minus
@@ -67,7 +71,27 @@ data Op
   | LessThan
   | Equal
   | NotEqual
+  | Mod
   deriving (Eq, Ord, Show)
+
+parseBinomial :: Parser PredicateExpr
+parseBinomial = liftA3 Binomial parseOp parsePredicateExpr parsePredicateExpr
+
+parsePredicateExpr :: Parser PredicateExpr
+parsePredicateExpr
+  =  eatSpaces
+  $  (satisfy isLower $> X)
+ <|> (Real <$> number)
+ <|> parseBinomial
+
+parseArrow :: Parser TypeExpr
+parseArrow = liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
+
+parseTypeExpr :: Parser TypeExpr
+parseTypeExpr
+  =  eatSpaces
+  $ (LitType <$> ident)
+ <|> parseArrow
 
 parseOp :: Parser Op
 parseOp = (word "==" $> Equal)
@@ -78,6 +102,7 @@ parseOp = (word "==" $> Equal)
        <|> (char '-' $> Minus)
        <|> (char '*' $> Times)
        <|> (char '/' $> Divide)
+       <|> (char '%' $> Mod)
 
 parseCall :: Parser Expr
 parseCall = liftA2 Call ident (zeroOrMore parseExpr)
@@ -92,14 +117,12 @@ parseFunc = Function
          <*  eatSpaces (char '=')
          <*> eatSpaces parseExpr
 
-parseExpr' :: Parser Expr
-parseExpr' =  parseCall
-          <|> parseBinOp
-          <|> (Number <$> number)
-          <|> (Ident <$> ident)
-
 parseExpr :: Parser Expr
-parseExpr = eatSpaces parseExpr'
+parseExpr = eatSpaces
+          $ parseCall
+         <|> parseBinOp
+         <|> (Number <$> number)
+         <|> (Ident <$> ident)
 
 parseStmt :: Parser Stmt
 parseStmt = eatSpaces parseFunc
