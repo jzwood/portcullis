@@ -5,12 +5,6 @@ import Data.Functor
 import Control.Applicative
 import Data.Char hiding (chr)
 
-
-{--
-  | Function Name [Expr] Expr
---}
-
-
 -- Notes:
 -- no Var (variables): instead you have functions with zero parameters
 -- no Extern (external): we're just not gonna let you call external functions :/
@@ -30,24 +24,31 @@ newtype Var = Var String
 
 -- NonZero = Real x where x /= 0
 
-data Predicate = Predicate (Double -> Bool)
+-- TODO: finish Stmt parser -- need to be able to parse the following examples
+-- make a decision about colon or something else
 
-instance Show Predicate where
-  show p = "Num -> Bool"
+-- NonZero = Num x where
+-- divide -> -> Num NonZero Num
+-- divide num den = num / den
+data Stmt
+  = Type Name PredicateExpr
+  | Signature Name TypeExpr
+  | Function Name [Var] Expr
+  deriving (Show, Eq)
+
+data PredicateExpr
+  = X
+  | Real Double
+  | Binomial Op PredicateExpr PredicateExpr
+  deriving (Eq, Show)
 
 -- (a -> (a -> b) -> c) -> ((c -> a) -> a)
 -- [["a", ["a", "b"], "c"], [["c", "a"], "a"]
 -- -> a -> -> a b c -> -> c a a
 data TypeExpr
-  = LitType Ident
+  = NumType Ident
   | Arrow TypeExpr TypeExpr
   deriving (Show, Eq)
-
-data Stmt
-  = Type Name Predicate
-  | Signature TypeExpr
-  | Function Name [Var] Expr
-  deriving (Show)
 
 data Expr
   = Number Double -- 34.23
@@ -56,11 +57,6 @@ data Expr
   | Guard [(Expr, Expr)]
   | BinOp Op Expr Expr  -- + 2 3
   deriving (Eq, Show)
-
-data PredicateExpr
-  = X
-  | Real Double
-  | Binomial Op PredicateExpr PredicateExpr
 
 data Op
   = Plus
@@ -74,8 +70,11 @@ data Op
   | Mod
   deriving (Eq, Ord, Show)
 
-parseBinomial :: Parser PredicateExpr
-parseBinomial = liftA3 Binomial parseOp parsePredicateExpr parsePredicateExpr
+parseStmt :: Parser Stmt
+parseStmt =  eatSpaces
+          $  parseFunc
+         <|> (liftA2 Signature ident $ eatSpaces parseTypeExpr)
+         <|> (liftA2 Type ident $ eatSpaces parsePredicateExpr)
 
 parsePredicateExpr :: Parser PredicateExpr
 parsePredicateExpr
@@ -84,13 +83,16 @@ parsePredicateExpr
  <|> (Real <$> number)
  <|> parseBinomial
 
+parseBinomial :: Parser PredicateExpr
+parseBinomial = liftA3 Binomial parseOp parsePredicateExpr parsePredicateExpr
+
 parseArrow :: Parser TypeExpr
 parseArrow = liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
 
 parseTypeExpr :: Parser TypeExpr
 parseTypeExpr
   =  eatSpaces
-  $ (LitType <$> ident)
+  $ (NumType <$> chrs)
  <|> parseArrow
 
 parseOp :: Parser Op
@@ -124,43 +126,3 @@ parseExpr = eatSpaces
          <|> (Number <$> number)
          <|> (Ident <$> ident)
 
-parseStmt :: Parser Stmt
-parseStmt = eatSpaces parseFunc
-
-{--
-fizzbuzz : W -> B
-fizzbuzz (W a) =
-  { B "Fizz Buzz", and mod3 mod5
-  { B "Fizz", mod3
-  { B "Buzz", mod5
-  { B (str a)
-  where
-    mod3 <- % a 3 = 0
-    mod5 <- % a 5 = 0
-    mod35 <= and mod3 mod5
-
-fizzbuzz (I a) {
-  S "fizz buzz", mod3&5 a
-  S "fizz", mod3 a
-  S "buzz", mod5 a
-  S (quote a)
-}
-
-magic4 = ? n (N 1) -> (I 3); (N 2) -> (I 2)
-
-SELECT (D a) FROM KITTY (N a) WHERE
-
-
-a = b |> c |> d
-a' = b' |> c' |> d'
-a'' =
-    |> b/2
-  |>
-
-a <| a |>
-
-
-
-
-
---}

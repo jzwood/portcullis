@@ -3,7 +3,7 @@
 module Parser where
 
 import Control.Applicative
-import Data.Char
+import Data.Char hiding (chr)
 
 data Cursor = Cursor { line :: Integer, col :: Integer}
   deriving (Show)
@@ -80,6 +80,9 @@ number = decimal <|> (fromIntegral <$> integer)
 
 chr :: Parser Char
 chr = satisfy isAlpha
+
+chrs :: Parser String
+chrs = oneOrMore chr
 
 spaces :: Parser String
 spaces = zeroOrMore (satisfy isSpace)
