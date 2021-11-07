@@ -120,8 +120,8 @@ parseOp = (word "==" $> Equal)
        <|> (char '/' $> Divide)
        <|> (char '%' $> Mod)
 
-parseCall :: Parser Expr
-parseCall = liftA2 Call camel (zeroOrMore parseExpr)
+--parseCall :: Parser Expr
+--parseCall = liftA2 Call camel (zeroOrMore parseExpr)
 
 parseBinOp :: Parser Expr
 parseBinOp = liftA3 BinOp parseOp parseExpr parseExpr
@@ -135,8 +135,8 @@ parseFunc = Function
 
 parseExpr :: Parser Expr
 parseExpr = eatSpaces
-          $ parseCall
-         <|> parseBinOp
+          -- $ parseCall
+          $  parseBinOp
          <|> (Number <$> number)
          <|> (Ident <$> camel)
 
