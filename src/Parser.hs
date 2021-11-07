@@ -3,7 +3,7 @@
 module Parser where
 
 import Control.Applicative
-import Data.Char hiding (chr)
+import Data.Char
 
 data Cursor = Cursor { line :: Integer, col :: Integer}
   deriving (Show)
@@ -31,12 +31,6 @@ satisfy p = Parser f
       | otherwise = Left cursor
       where
         nextCursor = if c == '\n' then nextLine cursor else nextChar cursor
-
-char :: Char -> Parser Char
-char c = satisfy (== c)
-
-word :: String -> Parser String
-word = traverse char
 
 ffst :: (a -> b) -> (a, c, d) -> (b, c, d)
 ffst f (x, y, z) = (f x, y, z)
@@ -78,17 +72,32 @@ integer = read <$> (oneOrMore $ satisfy isDigit)
 number :: Parser Double
 number = decimal <|> (fromIntegral <$> integer)
 
-chr :: Parser Char
-chr = satisfy isAlpha
+char :: Char -> Parser Char
+char c = satisfy (== c)
 
-chrs :: Parser String
-chrs = oneOrMore chr
+word :: String -> Parser String
+word = traverse char
+
+alphaChar :: Parser Char
+alphaChar = satisfy isAlpha
+
+alphaChars :: Parser String
+alphaChars = oneOrMore alphaChar
 
 spaces :: Parser String
 spaces = zeroOrMore (satisfy isSpace)
 
-ident :: Parser String
-ident = (:) <$> (satisfy isLower) <*> zeroOrMore (satisfy isAlphaNum)
+alphaNumChar :: Parser Char
+alphaNumChar = satisfy isAlphaNum
+
+identStartsWith :: (Char -> Bool) -> Parser String
+identStartsWith char0 = liftA2 (:) (satisfy char0) (zeroOrMore alphaNumChar)
+
+camel :: Parser String
+camel = identStartsWith isLower
+
+pascal :: Parser String
+pascal = identStartsWith isUpper
 
 paren :: Parser a -> Parser a
 paren p = char '(' *> p <* char ')'

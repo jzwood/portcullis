@@ -3,7 +3,7 @@ module Syntax where
 import Parser
 import Data.Functor
 import Control.Applicative
-import Data.Char hiding (chr)
+import Data.Char
 
 -- Notes:
 -- no Var (variables): instead you have functions with zero parameters
@@ -27,9 +27,12 @@ newtype Var = Var String
 -- TODO: finish Stmt parser -- need to be able to parse the following examples
 -- make a decision about colon or something else
 
--- NonZero = Num x where
--- divide -> -> Num NonZero Num
--- divide num den = num / den
+a = "NonZero /=  0   x "
+b = "divide  ->   -> Num NonZero   Num"
+c = "divide   num den   = /   num den  "
+
+type Mod = [Stmt]
+
 data Stmt
   = Type Name PredicateExpr
   | Signature Name TypeExpr
@@ -67,19 +70,28 @@ data Op
   | LessThan
   | Equal
   | NotEqual
+  | And
+  | Or
   | Mod
   deriving (Eq, Ord, Show)
 
 parseStmt :: Parser Stmt
 parseStmt =  eatSpaces
           $  parseFunc
-         <|> (liftA2 Signature ident $ eatSpaces parseTypeExpr)
-         <|> (liftA2 Type ident $ eatSpaces parsePredicateExpr)
+         <|> parseType
+         <|> parseSignature
+
+parseSignature :: Parser Stmt
+parseSignature = liftA2 Signature camel parseTypeExpr
+
+-- NonZero > 0 x
+parseType :: Parser Stmt
+parseType = liftA2 Type pascal parsePredicateExpr
 
 parsePredicateExpr :: Parser PredicateExpr
 parsePredicateExpr
   =  eatSpaces
-  $  (satisfy isLower $> X)
+  $  (camel $> X)
  <|> (Real <$> number)
  <|> parseBinomial
 
@@ -92,7 +104,7 @@ parseArrow = liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
 parseTypeExpr :: Parser TypeExpr
 parseTypeExpr
   =  eatSpaces
-  $ (NumType <$> chrs)
+  $ (NumType <$> alphaChars)
  <|> parseArrow
 
 parseOp :: Parser Op
@@ -100,6 +112,8 @@ parseOp = (word "==" $> Equal)
        <|> (word "/=" $> Equal)
        <|> (char '>' $> GreaterThan)
        <|> (char '<' $> LessThan)
+       <|> (char '&' $> And)
+       <|> (char '|' $> Or)
        <|> (char '+' $> Plus)
        <|> (char '-' $> Minus)
        <|> (char '*' $> Times)
@@ -107,15 +121,15 @@ parseOp = (word "==" $> Equal)
        <|> (char '%' $> Mod)
 
 parseCall :: Parser Expr
-parseCall = liftA2 Call ident (zeroOrMore parseExpr)
+parseCall = liftA2 Call camel (zeroOrMore parseExpr)
 
 parseBinOp :: Parser Expr
 parseBinOp = liftA3 BinOp parseOp parseExpr parseExpr
 
 parseFunc :: Parser Stmt
 parseFunc = Function
-         <$> ident
-         <*> eatSpaces (zeroOrMore $ Var <$> (eatSpaces ident))
+         <$> camel
+         <*> eatSpaces (zeroOrMore $ Var <$> (eatSpaces camel))
          <*  eatSpaces (char '=')
          <*> eatSpaces parseExpr
 
@@ -124,5 +138,5 @@ parseExpr = eatSpaces
           $ parseCall
          <|> parseBinOp
          <|> (Number <$> number)
-         <|> (Ident <$> ident)
+         <|> (Ident <$> camel)
 
