@@ -4,6 +4,7 @@ module Parser where
 
 import Control.Applicative
 import Data.Char
+import Data.List (genericReplicate, foldl')
 
 data Cursor = Cursor { line :: Integer, col :: Integer}
   deriving (Show)
@@ -61,7 +62,12 @@ oneOrMore :: Parser a -> Parser [a]
 oneOrMore p = (:) <$> p <*> zeroOrMore p
 
 zeroOrOne :: Parser a -> Parser [a]
-zeroOrOne p = undefined
+zeroOrOne p = fmap pure p <|> pure []
+
+occurN :: Integer -> Parser a -> Parser [a]
+occurN n p
+   | n < 1 = pure []
+   | otherwise = liftA2 (:) p (occurN (n - 1) p)
 
 decimal :: Parser Double
 decimal = ((\s1 c s2 -> read $ s1 ++ c : s2) <$> (oneOrMore $ satisfy isDigit) <*> (char '.') <*> (oneOrMore $ satisfy isDigit))
@@ -102,5 +108,5 @@ pascal = identStartsWith isUpper
 paren :: Parser a -> Parser a
 paren p = char '(' *> p <* char ')'
 
-eatSpaces :: Parser a -> Parser a
-eatSpaces p = spaces *> p
+trimLeft :: Parser a -> Parser a
+trimLeft p = spaces *> p

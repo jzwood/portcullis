@@ -11,7 +11,6 @@ import Data.Char
 -- TODO steal from this: https://blog.sumtypeofway.com/posts/introduction-to-recursion-schemes.html
 
 type Name = String
-type Ident = String
 
 newtype Var = Var String
   deriving (Show, Eq)
@@ -49,13 +48,13 @@ data PredicateExpr
 -- [["a", ["a", "b"], "c"], [["c", "a"], "a"]
 -- -> a -> -> a b c -> -> c a a
 data TypeExpr
-  = NumType Ident
+  = NumType String
   | Arrow TypeExpr TypeExpr
   deriving (Show, Eq)
 
 data Expr
   = Number Double -- 34.23
-  | Ident String  -- arg
+  | Ident Name  -- arg
   | Call Name [Expr]  -- add 12 45 (function invocation)
   | Guard [(Expr, Expr)]
   | BinOp Op Expr Expr  -- + 2 3
@@ -76,7 +75,7 @@ data Op
   deriving (Eq, Ord, Show)
 
 parseStmt :: Parser Stmt
-parseStmt =  eatSpaces
+parseStmt =  trimLeft
           $  parseFunc
          <|> parseType
          <|> parseSignature
@@ -90,7 +89,7 @@ parseType = liftA2 Type pascal parsePredicateExpr
 
 parsePredicateExpr :: Parser PredicateExpr
 parsePredicateExpr
-  =  eatSpaces
+  =  trimLeft
   $  (camel $> X)
  <|> (Real <$> number)
  <|> parseBinomial
@@ -103,7 +102,7 @@ parseArrow = liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
 
 parseTypeExpr :: Parser TypeExpr
 parseTypeExpr
-  =  eatSpaces
+  =  trimLeft
   $ (NumType <$> alphaChars)
  <|> parseArrow
 
@@ -120,8 +119,9 @@ parseOp = (word "==" $> Equal)
        <|> (char '/' $> Divide)
        <|> (char '%' $> Mod)
 
+-- TODO need to extract /int from add/3 and parse that n number of times
 --parseCall :: Parser Expr
---parseCall = liftA2 Call camel (zeroOrMore parseExpr)
+--parseCall = liftA2 Call (liftA3 (:) camel ) (zeroOrMore parseExpr)
 
 parseBinOp :: Parser Expr
 parseBinOp = liftA3 BinOp parseOp parseExpr parseExpr
@@ -129,12 +129,12 @@ parseBinOp = liftA3 BinOp parseOp parseExpr parseExpr
 parseFunc :: Parser Stmt
 parseFunc = Function
          <$> camel
-         <*> eatSpaces (zeroOrMore $ Var <$> (eatSpaces camel))
-         <*  eatSpaces (char '=')
-         <*> eatSpaces parseExpr
+         <*> trimLeft (zeroOrMore $ Var <$> (trimLeft camel))
+         <*  trimLeft (char '=')
+         <*> trimLeft parseExpr
 
 parseExpr :: Parser Expr
-parseExpr = eatSpaces
+parseExpr = trimLeft
           -- $ parseCall
           $  parseBinOp
          <|> (Number <$> number)
