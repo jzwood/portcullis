@@ -119,9 +119,8 @@ parseOp = (word "==" $> Equal)
        <|> (char '/' $> Divide)
        <|> (char '%' $> Mod)
 
--- TODO need to extract /int from add/3 and parse that n number of times
---parseCall :: Parser Expr
---parseCall = liftA2 Call (liftA3 (:) camel ) (zeroOrMore parseExpr)
+parseCall :: Parser Expr
+parseCall = paren . trim $ liftA2 Call camel (zeroOrMore parseExpr)
 
 parseBinOp :: Parser Expr
 parseBinOp = liftA3 BinOp parseOp parseExpr parseExpr
@@ -134,9 +133,9 @@ parseFunc = Function
          <*> trimLeft parseExpr
 
 parseExpr :: Parser Expr
-parseExpr = trimLeft
-          -- $ parseCall
-          $  parseBinOp
+parseExpr =  trimLeft
+          $  parseCall
+         <|> parseBinOp
          <|> (Number <$> number)
          <|> (Ident <$> camel)
 

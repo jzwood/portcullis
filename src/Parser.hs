@@ -6,8 +6,10 @@ import Control.Applicative
 import Data.Char
 import Data.List (genericReplicate, foldl')
 
+-- APPLICATIVE PARSER
+
 data Cursor = Cursor { line :: Integer, col :: Integer}
-  deriving (Show)
+  deriving (Show, Eq)
 
 instance Semigroup Cursor where
   (<>) (Cursor l1 c1) (Cursor l2 c2) = Cursor (l1 + l2) (c1 + c2)
@@ -54,6 +56,7 @@ instance Alternative Parser where
       Left c' -> rp2 c s
       Right acs -> Right acs
 
+-- PARSER UTILS
 
 zeroOrMore :: Parser a -> Parser [a]
 zeroOrMore p = oneOrMore p <|> pure []
@@ -107,6 +110,9 @@ pascal = identStartsWith isUpper
 
 paren :: Parser a -> Parser a
 paren p = char '(' *> p <* char ')'
+
+trim :: Parser a -> Parser a
+trim p = spaces *> p <* spaces
 
 trimLeft :: Parser a -> Parser a
 trimLeft p = spaces *> p

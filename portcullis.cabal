@@ -35,7 +35,7 @@ library
   build-depends:
       base >=4.7 && <5
     , containers >=0.6.5.1
-    , protolude ==0.3.0
+    , hspec ==2.7.10
   default-language: Haskell2010
 
 executable portcullis-exe
@@ -48,14 +48,15 @@ executable portcullis-exe
   build-depends:
       base >=4.7 && <5
     , containers >=0.6.5.1
+    , hspec ==2.7.10
     , portcullis
-    , protolude ==0.3.0
   default-language: Haskell2010
 
 test-suite portcullis-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      ParserSpec
       Paths_portcullis
   hs-source-dirs:
       test
@@ -63,6 +64,6 @@ test-suite portcullis-test
   build-depends:
       base >=4.7 && <5
     , containers >=0.6.5.1
+    , hspec ==2.7.10
     , portcullis
-    , protolude ==0.3.0
   default-language: Haskell2010

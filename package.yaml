@@ -21,8 +21,8 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
-- protolude == 0.3.0
 - containers >= 0.6.5.1
+- hspec == 2.7.10
 
 library:
   source-dirs: src
