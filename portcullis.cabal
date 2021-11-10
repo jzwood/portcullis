@@ -27,6 +27,7 @@ library
   exposed-modules:
       Parser
       Syntax
+      Test
       Util
   other-modules:
       Paths_portcullis

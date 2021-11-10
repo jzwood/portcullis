@@ -1,5 +1,6 @@
-module Main where
+module Test where
 
+import Data.List
 import Syntax
 import Parser
 

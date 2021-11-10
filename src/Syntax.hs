@@ -23,9 +23,6 @@ newtype Var = Var String
 
 -- NonZero = Real x where x /= 0
 
--- TODO: finish Stmt parser -- need to be able to parse the following examples
--- make a decision about colon or something else
-
 type Mod = [Stmt]
 
 data Stmt
@@ -40,9 +37,6 @@ data PredicateExpr
   | Binomial Op PredicateExpr PredicateExpr
   deriving (Eq, Show)
 
--- (a -> (a -> b) -> c) -> ((c -> a) -> a)
--- [["a", ["a", "b"], "c"], [["c", "a"], "a"]
--- -> a -> -> a b c -> -> c a a
 data TypeExpr
   = NumType String
   | Arrow TypeExpr TypeExpr
