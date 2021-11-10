@@ -2,6 +2,7 @@ module ParserSpec (spec) where
 
 import Test.Hspec
 import Parser
+import Syntax
 
 success :: Either Cursor (a, Cursor, String) -> Maybe (a, String)
 success (Left _) = Nothing
@@ -39,3 +40,15 @@ spec = do
       success result `shouldBe` Just (123, "abc")
       let result = runParser number mempty "123.456abc"
       success result `shouldBe` Just (123.456, "abc")
+
+    it "parse Stmt" $ do
+      let strType = runParser parseStmt mempty "NonZero /=  0   x "
+          parsedType = Type "NonZero" (Binomial NotEqual (Real 0.0) X)
+      success strType `shouldBe` Just (parsedType, " ")
+      let strSig = runParser parseStmt mempty "divide  ->   -> Num NonZero   Num"
+          parsedSig = Signature "divide" (Arrow (Arrow (NumType "Num") (NumType "NonZero")) (NumType "Num"))
+      success strSig `shouldBe` Just (parsedSig, "")
+      let strFunction = runParser parseStmt mempty "divide   num den   = /   num den  "
+          parsedFunction = Function "divide" [Var "num",Var "den"] (BinOp Divide (Ident "num") (Ident "den"))
+      success strFunction `shouldBe` Just (parsedFunction, "  ")
+

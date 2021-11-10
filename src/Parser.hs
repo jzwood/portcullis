@@ -73,7 +73,10 @@ occurN n p
    | otherwise = liftA2 (:) p (occurN (n - 1) p)
 
 decimal :: Parser Double
-decimal = ((\s1 c s2 -> read $ s1 ++ c : s2) <$> (oneOrMore $ satisfy isDigit) <*> (char '.') <*> (oneOrMore $ satisfy isDigit))
+decimal = ((\s1 s2 -> read $ s1 ++ '.' : s2) <$> int <*> (dot *> int))
+  where
+    int = oneOrMore $ satisfy isDigit
+    dot = char '.'
 
 integer :: Parser Integer
 integer = read <$> (oneOrMore $ satisfy isDigit)

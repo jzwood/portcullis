@@ -26,10 +26,6 @@ newtype Var = Var String
 -- TODO: finish Stmt parser -- need to be able to parse the following examples
 -- make a decision about colon or something else
 
-a = "NonZero /=  0   x "
-b = "divide  ->   -> Num NonZero   Num"
-c = "divide   num den   = /   num den  "
-
 type Mod = [Stmt]
 
 data Stmt
@@ -72,7 +68,7 @@ data Op
   | And
   | Or
   | Mod
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Show)
 
 parseStmt :: Parser Stmt
 parseStmt =  trimLeft
@@ -108,7 +104,7 @@ parseTypeExpr
 
 parseOp :: Parser Op
 parseOp = (word "==" $> Equal)
-       <|> (word "/=" $> Equal)
+       <|> (word "/=" $> NotEqual)
        <|> (char '>' $> GreaterThan)
        <|> (char '<' $> LessThan)
        <|> (char '&' $> And)
