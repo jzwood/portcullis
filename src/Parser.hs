@@ -67,6 +67,9 @@ oneOrMore p = (:) <$> p <*> zeroOrMore p
 zeroOrOne :: Parser a -> Parser [a]
 zeroOrOne p = fmap pure p <|> pure []
 
+optionalModifier :: (Parser a -> Parser a) -> Parser a -> Parser a
+optionalModifier m p = m p <|> p
+
 occurN :: Integer -> Parser a -> Parser [a]
 occurN n p
    | n < 1 = pure []

@@ -25,6 +25,9 @@ newtype Var = Var String
 
 type Mod = [Stmt]
 
+data Pipeline
+  = InOut Name
+
 data Stmt
   = Type Name PredicateExpr
   | Signature Name TypeExpr
@@ -85,7 +88,7 @@ parsePredicateExpr
  <|> parseBinomial
 
 parseBinomial :: Parser PredicateExpr
-parseBinomial = liftA3 Binomial parseOp parsePredicateExpr parsePredicateExpr
+parseBinomial = (optionalModifier paren . trim) $ liftA3 Binomial parseOp parsePredicateExpr parsePredicateExpr
 
 parseArrow :: Parser TypeExpr
 parseArrow = liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
@@ -113,7 +116,7 @@ parseCall :: Parser Expr
 parseCall = paren . trim $ liftA2 Call camel (zeroOrMore parseExpr)
 
 parseBinOp :: Parser Expr
-parseBinOp = liftA3 BinOp parseOp parseExpr parseExpr
+parseBinOp = (optionalModifier paren . trim) $ liftA3 BinOp parseOp parseExpr parseExpr
 
 parseFunc :: Parser Stmt
 parseFunc = Function

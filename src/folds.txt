@@ -5,3 +5,7 @@ unfold :: (b -> Bool) -> (b -> [a, b]) -> b -> [a, [a, [a, ...]]  //1D tuple tre
 unfold :: (b -> Bool) -> (b -> [a, b, b]) -> b -> [a, [a, []], [a, []]]  //2D tuple tree aka binary tree
 
 unfold terminates? coalgebra tuple-value
+
+
+
+fold :: (a -> b -> a) -> [b] -> a

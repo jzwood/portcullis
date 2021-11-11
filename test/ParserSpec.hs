@@ -44,7 +44,7 @@ spec = do
     it "parse Stmt" $ do
       let strType = runParser parseStmt mempty "NonZero /=  0   x "
           parsedType = Type "NonZero" (Binomial NotEqual (Real 0.0) X)
-      success strType `shouldBe` Just (parsedType, " ")
+      success strType `shouldBe` Just (parsedType, "")
       let strSig = runParser parseStmt mempty "divide  ->   -> Num NonZero   Num"
           parsedSig = Signature "divide" (Arrow (Arrow (NumType "Num") (NumType "NonZero")) (NumType "Num"))
       success strSig `shouldBe` Just (parsedSig, "")
