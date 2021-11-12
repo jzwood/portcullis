@@ -37,7 +37,7 @@ data Stmt
 data PredicateExpr
   = X
   | Real Double
-  | Binomial Op PredicateExpr PredicateExpr
+  | Binomial Bop PredicateExpr PredicateExpr
   deriving (Eq, Show)
 
 data TypeExpr
@@ -50,10 +50,11 @@ data Expr
   | Ident Name  -- arg
   | Call Name [Expr]  -- add 12 45 (function invocation)
   | Guard [(Expr, Expr)]
-  | BinOp Op Expr Expr  -- + 2 3
+  | BinOp Bop Expr Expr  -- + 2 3
+  | TernOp Top Expr Expr Expr
   deriving (Eq, Show)
 
-data Op
+data Bop
   = Plus
   | Minus
   | Times
@@ -65,6 +66,11 @@ data Op
   | And
   | Or
   | Mod
+  deriving (Eq, Show)
+
+data Top
+  = Fold
+  | Unfold
   deriving (Eq, Show)
 
 parseStmt :: Parser Stmt
@@ -106,7 +112,7 @@ parseTypeExpr
   $ (NumType <$> alphaChars)
  <|> parseArrow
 
-parseOp :: Parser Op
+parseOp :: Parser Bop
 parseOp = (word "==" $> Equal)
        <|> (word "/=" $> NotEqual)
        <|> (char '>' $> GreaterThan)
