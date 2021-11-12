@@ -52,3 +52,7 @@ spec = do
           parsedFunction = Function "divide" [Var "num",Var "den"] (BinOp Divide (Ident "num") (Ident "den"))
       success strFunction `shouldBe` Just (parsedFunction, "")
 
+    it "parse guard" $ do
+      let strGuardFunc = runParser parseStmt mempty "guard a =\n ? > a 1 34 \n ? == a 0 0 \n ? 1 0"
+          parsedStmt = Function "guard" [Var "a"] (Guard [(BinOp GreaterThan (Ident "a") (Number 1.0),Number 34.0),(BinOp Equal (Ident "a") (Number 0.0),Number 0.0),(Number 1.0,Number 0.0)])
+      success strGuardFunc `shouldBe` Just (parsedStmt, "")
