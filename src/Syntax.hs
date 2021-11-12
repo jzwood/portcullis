@@ -93,6 +93,13 @@ parseBinomial = (optionalModifier paren . trim) $ liftA3 Binomial parseOp parseP
 parseArrow :: Parser TypeExpr
 parseArrow = liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
 
+parseFunc :: Parser Stmt
+parseFunc = Function
+         <$> camel
+         <*> trimLeft (zeroOrMore $ Var <$> (trimLeft camel))
+         <*  trimLeft (char '=')
+         <*> trimLeft parseExpr
+
 parseTypeExpr :: Parser TypeExpr
 parseTypeExpr
   =  trimLeft
@@ -113,22 +120,22 @@ parseOp = (word "==" $> Equal)
        <|> (char '%' $> Mod)
 
 parseCall :: Parser Expr
-parseCall = paren . trim $ liftA2 Call camel (zeroOrMore parseExpr)
+parseCall = paren . trim
+          $ liftA2 Call camel (zeroOrMore parseExpr)
 
 parseBinOp :: Parser Expr
-parseBinOp = (optionalModifier paren . trim) $ liftA3 BinOp parseOp parseExpr parseExpr
+parseBinOp = (optionalModifier paren . trim)
+           $ liftA3 BinOp parseOp parseExpr parseExpr
 
-parseFunc :: Parser Stmt
-parseFunc = Function
-         <$> camel
-         <*> trimLeft (zeroOrMore $ Var <$> (trimLeft camel))
-         <*  trimLeft (char '=')
-         <*> trimLeft parseExpr
+parseGuard :: Parser Expr
+parseGuard = Guard
+          <$> (oneOrMore $ liftA2 (,) (trim $ char '?' *> parseExpr) (trimLeft parseExpr))
 
 parseExpr :: Parser Expr
 parseExpr =  trimLeft
           $  parseCall
          <|> parseBinOp
+         <|> parseGuard
          <|> (Number <$> number)
          <|> (Ident <$> camel)
 

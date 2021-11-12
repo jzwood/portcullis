@@ -50,5 +50,5 @@ spec = do
       success strSig `shouldBe` Just (parsedSig, "")
       let strFunction = runParser parseStmt mempty "divide   num den   = /   num den  "
           parsedFunction = Function "divide" [Var "num",Var "den"] (BinOp Divide (Ident "num") (Ident "den"))
-      success strFunction `shouldBe` Just (parsedFunction, "  ")
+      success strFunction `shouldBe` Just (parsedFunction, "")
 

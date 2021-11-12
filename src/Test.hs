@@ -5,7 +5,7 @@ import Syntax
 import Parser
 
 main = do
-  file <- readFile "src/examples/add.po"
-  let res = runParser (oneOrMore parseStmt) mempty file
+  file <- readFile "src/examples/guard.po"
+  let res = runParser (oneOrMore parseFunc) mempty file
   print res
   return ()

@@ -1,5 +1,2 @@
-
-NonZero /=  0   x
-
-divide  ->   -> Num NonZero   Num
-divide   num den   = /   num den
+test a b =
+  + a b

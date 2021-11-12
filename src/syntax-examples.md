@@ -5,6 +5,7 @@ Whole = Num x where x > 0
 NonZero = Real x where x /= 0
 Zero = Whole x where x = 0
 Enum = Real x where x = 0 | x = 2 | x = 3
+Enum = | | (== x 0) (== x 2) (== x 3)
 
 floor : Real -> Integer
 
@@ -16,6 +17,5 @@ split x =
   res ?=
   x > 3 ?= 0
   x == 2 = 1
-  True = 3
-
+  1 = 3
 
