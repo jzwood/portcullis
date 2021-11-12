@@ -153,4 +153,3 @@ parseExpr =  trimLeft
          <|> parseGuard
          <|> (Number <$> number)
          <|> (Ident <$> camel)
-
