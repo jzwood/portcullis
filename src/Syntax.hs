@@ -94,7 +94,7 @@ parsePredicateExpr
  <|> parseBinomial
 
 parseBinomial :: Parser PredicateExpr
-parseBinomial = (optionalModifier paren . trim) $ liftA3 Binomial parseOp parsePredicateExpr parsePredicateExpr
+parseBinomial = (optionalModifier paren . trim) $ liftA3 Binomial parseBop parsePredicateExpr parsePredicateExpr
 
 parseArrow :: Parser TypeExpr
 parseArrow = liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
@@ -112,8 +112,8 @@ parseTypeExpr
   $ (NumType <$> alphaChars)
  <|> parseArrow
 
-parseOp :: Parser Bop
-parseOp = (word "==" $> Equal)
+parseBop :: Parser Bop
+parseBop = (word "==" $> Equal)
        <|> (word "/=" $> NotEqual)
        <|> (char '>' $> GreaterThan)
        <|> (char '<' $> LessThan)
@@ -125,13 +125,21 @@ parseOp = (word "==" $> Equal)
        <|> (char '/' $> Divide)
        <|> (char '%' $> Mod)
 
+parseTop :: Parser Top
+parseTop =  (word "fold" $> Fold)
+        <|> (word "unfold" $> Unfold)
+
 parseCall :: Parser Expr
 parseCall = paren . trim
           $ liftA2 Call camel (zeroOrMore parseExpr)
 
 parseBinOp :: Parser Expr
 parseBinOp = (optionalModifier paren . trim)
-           $ liftA3 BinOp parseOp parseExpr parseExpr
+           $ liftA3 BinOp parseBop parseExpr parseExpr
+
+parseTernOp :: Parser Expr
+parseTernOp = (optionalModifier paren . trim)
+           $ TernOp <$> parseTop <*> parseExpr <*> parseExpr <*> parseExpr
 
 parseGuard :: Parser Expr
 parseGuard = Guard
@@ -141,6 +149,7 @@ parseExpr :: Parser Expr
 parseExpr =  trimLeft
           $  parseCall
          <|> parseBinOp
+         <|> parseTernOp
          <|> parseGuard
          <|> (Number <$> number)
          <|> (Ident <$> camel)
