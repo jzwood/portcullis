@@ -76,14 +76,14 @@ data Top
   deriving (Eq, Show)
 
 showGuardCase :: (Expr, Expr) -> String
-showGuardCase (expr1, expr2) = "if (" ++ (show expr1) ++ ") {return " ++ (show expr2) ++ ";}"
+showGuardCase (expr1, expr2) = "\n\tif (" ++ (show expr1) ++ ") {\n\t\treturn " ++ (show expr2) ++ ";\n\t}"
 
 instance Show Expr where
   show (Number n) = show n
   show (Ident name) = name
   show (Call name exprs) = name ++ parenthize (intercalate ", " $ show <$> exprs)
   show (BinOp bop expr1 expr2) = parenthize (show expr1 ++ (pad $ show bop) ++ show expr2)
-  show (Guard exprExprs) = concat ["(() => {", (intercalate " " $ showGuardCase <$> exprExprs), "})()"]
+  show (Guard exprExprs) = concat ["(() => {", (intercalate " " $ showGuardCase <$> exprExprs), "\n})()"]
 
 instance Show Bop where
   show Plus = "+"
