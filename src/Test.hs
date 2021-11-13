@@ -1,6 +1,7 @@
 module Test where
 
 import Data.List
+import MiniParser
 import Syntax
 import Parser
 

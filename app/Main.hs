@@ -2,7 +2,7 @@ module Main where
 
 import Syntax
 import Parser
-
+import MiniParser
 
 main = do
   file <- readFile "src/examples/add.po"

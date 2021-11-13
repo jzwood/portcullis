@@ -1,8 +1,9 @@
 module ParserSpec (spec) where
 
 import Test.Hspec
-import Parser
+import MiniParser
 import Syntax
+import Parser
 
 success :: Either Cursor (a, Cursor, String) -> Maybe (a, String)
 success (Left _) = Nothing

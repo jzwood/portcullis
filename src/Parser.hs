@@ -1,124 +1,90 @@
-{-# LANGUAGE NamedFieldPuns #-}
-
 module Parser where
 
+import MiniParser
+import Syntax
+import Data.Functor
 import Control.Applicative
 import Data.Char
-import Data.List (genericReplicate, foldl')
+import Data.List
+import Util
 
--- APPLICATIVE PARSER
+parseStmt :: Parser Stmt
+parseStmt =  trimLeft
+          $  parseFunc
+         <|> parseType
+         <|> parseSignature
 
-data Cursor = Cursor { line :: Integer, col :: Integer}
-  deriving (Show, Eq)
+parseSignature :: Parser Stmt
+parseSignature = liftA2 Signature camel parseTypeExpr
 
-instance Semigroup Cursor where
-  (<>) (Cursor l1 c1) (Cursor l2 c2) = Cursor (l1 + l2) (c1 + c2)
+-- NonZero > 0 x
+parseType :: Parser Stmt
+parseType = liftA2 Type pascal parsePredicateExpr
 
-instance Monoid Cursor where
-  mempty = Cursor 0 0
+parsePredicateExpr :: Parser PredicateExpr
+parsePredicateExpr
+  =  trimLeft
+  $  (camel $> X)
+ <|> (Real <$> number)
+ <|> parseBinomial
 
-nextLine :: Cursor -> Cursor
-nextLine (Cursor line col) = Cursor (line + 1) 0
+parseBinomial :: Parser PredicateExpr
+parseBinomial = (optionalModifier paren . trim) $ liftA3 Binomial parseBop parsePredicateExpr parsePredicateExpr
 
-nextChar :: Cursor -> Cursor
-nextChar (Cursor line col) = Cursor line (col + 1)
+parseArrow :: Parser TypeExpr
+parseArrow = liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
 
-newtype Parser a = Parser { runParser :: Cursor -> String -> Either Cursor (a, Cursor, String) }
+parseFunc :: Parser Stmt
+parseFunc = Function
+         <$> camel
+         <*> trimLeft (zeroOrMore $ Var <$> (trimLeft camel))
+         <*  trimLeft (char '=')
+         <*> trimLeft parseExpr
 
-satisfy :: (Char -> Bool) -> Parser Char
-satisfy p = Parser f
-  where
-    f cursor [] = Left cursor
-    f cursor (c:cs)
-      | p c = Right (c, nextCursor, cs)
-      | otherwise = Left cursor
-      where
-        nextCursor = if c == '\n' then nextLine cursor else nextChar cursor
+parseTypeExpr :: Parser TypeExpr
+parseTypeExpr
+  =  trimLeft
+  $ (NumType <$> alphaChars)
+ <|> parseArrow
 
-ffst :: (a -> b) -> (a, c, d) -> (b, c, d)
-ffst f (x, y, z) = (f x, y, z)
+parseBop :: Parser Bop
+parseBop = (word "==" $> Equal)
+       <|> (word "/=" $> NotEqual)
+       <|> (char '>' $> GreaterThan)
+       <|> (char '<' $> LessThan)
+       <|> (char '&' $> And)
+       <|> (char '|' $> Or)
+       <|> (char '+' $> Plus)
+       <|> (char '-' $> Minus)
+       <|> (char '*' $> Times)
+       <|> (char '/' $> Divide)
+       <|> (char '%' $> Mod)
 
-instance Functor Parser where
- --fmap f (Parser rp) = Parser $ curry $ fmap (ffst f) . uncurry rp
- fmap f (Parser rp) = Parser (\c s -> fmap (ffst f) (rp c s))
+parseTop :: Parser Top
+parseTop =  (word "fold" $> Fold)
+        <|> (word "unfold" $> Unfold)
 
-instance Applicative Parser where
-  pure a = Parser (\c s -> Right (a, c, s))
-  (<*>) (Parser fp) p = Parser $ \c s ->
-    case fp c s of
-      Left cu -> Left cu
-      Right (f, c', s') -> runParser (f <$> p) c' s'
+parseCall :: Parser Expr
+parseCall = paren . trim
+          $ liftA2 Call camel (zeroOrMore parseExpr)
 
-instance Alternative Parser where
-  empty = Parser (\c _ -> Left c)
-  Parser rp1 <|> Parser rp2 = Parser $ \c s ->
-    case rp1 c s of
-      Left c' -> rp2 c s
-      Right acs -> Right acs
+parseBinOp :: Parser Expr
+parseBinOp = (optionalModifier paren . trim)
+           $ liftA3 BinOp parseBop parseExpr parseExpr
 
--- PARSER UTILS
+parseTernOp :: Parser Expr
+parseTernOp = (optionalModifier paren . trim)
+            $ TernOp <$> parseTop <*> parseExpr <*> parseExpr <*> parseExpr
 
-zeroOrMore :: Parser a -> Parser [a]
-zeroOrMore p = oneOrMore p <|> pure []
+parseGuard :: Parser Expr
+parseGuard = Guard
+          <$> (oneOrMore $ liftA2 (,) (trim $ char '?' *> parseExpr) (trimLeft parseExpr))
 
-oneOrMore :: Parser a -> Parser [a]
-oneOrMore p = (:) <$> p <*> zeroOrMore p
-
-zeroOrOne :: Parser a -> Parser [a]
-zeroOrOne p = fmap pure p <|> pure []
-
-optionalModifier :: (Parser a -> Parser a) -> Parser a -> Parser a
-optionalModifier m p = m p <|> p
-
-occurN :: Integer -> Parser a -> Parser [a]
-occurN n p
-   | n < 1 = pure []
-   | otherwise = liftA2 (:) p (occurN (n - 1) p)
-
-decimal :: Parser Double
-decimal = ((\s1 s2 -> read $ s1 ++ '.' : s2) <$> int <*> (dot *> int))
-  where
-    int = oneOrMore $ satisfy isDigit
-    dot = char '.'
-
-integer :: Parser Integer
-integer = read <$> (oneOrMore $ satisfy isDigit)
-
-number :: Parser Double
-number = decimal <|> (fromIntegral <$> integer)
-
-char :: Char -> Parser Char
-char c = satisfy (== c)
-
-word :: String -> Parser String
-word = traverse char
-
-alphaChar :: Parser Char
-alphaChar = satisfy isAlpha
-
-alphaChars :: Parser String
-alphaChars = oneOrMore alphaChar
-
-spaces :: Parser String
-spaces = zeroOrMore (satisfy isSpace)
-
-alphaNumChar :: Parser Char
-alphaNumChar = satisfy isAlphaNum
-
-identStartsWith :: (Char -> Bool) -> Parser String
-identStartsWith char0 = liftA2 (:) (satisfy char0) (zeroOrMore alphaNumChar)
-
-camel :: Parser String
-camel = identStartsWith isLower
-
-pascal :: Parser String
-pascal = identStartsWith isUpper
-
-paren :: Parser a -> Parser a
-paren p = char '(' *> p <* char ')'
-
-trim :: Parser a -> Parser a
-trim p = spaces *> p <* spaces
-
-trimLeft :: Parser a -> Parser a
-trimLeft p = spaces *> p
+parseExpr :: Parser Expr
+parseExpr =  trimLeft
+          $  parseCall
+         <|> parseBinOp
+         <|> parseTernOp
+         <|> parseGuard
+         <|> (Number <$> number)
+         <|> (Ident <$> camel)

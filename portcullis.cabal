@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      MiniParser
       Parser
       Syntax
       Test
