@@ -6,6 +6,6 @@ import Parser
 
 main = do
   file <- readFile "src/examples/guard.po"
-  let res = runParser (oneOrMore parseFunc) mempty file
+  let res = runParser (oneOrMore parseStmt) mempty file
   print res
   return ()

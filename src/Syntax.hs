@@ -4,6 +4,8 @@ import Parser
 import Data.Functor
 import Control.Applicative
 import Data.Char
+import Data.List
+import Util
 
 -- Notes:
 -- no Var (variables): instead you have functions with zero parameters
@@ -52,7 +54,7 @@ data Expr
   | Guard [(Expr, Expr)]
   | BinOp Bop Expr Expr  -- + 2 3
   | TernOp Top Expr Expr Expr
-  deriving (Eq, Show)
+  deriving (Eq)
 
 data Bop
   = Plus
@@ -66,12 +68,35 @@ data Bop
   | And
   | Or
   | Mod
-  deriving (Eq, Show)
+  deriving (Eq)
 
 data Top
   = Fold
   | Unfold
   deriving (Eq, Show)
+
+showGuardCase :: (Expr, Expr) -> String
+showGuardCase (expr1, expr2) = "if (" ++ (show expr1) ++ ") {return " ++ (show expr2) ++ ";}"
+
+instance Show Expr where
+  show (Number n) = show n
+  show (Ident name) = name
+  show (Call name exprs) = name ++ parenthize (intercalate ", " $ show <$> exprs)
+  show (BinOp bop expr1 expr2) = parenthize (show expr1 ++ (pad $ show bop) ++ show expr2)
+  show (Guard exprExprs) = concat ["(() => {", (intercalate " " $ showGuardCase <$> exprExprs), "})()"]
+
+instance Show Bop where
+  show Plus = "+"
+  show Minus = "-"
+  show Times = "*"
+  show Divide = "/"
+  show GreaterThan = ">"
+  show LessThan = "<"
+  show Equal = "==="
+  show NotEqual = "!=="
+  show And = "&&"
+  show Or = "||"
+  show Mod = "%"
 
 parseStmt :: Parser Stmt
 parseStmt =  trimLeft
@@ -139,7 +164,7 @@ parseBinOp = (optionalModifier paren . trim)
 
 parseTernOp :: Parser Expr
 parseTernOp = (optionalModifier paren . trim)
-           $ TernOp <$> parseTop <*> parseExpr <*> parseExpr <*> parseExpr
+            $ TernOp <$> parseTop <*> parseExpr <*> parseExpr <*> parseExpr
 
 parseGuard :: Parser Expr
 parseGuard = Guard

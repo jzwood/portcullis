@@ -7,5 +7,4 @@ unfold :: (b -> Bool) -> (b -> [a, b, b]) -> b -> [a, [a, []], [a, []]]  //2D tu
 unfold terminates? coalgebra tuple-value
 
 
-
 fold :: (a -> b -> a) -> [b] -> a
