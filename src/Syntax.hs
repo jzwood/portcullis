@@ -15,7 +15,10 @@ import Util
 type Name = String
 
 newtype Var = Var String
-  deriving (Show, Eq)
+  deriving (Eq)
+
+instance Show Var where
+  show (Var str) = str
 
 --data Stmt
   -- = Data Type
@@ -34,18 +37,18 @@ data Stmt
   = Type Name PredicateExpr
   | Signature Name TypeExpr
   | Function Name [Var] Expr
-  deriving (Show, Eq)
+  deriving (Eq)
 
 data PredicateExpr
   = X
   | Real Double
   | Binomial Bop PredicateExpr PredicateExpr
-  deriving (Eq, Show)
+  deriving (Eq)
 
 data TypeExpr
-  = NumType String
+  = NumType Name
   | Arrow TypeExpr TypeExpr
-  deriving (Show, Eq)
+  deriving (Eq)
 
 data Expr
   = Number Double -- 34.23
@@ -73,7 +76,26 @@ data Bop
 data Top
   = Fold
   | Unfold
-  deriving (Eq, Show)
+  deriving (Eq)
+
+instance Show TypeExpr where
+  show (NumType name) = name
+  show (Arrow tExpr1 tExpr2) = parenthize (show tExpr1 ++ (" -> ") ++ show tExpr2)
+
+instance Show PredicateExpr where
+  show X = "x"
+  show (Real num) = show num
+  show (Binomial bop pExpr1 pExpr2) = parenthize (show pExpr1 ++ (pad $ show bop) ++ show pExpr2)
+
+instance Show Stmt where
+  show (Type name pExpr) = comment $ concat ["type ", name, " is Num x where ", show pExpr]
+  show (Signature name tExpr) = comment $ concat ["function ", show name, " has type ", show tExpr]
+  show (Function name vars expr) = concat
+    [ "function "
+    , name
+    , parenthize (intercalate ", " (show <$> vars))
+    , concat [" {\n", indent ("return " ++ (show expr) ++ ";"), "}"]
+    ]
 
 showGuardCase :: (Expr, Expr) -> String
 showGuardCase (expr1, expr2) = "\n\tif (" ++ (show expr1) ++ ") {\n\t\treturn " ++ (show expr2) ++ ";\n\t}"
@@ -84,6 +106,7 @@ instance Show Expr where
   show (Call name exprs) = name ++ parenthize (intercalate ", " $ show <$> exprs)
   show (BinOp bop expr1 expr2) = parenthize (show expr1 ++ (pad $ show bop) ++ show expr2)
   show (Guard exprExprs) = concat ["(() => {", (intercalate " " $ showGuardCase <$> exprExprs), "\n})()"]
+  show (TernOp top expr1 expr2 expr3) = show top ++ parenthize (intercalate ", " $ show <$> [expr1, expr2, expr3])
 
 instance Show Bop where
   show Plus = "+"
@@ -92,8 +115,12 @@ instance Show Bop where
   show Divide = "/"
   show GreaterThan = ">"
   show LessThan = "<"
-  show Equal = "==="
-  show NotEqual = "!=="
+  show Equal = "=="
+  show NotEqual = "!="
   show And = "&&"
   show Or = "||"
   show Mod = "%"
+
+instance Show Top where
+  show Fold = "fold"
+  show Unfold = "unfold"
