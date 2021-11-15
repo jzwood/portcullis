@@ -29,6 +29,7 @@ library
       Parser
       Syntax
       Test
+      TypeChecker
       Util
   other-modules:
       Paths_portcullis
