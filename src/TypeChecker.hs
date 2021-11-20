@@ -1,37 +1,66 @@
 module TypeChecker where
 
 import Syntax
+import Data.Function
+import Data.Functor
+import Data.Map (Map)
 
 
-data Type = TypesCheck | TypesDoNotCheck String
+data TypeError
+  = WrongArity
+  | Mismatch
+  deriving (Eq, Show)
+  -- | Mismatch TypeExpr TypeExpr
+  -- | NotFunction TypeExpr
+  -- | NotInScope Name
 
 --data TypeExpr
   -- = NumType Name
   -- | Arrow TypeExpr TypeExpr
   -- deriving (Eq)
 
-typecheck :: TypeExpr -> [TypeExpr] -> Either String TypeExpr
-typecheck typeExpr typeExprs = undefined
+{-
+  INSIGHT, MAYBE
+  we can apply 1 expr at a time and get a new typeExpr each time
+-}
 
-typecheckBinOp :: Bop -> Expr -> Expr -> Either String TypeExpr
-typecheckBinOp bop expr1 expr2 = typecheck (typeofBop bop) (typeofExpr <$> [expr1, expr2])
+typecheck :: TypeExpr -> [Expr] -> Either TypeError TypeExpr
+typecheck t [] = Right t
+typecheck (NumType _) _ = Left WrongArity -- we cannot apply expr(s) to numtype
+typecheck (Arrow t1 t2) (e:es) =
+  typeofExpr e <&>  -- get type of expression
+  typeCompare t1 >>  -- compare type with sig
+  typecheck t2 es  -- typecheck tail of sig against tail of expression
 
-typeofExpr :: Expr -> TypeExpr
-typeofExpr (Number n) = NumType "Num"
+--typecheck :: Map Name TypeExpr -> Stmt -> Bool
+
+--typecheckBinOp :: Bop -> Expr -> Expr -> Either TypeError TypeExpr
+--typecheckBinOp bop expr1 expr2 =
+  --if (typeofExpr expr1) == (NumType "Num") && (typeofExpr expr2) == (NumType "Num")
+  --then Right (NumType "Num")
+  --else Left "bin expresssions are wrong type"
+
+typeCompare :: TypeExpr -> TypeExpr -> Bool
+typeCompare = (==)
+
+typeofExpr :: Expr -> Either TypeError TypeExpr
+typeofExpr (Number n) = Right $ NumType "Num"
 typeofExpr (Ident name) = undefined
 typeofExpr (Call name exprs) = undefined
 typeofExpr (Guard exprPairs) = undefined
---typeofExpr (BinOp bop expr1 expr2) = (typeofExpr expr1) (typeofBop) (typeofExpr)
+--typeofExpr (BinOp bop expr1 expr2) = (typeCompare $ typeofBop bop) (Arrow expr1, expr2] -- typecheckBinOp bop expr1 expr2
 
 typeofBop :: Bop -> TypeExpr
-typeofBop Plus = Arrow (Arrow (NumType "Num") (NumType "Num")) (NumType "Num")
-typeofBop Minus = Arrow (Arrow (NumType "Num") (NumType "Num")) (NumType "Num")
-typeofBop Times = Arrow (Arrow (NumType "Num") (NumType "Num")) (NumType "Num")
-typeofBop Divide = Arrow (Arrow (NumType "Num") (NumType "NonZero")) (NumType "Num")
-typeofBop GreaterThan = Arrow (Arrow (NumType "Num") (NumType "Num")) (NumType "Bool")
-typeofBop LessThan = Arrow (Arrow (NumType "Num") (NumType "Num")) (NumType "Bool")
-typeofBop Equal = Arrow (Arrow (NumType "Num") (NumType "Num")) (NumType "Bool")
-typeofBop NotEqual = Arrow (Arrow (NumType "Num") (NumType "Num")) (NumType "Bool")
-typeofBop And = Arrow (Arrow (NumType "Bool") (NumType "Bool")) (NumType "Bool")
-typeofBop Or = Arrow (Arrow (NumType "Bool") (NumType "Bool")) (NumType "Bool")
-typeofBop Mod = Arrow (Arrow (NumType "Num") (NumType "Num")) (NumType "Num")
+typeofBop bop =
+  case bop of
+    Plus -> numnumnum
+    Minus -> numnumnum
+    Divide -> numnumnum
+    Times -> numnumnum
+    Mod -> numnumnum
+    Equal -> numnumbool
+    NotEqual -> numnumbool
+  where
+    numnumnum = Arrow (NumType "Num") (Arrow (NumType "Num") (NumType "Num"))
+    numnumbool = Arrow (NumType "Num") (Arrow (NumType "Num") (NumType "Bool"))
+
