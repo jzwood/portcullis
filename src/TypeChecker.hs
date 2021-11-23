@@ -1,44 +1,28 @@
 module TypeChecker where
 
-import Syntax
 import Data.Function
 import Data.Functor
 import Data.Map (Map)
+import Data.Traversable
+import Data.List
+import Syntax
 
 
 data TypeError
-  = WrongArity
+  = NotFunction
+  | BadGuardPredicate
   | Mismatch
   deriving (Eq, Show)
   -- | Mismatch TypeExpr TypeExpr
   -- | NotFunction TypeExpr
   -- | NotInScope Name
 
---data TypeExpr
-  -- = NumType Name
-  -- | Arrow TypeExpr TypeExpr
-  -- deriving (Eq)
-
-{-
-  INSIGHT, MAYBE
-  we can apply 1 expr at a time and get a new typeExpr each time
--}
-
-typecheck :: TypeExpr -> [Expr] -> Either TypeError TypeExpr
-typecheck t [] = Right t
-typecheck (NumType _) _ = Left WrongArity -- we cannot apply expr(s) to numtype
-typecheck (Arrow t1 t2) (e:es) =
-  typeofExpr e >>=  -- get type of expression
-  typeCompare t1 >>  -- compare type with sig (
-  typecheck t2 es  -- typecheck tail of sig against tail of expression
-
---typecheck :: Map Name TypeExpr -> Stmt -> Bool
-
---typecheckBinOp :: Bop -> Expr -> Expr -> Either TypeError TypeExpr
---typecheckBinOp bop expr1 expr2 =
-  --if (typeofExpr expr1) == (NumType "Num") && (typeofExpr expr2) == (NumType "Num")
-  --then Right (NumType "Num")
-  --else Left "bin expresssions are wrong type"
+typecheckExpr :: Expr -> TypeExpr -> Either TypeError TypeExpr
+typecheckExpr _ (NumType _) = Left NotFunction -- we cannot apply expr(s) to numtype
+typecheckExpr expr (Arrow t1 t2)
+  = typeofExpr expr -- get type of expression
+  >>= typeCompare t1  -- compare type with sig
+  >> Right t2
 
 typeCompare :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typeCompare t1 t2
@@ -49,8 +33,21 @@ typeofExpr :: Expr -> Either TypeError TypeExpr
 typeofExpr (Number n) = Right $ NumType "Num"
 typeofExpr (Ident name) = undefined
 typeofExpr (Call name exprs) = undefined
-typeofExpr (Guard exprPairs) = undefined
-typeofExpr (BinOp bop expr1 expr2) = typecheck (typeofBop bop) [expr1, expr2]
+typeofExpr (Guard exprPairs) = goodPs >> goodEs
+  where
+    (predicates, exprs) = unzip exprPairs
+    goodPs =   predicates
+          <&>  typeofExpr
+           &   sequence
+           >>= \(p:ps) -> if all (==(NumType "Num")) (p:ps) then Right p else Left BadGuardPredicate
+    goodEs =  exprs
+          <&> typeofExpr
+           &  sequence
+      >>= \(t:ts) -> if all (==t) ts then Right t else Left Mismatch
+
+typeofExpr (BinOp bop expr1 expr2)
+  = typecheckExpr expr1 (typeofBop bop)
+  >>= typecheckExpr expr2
 
 typeofBop :: Bop -> TypeExpr
 typeofBop bop =
