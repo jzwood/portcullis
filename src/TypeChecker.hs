@@ -39,7 +39,7 @@ typeofExpr (Guard exprPairs) = goodPs >> goodEs
     goodPs =   predicates
           <&>  typeofExpr
            &   sequence
-           >>= \(p:ps) -> if all (==(NumType "Num")) (p:ps) then Right p else Left BadGuardPredicate
+           >>= \(p:ps) -> if all (==(NumType "Bool")) (p:ps) then Right p else Left BadGuardPredicate
     goodEs =  exprs
           <&> typeofExpr
            &  sequence

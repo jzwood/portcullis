@@ -11,25 +11,10 @@ import Util
 parseStmt :: Parser Stmt
 parseStmt =  trimLeft
           $  parseFunc
-         <|> parseType
          <|> parseSignature
 
 parseSignature :: Parser Stmt
 parseSignature = liftA2 Signature camel parseTypeExpr
-
--- NonZero > 0 x
-parseType :: Parser Stmt
-parseType = liftA2 Type pascal parsePredicateExpr
-
-parsePredicateExpr :: Parser PredicateExpr
-parsePredicateExpr
-  =  trimLeft
-  $  (camel $> X)
- <|> (Real <$> number)
- <|> parseBinomial
-
-parseBinomial :: Parser PredicateExpr
-parseBinomial = (optionalModifier paren . trim) $ liftA3 Binomial parseBop parsePredicateExpr parsePredicateExpr
 
 parseArrow :: Parser TypeExpr
 parseArrow = liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr

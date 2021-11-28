@@ -43,9 +43,6 @@ spec = do
       success result `shouldBe` Just (123.456, "abc")
 
     it "parse Stmt" $ do
-      let result = runParser parseStmt mempty "NonZero /=  0   x "
-          expected = Type "NonZero" (Binomial NotEqual (Real 0.0) X)
-      success result `shouldBe` Just (expected, "")
       let result = runParser parseStmt mempty "divide  ->   -> Num NonZero   Num"
           expected = Signature "divide" (Arrow (Arrow (NumType "Num") (NumType "NonZero")) (NumType "Num"))
       success result `shouldBe` Just (expected, "")

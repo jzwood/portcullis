@@ -34,15 +34,8 @@ data Pipeline
   = InOut Name
 
 data Stmt
-  = Type Name PredicateExpr
-  | Signature Name TypeExpr
+  = Signature Name TypeExpr
   | Function Name [Var] Expr
-  deriving (Eq)
-
-data PredicateExpr
-  = X
-  | Real Double
-  | Binomial Bop PredicateExpr PredicateExpr
   deriving (Eq)
 
 data TypeExpr
@@ -82,13 +75,7 @@ instance Show TypeExpr where
   show (NumType name) = name
   show (Arrow tExpr1 tExpr2) = parenthize (show tExpr1 ++ (" -> ") ++ show tExpr2)
 
-instance Show PredicateExpr where
-  show X = "x"
-  show (Real num) = show num
-  show (Binomial bop pExpr1 pExpr2) = parenthize (show pExpr1 ++ (pad $ show bop) ++ show pExpr2)
-
 instance Show Stmt where
-  show (Type name pExpr) = comment $ concat ["type ", name, " is Num x where ", show pExpr]
   show (Signature name tExpr) = comment $ concat ["function ", show name, " has type ", show tExpr]
   show (Function name vars expr) = concat
     [ "function "
