@@ -35,6 +35,9 @@ satisfy p = Parser f
       where
         nextCursor = if c == '\n' then nextLine cursor else nextChar cursor
 
+anyChar :: Parser Char
+anyChar = satisfy (const True)
+
 ffst :: (a -> b) -> (a, c, d) -> (b, c, d)
 ffst f (x, y, z) = (f x, y, z)
 

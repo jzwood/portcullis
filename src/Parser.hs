@@ -28,17 +28,18 @@ parseFunc = Function
 
 parseTypeExpr :: Parser TypeExpr
 parseTypeExpr
-  =  trimLeft
-  $ (NumType <$> alphaChars)
- <|> parseArrow
+   =  trimLeft
+   $  (NumType <$ (word $ show NumType))
+  <|> (CharType <$ (word $ show CharType))
+  <|> (AtomType <$ (word $ show AtomType))
+  <|> (Unspecfied <$> camel)
+  <|> parseArrow
 
 parseBop :: Parser Bop
 parseBop = (word "==" $> Equal)
        <|> (word "/=" $> NotEqual)
        <|> (char '>' $> GreaterThan)
        <|> (char '<' $> LessThan)
-       <|> (char '&' $> And)
-       <|> (char '|' $> Or)
        <|> (char '+' $> Plus)
        <|> (char '-' $> Minus)
        <|> (char '*' $> Times)
@@ -65,11 +66,19 @@ parseGuard :: Parser Expr
 parseGuard = Guard
           <$> (oneOrMore $ liftA2 (,) (trim $ char '?' *> parseExpr) (trimLeft parseExpr))
 
+parseChar :: Parser Char
+parseChar = char '\'' *> anyChar <* char '\''
+
+parsePrimitive :: Parser Primitive
+parsePrimitive =  (Number <$> number)
+               <|> (Character <$> parseChar)
+               <|> (Atom <$> pascal)
+
 parseExpr :: Parser Expr
 parseExpr =  trimLeft
           $  parseCall
          <|> parseBinOp
          <|> parseTernOp
          <|> parseGuard
-         <|> (Number <$> number)
-         <|> (Ident <$> camel)
+         <|> Prim <$> parsePrimitive
+         <|> Ident <$> camel

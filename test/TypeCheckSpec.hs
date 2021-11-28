@@ -8,10 +8,10 @@ spec :: Spec
 spec = do
   describe "typecheck" $ do
     it "typeofExpr (binary ops)" $ do
-      let binop = BinOp Plus (Number 1) (Number 2)
-      typeofExpr binop `shouldBe` Right (NumType "Num")
-      let binop = BinOp Plus (BinOp Minus (Number 4) (BinOp Times (Number 1) (Number 5))) (Number 2)
-      typeofExpr binop `shouldBe` Right (NumType "Num")
-      let binop = BinOp GreaterThan (BinOp Minus (Number 4) (BinOp Times (Number 1) (Number 5))) (Number 2)
-      typeofExpr binop `shouldBe` Right (NumType "Bool")
+      let binop = BinOp Plus (Prim $ Number 1) (Prim $ Number 2)
+      typeofExpr binop `shouldBe` Right NumType
+      let binop = BinOp Plus (BinOp Minus (Prim $ Number 4) (BinOp Times (Prim $ Number 1) (Prim $ Number 5))) (Prim $ Number 2)
+      typeofExpr binop `shouldBe` Right (NumType)
+      let binop = BinOp GreaterThan (BinOp Minus (Prim $ Number 4) (BinOp Times (Prim $ Number 1) (Prim $ Number 5))) (Prim $ Number 2)
+      typeofExpr binop `shouldBe` Right AtomType
 

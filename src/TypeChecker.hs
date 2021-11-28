@@ -18,7 +18,9 @@ data TypeError
   -- | NotInScope Name
 
 typecheckExpr :: Expr -> TypeExpr -> Either TypeError TypeExpr
-typecheckExpr _ (NumType _) = Left NotFunction -- we cannot apply expr(s) to numtype
+typecheckExpr _ NumType = Left NotFunction -- we cannot apply expr(s) to numtype
+typecheckExpr _ CharType = Left NotFunction -- we cannot apply expr(s) to numtype
+typecheckExpr _ AtomType = Left NotFunction -- we cannot apply expr(s) to numtype
 typecheckExpr expr (Arrow t1 t2)
   = typeofExpr expr -- get type of expression
   >>= typeCompare t1  -- compare type with sig
@@ -30,7 +32,11 @@ typeCompare t1 t2
   | otherwise = Left Mismatch
 
 typeofExpr :: Expr -> Either TypeError TypeExpr
-typeofExpr (Number n) = Right $ NumType "Num"
+typeofExpr (Prim p) =
+  case p of
+    Number n -> Right NumType
+    Character c -> Right CharType
+    Atom a -> Right AtomType
 typeofExpr (Ident name) = undefined
 typeofExpr (Call name exprs) = undefined
 typeofExpr (Guard exprPairs) = goodPs >> goodEs
@@ -39,7 +45,7 @@ typeofExpr (Guard exprPairs) = goodPs >> goodEs
     goodPs =   predicates
           <&>  typeofExpr
            &   sequence
-           >>= \(p:ps) -> if all (==(NumType "Bool")) (p:ps) then Right p else Left BadGuardPredicate
+           >>= \(p:ps) -> if all (==AtomType) (p:ps) then Right p else Left BadGuardPredicate
     goodEs =  exprs
           <&> typeofExpr
            &  sequence
@@ -62,6 +68,6 @@ typeofBop bop =
     GreaterThan -> nnb
     LessThan -> nnb
   where
-    nnn = Arrow (NumType "Num") (Arrow (NumType "Num") (NumType "Num"))
-    nnb = Arrow (NumType "Num") (Arrow (NumType "Num") (NumType "Bool"))
+    nnn = Arrow (NumType) (Arrow NumType NumType)
+    nnb = Arrow (NumType) (Arrow NumType AtomType)
 

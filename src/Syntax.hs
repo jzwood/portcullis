@@ -26,8 +26,6 @@ instance Show Var where
   -- | FunType Name [Type]
   -- | Pipe Name [Name] [Name] -- pipe name, input function names, output function names
 
--- NonZero = Real x where x /= 0
-
 type Mod = [Stmt]
 
 data Pipeline
@@ -39,12 +37,21 @@ data Stmt
   deriving (Eq)
 
 data TypeExpr
-  = NumType Name
+  = NumType
+  | CharType
+  | AtomType
+  | Unspecfied Name
   | Arrow TypeExpr TypeExpr
   deriving (Eq)
 
-data Expr
+data Primitive
   = Number Double -- 34.23
+  | Character Char -- 'b'
+  | Atom Name -- Apple
+  deriving (Eq)
+
+data Expr
+  = Prim Primitive
   | Ident Name  -- arg
   | Call Name [Expr]  -- add 12 45 (function invocation)
   | Guard [(Expr, Expr)]
@@ -61,8 +68,6 @@ data Bop
   | LessThan
   | Equal
   | NotEqual
-  | And
-  | Or
   | Mod
   deriving (Eq)
 
@@ -72,7 +77,10 @@ data Top
   deriving (Eq)
 
 instance Show TypeExpr where
-  show (NumType name) = name
+  show NumType = "Num"
+  show CharType = "Char"
+  show AtomType = "Atom"
+  show (Unspecfied t) = t
   show (Arrow tExpr1 tExpr2) = parenthize (show tExpr1 ++ (" -> ") ++ show tExpr2)
 
 instance Show Stmt where
@@ -87,8 +95,13 @@ instance Show Stmt where
 showGuardCase :: (Expr, Expr) -> String
 showGuardCase (expr1, expr2) = "\n\tif (" ++ (show expr1) ++ ") {\n\t\treturn " ++ (show expr2) ++ ";\n\t}"
 
-instance Show Expr where
+instance Show Primitive where
   show (Number n) = show n
+  show (Character c) = '\'' : c : '\'' : []
+  show (Atom n) = n
+
+instance Show Expr where
+  show (Prim p) = show p
   show (Ident name) = name
   show (Call name exprs) = name ++ parenthize (intercalate ", " $ show <$> exprs)
   show (BinOp bop expr1 expr2) = parenthize (show expr1 ++ (pad $ show bop) ++ show expr2)
@@ -102,10 +115,8 @@ instance Show Bop where
   show Divide = "/"
   show GreaterThan = ">"
   show LessThan = "<"
-  show Equal = "=="
-  show NotEqual = "!="
-  show And = "&&"
-  show Or = "||"
+  show Equal = "==="
+  show NotEqual = "!=="
   show Mod = "%"
 
 instance Show Top where
