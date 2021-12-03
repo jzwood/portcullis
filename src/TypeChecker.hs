@@ -23,12 +23,23 @@ typecheckExpr _ CharType = Left NotFunction -- we cannot apply expr(s) to numtyp
 typecheckExpr _ AtomType = Left NotFunction -- we cannot apply expr(s) to numtype
 typecheckExpr expr (Arrow t1 t2)
   = typeofExpr expr -- get type of expression
-  >>= typeCompare t1  -- compare type with sig
-  >> Right t2
+  >>= \t0 -> applyType t0 t1 t2  -- compare type with sig
 
-typeCompare :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
-typeCompare t1 t2
-  | t1 == t2 = Right t2
+concretize :: (Name -> TypeExpr) -> TypeExpr -> TypeExpr
+concretize f (Arrow t1 t2) = Arrow (concretize f t1) (concretize f t2)
+concretize f (Unspecfied name) = f name
+concretize f t = t
+
+-- t0 is type being applied
+-- t1 t2 are the decomposed arrow type that's checked against (t1 -> t2)
+-- t0 must be compatible with t1
+applyType :: TypeExpr -> TypeExpr -> TypeExpr -> Either TypeError TypeExpr
+applyType t0 t1@(Unspecfied n1) t2 = Right $ concretize (\n0 -> if n0 == n1 then t0 else t1) t2
+applyType (Arrow t1 t2) (Arrow t1' t2') _ = undefined
+applyType (Arrow _ _) _ _ = Left Mismatch
+applyType _ (Arrow _ _) _ = Left Mismatch
+applyType t0 t1 t2
+  | t0 == t1 = Right t2
   | otherwise = Left Mismatch
 
 typeofExpr :: Expr -> Either TypeError TypeExpr
@@ -49,7 +60,7 @@ typeofExpr (Guard exprPairs) = goodPs >> goodEs
     goodEs =  exprs
           <&> typeofExpr
            &  sequence
-      >>= \(t:ts) -> if all (==t) ts then Right t else Left Mismatch
+          >>= \(t:ts) -> if all (==t) ts then Right t else Left Mismatch
 
 typeofExpr (BinOp bop expr1 expr2)
   = typecheckExpr expr1 (typeofBop bop)

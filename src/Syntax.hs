@@ -31,10 +31,12 @@ type Mod = [Stmt]
 data Pipeline
   = InOut Name
 
-data Stmt
+data Stmt  -- aka Declaration
   = Signature Name TypeExpr
   | Function Name [Var] Expr
   deriving (Eq)
+
+-- data ConcreteType = NumType | CharType | AtomType
 
 data TypeExpr
   = NumType
