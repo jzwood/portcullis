@@ -23,6 +23,7 @@ dependencies:
 - base >= 4.7 && < 5
 - containers >= 0.6.5.1
 - hspec == 2.7.10
+- QuickCheck == 2.14.2
 
 library:
   source-dirs: src

@@ -3,6 +3,7 @@ module TypeCheckSpec (spec) where
 import Test.Hspec
 import Syntax
 import TypeChecker
+import qualified Data.Map as Map
 
 spec :: Spec
 spec = do
@@ -25,8 +26,37 @@ spec = do
           t1 = NumType
           t2 = AtomType
       applyType t t1 t2 `shouldBe` Right t2
+      let te = (Arrow (Unspecfied "a") (Unspecfied "b"))
+          t1 = NumType
+          t2 = NumType
+      applyType te t1 t2 `shouldBe` Left Mismatch
+      --let te = (Arrow (Unspecfied "a") (Unspecfied "b"))
+          --t1 = (Arrow (Unspecfied "a") (Unspecfied "b"))
+          --t2 = NumType
+      --applyType te t1 t2 `shouldBe` Right t2
+      --let te = (Arrow (Unspecfied "a") (Unspecfied "b"))
+          --t1 = (Arrow (Unspecfied "c") (Unspecfied "d"))
+          --t2 = NumType
+      --applyType te t1 t2 `shouldBe` Right t2
+      --let te = (Arrow (Unspecfied "a") (Unspecfied "b"))
+          --t1 = (Arrow (Unspecfied "c") (Unspecfied "d"))
+          --t2 = NumType
+      --applyType te t1 t2 `shouldBe` Right t2
 
-    it "concretize" $ do
-      concretize (\n -> AtomType) NumType `shouldBe` NumType
-      concretize (\n -> AtomType) (Arrow (Unspecfied "b") CharType) `shouldBe` (Arrow AtomType CharType)
-      concretize (\n -> if n == "a" then NumType else Unspecfied n) (Arrow (Unspecfied "a") (Unspecfied "b")) `shouldBe` (Arrow NumType (Unspecfied "b"))
+    --it "specify NumType" $ do
+      --specify ("a", NumType) (Arrow NumType (Unspecfied "a")) `shouldBe` (Arrow NumType NumType)
+      --specify ("a", AtomType) (Arrow (Unspecfied "a") NumType) `shouldBe` (Arrow AtomType NumType)
+      --specify ("a", NumType) (Arrow (Arrow (Unspecfied "b") (Unspecfied "a")) (Unspecfied "a"))
+        --`shouldBe` (Arrow (Arrow (Unspecfied "b") AtomType) AtomType)
+
+    --it "specify Function" $ do
+      ---- specify ('f', a -> b) , (c -> d) -> d
+      --specify ("f", (Arrow NumType CharType)) (Arrow (Unspecfied "f") NumType) `shouldBe` (Arrow NumType NumType)
+      --specify ("a", NumType) (Arrow NumType (Unspecfied "a")) `shouldBe` (Arrow NumType NumType)
+      --specify ("a", NumType) (Arrow (Arrow (Unspecfied "b") (Unspecfied "a")) (Unspecfied "a"))
+        --`shouldBe` (Arrow (Arrow (Unspecfied "b") AtomType) AtomType)
+
+    it "normalizeType" $ do
+      let t = Arrow (Unspecfied "a") (Arrow (Unspecfied "b") (Unspecfied "a"))
+          nt = Arrow (Unspecfied "a0") (Arrow (Unspecfied "a1") (Unspecfied "a0"))
+      fst (normalizeTypeExpr Map.empty t) `shouldBe` nt
