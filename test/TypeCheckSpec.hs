@@ -60,3 +60,6 @@ spec = do
       let t = Arrow (Unspecfied "a") (Arrow (Unspecfied "b") (Unspecfied "a"))
           nt = Arrow (Unspecfied "a0") (Arrow (Unspecfied "a1") (Unspecfied "a0"))
       fst (normalizeTypeExpr Map.empty t) `shouldBe` nt
+      let t = Arrow AtomType (Arrow (Unspecfied "b") (Unspecfied "a"))
+          nt = Arrow AtomType (Arrow (Unspecfied "a0") (Unspecfied "a1"))
+      fst (normalizeTypeExpr Map.empty t) `shouldBe` nt
