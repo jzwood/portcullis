@@ -31,7 +31,7 @@ typecheck t (Unspecfied n) m =
   case Map.lookup n m of
     Nothing -> Right $ Map.insert n t m
     Just t' -> if t == t' then Right m else Left Mismatch
-typecheck (Arrow t1l t1r) (Arrow t2l t2r) m = typecheck t1l t2l m >>= typecheck t2l t2r
+typecheck (Arrow t0 t1) (Arrow t2 t3) m = typecheck t0 t2 m >>= typecheck t1 t3
 typecheck t1 t2 m =
   if t1 == t2 then Right m
               else Left Mismatch

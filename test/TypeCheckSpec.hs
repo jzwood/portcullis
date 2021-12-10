@@ -16,17 +16,20 @@ spec = do
       let binop = BinOp GreaterThan (BinOp Minus (Prim $ Number 4) (BinOp Times (Prim $ Number 1) (Prim $ Number 5))) (Prim $ Number 2)
       typeofExpr binop `shouldBe` Right AtomType
 
-  -- applyType :: TypeExpr -> TypeExpr -> TypeExpr -> Either TypeError TypeExpr
-    it "appyType" $ do
-      let te = NumType
-          ts = Arrow NumType AtomType
-          ts' = AtomType
-      applyType t t1 t2 `shouldBe` Right t2
+    it "typecheckExpr" $ do
       let t = NumType
-          t1 = NumType
-          t2 = AtomType
-      applyType t t1 t2 `shouldBe` Right t2
-      let te = (Arrow (Unspecfied "a") (Unspecfied "b"))
-          t1 = NumType
-          t2 = NumType
-      applyType te t1 t2 `shouldBe` Left Mismatch
+          ts = Arrow NumType AtomType
+          te = Right AtomType
+      typecheckExpr t ts `shouldBe` te
+      let t = Arrow NumType CharType
+          ts = Arrow (Arrow NumType (Unspecfied "a")) AtomType
+          te = Right AtomType
+      typecheckExpr t ts `shouldBe` te
+      let t = Arrow AtomType NumType
+          ts = Arrow (Arrow (Unspecfied "a") (Unspecfied "b")) (Arrow (Unspecfied "a") CharType)
+          te = Right $ Arrow AtomType CharType
+      typecheckExpr t ts `shouldBe` te
+      let t = Arrow AtomType CharType
+          ts = Arrow (Arrow (Unspecfied "a") (Unspecfied "b")) (Arrow (Unspecfied "a") (Unspecfied "b"))
+          te = Right $ Arrow AtomType CharType
+      typecheckExpr t ts `shouldBe` te
