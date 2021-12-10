@@ -1,6 +1,6 @@
 {-# LANGUAGE BangPatterns #-}
 
-module TypeChecker where
+module Typecheck where
 
 import Data.Function
 import Data.Functor

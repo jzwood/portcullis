@@ -4,7 +4,7 @@ import Syntax
 import Parser
 import MiniParser
 import Data.Map
-import TypeChecker
+import Typecheck
 
 t = Arrow AtomType CharType
 s = Arrow (Unspecfied "a") (Unspecfied "b")

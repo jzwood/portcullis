@@ -1,8 +1,8 @@
-module TypeCheckSpec (spec) where
+module TypecheckSpec (spec) where
 
 import Test.Hspec
 import Syntax
-import TypeChecker
+import Typecheck
 import qualified Data.Map as Map
 
 spec :: Spec

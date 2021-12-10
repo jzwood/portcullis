@@ -29,7 +29,7 @@ library
       Parser
       Syntax
       Test
-      TypeChecker
+      Typecheck
       Util
   other-modules:
       Paths_portcullis
@@ -63,7 +63,7 @@ test-suite portcullis-test
   other-modules:
       ParserSpec
       QuickTypeCheckSpec
-      TypeCheckSpec
+      TypecheckSpec
       Paths_portcullis
   hs-source-dirs:
       test
