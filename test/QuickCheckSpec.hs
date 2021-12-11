@@ -1,4 +1,4 @@
-module QuickTypeCheckSpec (spec) where
+module QuickCheckSpec (spec) where
 
 import Test.Hspec
 import Test.QuickCheck
