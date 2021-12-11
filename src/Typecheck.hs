@@ -41,33 +41,30 @@ applyTypeMap t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
 applyTypeMap (Arrow tl tr) m = Arrow (applyTypeMap tl m) (applyTypeMap tr m)
 applyTypeMap t _ = t
 
-typeofExpr :: Map Name Statement -> Expr -> Either TypeError TypeExpr
-typeofExpr _ (Prim p) =
+typeofExpr :: (Map Name Statement) -> Statement -> Expr -> Either TypeError TypeExpr
+typeofExpr _ _ (Prim p) =
   case p of
     Number n -> Right NumType
     Character c -> Right CharType
     Atom a -> Right AtomType
-typeofExpr m (Ident name) =
+typeofExpr _ (Statement { signature, args }) (Ident name) = undefined
+typeofExpr m _ (Call name exprs) =  -- signature expressions
   case Map.lookup name m of
     Nothing -> Left NotFunction
     Just (Statement { signature, args }) -> Right NumType  -- TODO find name in var
-typeofExpr m (Call name exprs) =
-  case Map.lookup name m of
-    Nothing -> Left NotFunction
-    Just statement -> Right $ signature statement
-typeofExpr m (Guard exprPairs) = goodPs >> goodEs
+typeofExpr m s (Guard exprPairs) = goodPs >> goodEs
   where
     (predicates, exprs) = unzip exprPairs
     goodPs =   predicates
-          <&>  typeofExpr m
+          <&>  typeofExpr m s
            &   sequence
            >>= \(p:ps) -> if all (==AtomType) (p:ps) then Right p else Left BadGuardPredicate
     goodEs =  exprs
-          <&> typeofExpr m
+          <&> typeofExpr m s
            &  sequence
           >>= \(t:ts) -> if all (==t) ts then Right t else Left Mismatch
-typeofExpr m (BinOp bop expr1 expr2)
-  = sequence [typeofExpr m expr1, typeofExpr m expr2]
+typeofExpr m s (BinOp bop expr1 expr2)
+  = sequence [typeofExpr m s expr1, typeofExpr m s expr2]
   >>= \[t1, t2] ->
     typecheckExpr t1 (typeofBop bop)
     >>= typecheckExpr t2
