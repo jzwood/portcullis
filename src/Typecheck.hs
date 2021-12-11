@@ -1,4 +1,4 @@
-{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE BangPatterns, NamedFieldPuns #-}
 
 module Typecheck where
 
@@ -41,27 +41,33 @@ applyTypeMap t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
 applyTypeMap (Arrow tl tr) m = Arrow (applyTypeMap tl m) (applyTypeMap tr m)
 applyTypeMap t _ = t
 
-typeofExpr :: Expr -> Either TypeError TypeExpr
-typeofExpr (Prim p) =
+typeofExpr :: Map Name Statement -> Expr -> Either TypeError TypeExpr
+typeofExpr _ (Prim p) =
   case p of
     Number n -> Right NumType
     Character c -> Right CharType
     Atom a -> Right AtomType
-typeofExpr (Ident name) = undefined
-typeofExpr (Call name exprs) = undefined
-typeofExpr (Guard exprPairs) = goodPs >> goodEs
+typeofExpr m (Ident name) =
+  case Map.lookup name m of
+    Nothing -> Left NotFunction
+    Just (Statement { signature, args }) -> Right NumType  -- TODO find name in var
+typeofExpr m (Call name exprs) =
+  case Map.lookup name m of
+    Nothing -> Left NotFunction
+    Just statement -> Right $ signature statement
+typeofExpr m (Guard exprPairs) = goodPs >> goodEs
   where
     (predicates, exprs) = unzip exprPairs
     goodPs =   predicates
-          <&>  typeofExpr
+          <&>  typeofExpr m
            &   sequence
            >>= \(p:ps) -> if all (==AtomType) (p:ps) then Right p else Left BadGuardPredicate
     goodEs =  exprs
-          <&> typeofExpr
+          <&> typeofExpr m
            &  sequence
           >>= \(t:ts) -> if all (==t) ts then Right t else Left Mismatch
-typeofExpr (BinOp bop expr1 expr2)
-  = sequence [typeofExpr expr1, typeofExpr expr2]
+typeofExpr m (BinOp bop expr1 expr2)
+  = sequence [typeofExpr m expr1, typeofExpr m expr2]
   >>= \[t1, t2] ->
     typecheckExpr t1 (typeofBop bop)
     >>= typecheckExpr t2

@@ -36,6 +36,13 @@ data Stmt  -- aka Declaration
   | Function Name [Var] Expr
   deriving (Eq)
 
+data Statement = Statement
+  { funcName :: Name
+  , signature :: TypeExpr
+  , args :: [Var]
+  , body :: Expr
+  } deriving (Show, Eq)
+
 -- data ConcreteType = NumType | CharType | AtomType
 
 data TypeExpr

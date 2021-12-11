@@ -27,6 +27,7 @@ library
   exposed-modules:
       MiniParser
       Parser
+      Semantics
       Syntax
       Test
       Typecheck
