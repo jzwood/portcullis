@@ -4,9 +4,9 @@ module Typecheck where
 
 import Data.Function
 import Data.Functor
-import Data.List
+import Data.List (elemIndex, foldl')
 import Data.Map (Map)
-import Data.Maybe
+import Data.Maybe (fromMaybe)
 import Data.Traversable
 import Syntax
 import qualified Data.Map as Map
@@ -14,9 +14,10 @@ import qualified Data.Map as Map
 data TypeError
   = NotFunction
   | BadGuardPredicate
-  | Mismatch
+  | AritySignatureMismatch
+  | TypeMismatch
   deriving (Eq, Show)
-  -- | Mismatch TypeExpr TypeExpr
+  -- | TypeMismatch TypeExpr TypeExpr
   -- | NotFunction TypeExpr
   -- | NotInScope Name
 
@@ -30,16 +31,21 @@ typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map 
 typecheck t (Unspecfied n) m =
   case Map.lookup n m of
     Nothing -> Right $ Map.insert n t m
-    Just t' -> if t == t' then Right m else Left Mismatch
+    Just t' -> if t == t' then Right m else Left TypeMismatch
 typecheck (Arrow t0 t1) (Arrow t2 t3) m = typecheck t0 t2 m >>= typecheck t1 t3
 typecheck t1 t2 m =
   if t1 == t2 then Right m
-              else Left Mismatch
+              else Left TypeMismatch
 
 applyTypeMap :: TypeExpr -> Map Name TypeExpr -> TypeExpr
 applyTypeMap t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
 applyTypeMap (Arrow tl tr) m = Arrow (applyTypeMap tl m) (applyTypeMap tr m)
 applyTypeMap t _ = t
+
+getArgTypeByIndex :: TypeExpr -> Int -> Maybe TypeExpr
+getArgTypeByIndex t 0 = Just t
+getArgTypeByIndex (Arrow t0 t1) n = getArgTypeByIndex t0 (n - 1)
+getArgTypeByIndex _ _ = Nothing
 
 typeofExpr :: (Map Name Statement) -> Statement -> Expr -> Either TypeError TypeExpr
 typeofExpr _ _ (Prim p) =
@@ -47,11 +53,17 @@ typeofExpr _ _ (Prim p) =
     Number n -> Right NumType
     Character c -> Right CharType
     Atom a -> Right AtomType
-typeofExpr _ (Statement { signature, args }) (Ident name) = undefined
-typeofExpr m _ (Call name exprs) =  -- signature expressions
+typeofExpr _ (Statement { signature, args }) (Ident name)
+   =  elemIndex (Var name) args
+  >>= getArgTypeByIndex signature
+  <&> Right
+   & fromMaybe (Left AritySignatureMismatch)
+typeofExpr m _ (Call name exprs) =
   case Map.lookup name m of
     Nothing -> Left NotFunction
-    Just (Statement { signature, args }) -> Right NumType  -- TODO find name in var
+    Just s@(Statement { signature })
+      ->  traverse (typeofExpr m s) exprs
+      >>= foldl' (\s t -> s >>= typecheckExpr t) (Right signature)
 typeofExpr m s (Guard exprPairs) = goodPs >> goodEs
   where
     (predicates, exprs) = unzip exprPairs
@@ -62,7 +74,7 @@ typeofExpr m s (Guard exprPairs) = goodPs >> goodEs
     goodEs =  exprs
           <&> typeofExpr m s
            &  sequence
-          >>= \(t:ts) -> if all (==t) ts then Right t else Left Mismatch
+          >>= \(t:ts) -> if all (==t) ts then Right t else Left TypeMismatch
 typeofExpr m s (BinOp bop expr1 expr2)
   = sequence [typeofExpr m s expr1, typeofExpr m s expr2]
   >>= \[t1, t2] ->
@@ -84,4 +96,3 @@ typeofBop bop =
   where
     nnn = Arrow NumType (Arrow NumType NumType)
     nnb = Arrow NumType (Arrow NumType AtomType)
-
