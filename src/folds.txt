@@ -8,3 +8,24 @@ unfold terminates? coalgebra tuple-value
 
 
 fold :: (a -> b -> a) -> [b] -> a
+
+
+------------------
+
+unfold :: (b -> Bool) -> (b -> b) -> b -> b // 0D tuple tree aka value
+unfold :: (b -> Bool) -> (b -> [a, b]) -> b -> [a, [a, [a, ...]]  //1D tuple tree aka list
+unfold :: (b -> Bool) -> (b -> [a, b, b]) -> b -> [a, [a, []], [a, []]]  //2D tuple tree aka binary tree
+
+fold :: (a -> b -> a) -> [b] -> a
+fold :: ()            ->
+
+
+
+
+
+
+unfoldr :: (a -> Bool) -> (b -> Maybe (a, b)) -> b -> [a]
+
+
+unfold: (a -> Bool) -> (a -> a) -> a
+fold:: (a -> b -> a) -> [b] -> a

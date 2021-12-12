@@ -26,7 +26,7 @@ instance Show Var where
   -- | FunType Name [Type]
   -- | Pipe Name [Name] [Name] -- pipe name, input function names, output function names
 
-type Mod = [Stmt]
+data Module = Module Name [Stmt]
 
 data Pipeline
   = InOut Name
@@ -50,13 +50,15 @@ data TypeExpr
   | CharType
   | AtomType
   | Unspecfied Name
+  | ListType [TypeExpr]
   | Arrow TypeExpr TypeExpr
   deriving (Eq)
 
-data Primitive
+data Primitive -- TODO rename this Data or something
   = Number Double -- 34.23
   | Character Char -- 'b'
   | Atom Name -- Apple
+  | List Primitive
   deriving (Eq)
 
 data Expr
@@ -90,6 +92,7 @@ instance Show TypeExpr where
   show CharType = "Char"
   show AtomType = "Atom"
   show (Unspecfied t) = t
+  show (ListType l) = '[' : (show t) ++ "]"
   show (Arrow tExpr1 tExpr2) = parenthize (show tExpr1 ++ (" -> ") ++ show tExpr2)
 
 instance Show Stmt where
@@ -108,6 +111,7 @@ instance Show Primitive where
   show (Number n) = show n
   show (Character c) = '\'' : c : '\'' : []
   show (Atom n) = n
+  show (List a) = '[' : (show a) ++ "]"
 
 instance Show Expr where
   show (Prim p) = show p

@@ -80,6 +80,7 @@ typeofExpr m s (BinOp bop expr1 expr2)
   >>= \[t1, t2] ->
     typecheckExpr t1 (typeofBop bop)
     >>= typecheckExpr t2
+typeofExpr m s (TernOp top expr1 expr2 expr3) = undefined
 
 typeofBop :: Bop -> TypeExpr
 typeofBop bop =
@@ -96,3 +97,7 @@ typeofBop bop =
   where
     nnn = Arrow NumType (Arrow NumType NumType)
     nnb = Arrow NumType (Arrow NumType AtomType)
+
+typeofTop :: Top -> TypeExpr
+typeofTop Fold = Arrow (Arrow (Unspecfied "a") (Arrow (Unspecfied "b") (Unspecfied "a"))) (Arrow (ListType (Unspecfied "a")) (Unspecfied "a"))
+typeofTop Unfold = Arrow (Arrow (Unspecfied "a") AtomType) (Arrow (Arrow (Unspecfied "a") (Unspecfied "a")) (Arrow (Unspecfied "a") (Unspecfied "a")))

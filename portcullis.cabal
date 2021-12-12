@@ -30,6 +30,7 @@ library
       Semantics
       Syntax
       Test
+      Transpile
       Typecheck
       Util
   other-modules:
