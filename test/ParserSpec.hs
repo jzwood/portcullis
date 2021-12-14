@@ -52,13 +52,13 @@ spec = do
 
     it "parse guard" $ do
       let result = runParser parseStmt mempty "guard a =\n ? > a 1 34 \n ? == a 0 0 \n ? 1 0"
-          expected = Function "guard" [Var "a"] (Guard [(BinOp GreaterThan (Ident "a") (Prim $ Number 1.0),Prim $ Number 34.0),(BinOp Equal (Ident "a") (Prim $ Number 0.0),Prim $ Number 0.0),(Prim $ Number 1.0,Prim $ Number 0.0)])
+          expected = Function "guard" [Var "a"] (Guard [(BinOp GreaterThan (Ident "a") (Val $ Number 1.0),Val $ Number 34.0),(BinOp Equal (Ident "a") (Val $ Number 0.0),Val $ Number 0.0),(Val $ Number 1.0,Val $ Number 0.0)])
       success result `shouldBe` Just (expected, "")
 
     it "parse fold" $ do
       let result = runParser parseStmt mempty "up a = unfold 1 2 3"
-          expected = Function "up" [Var "a"] (TernOp Unfold (Prim $ Number 1.0) (Prim $ Number 2.0) (Prim $ Number 3.0))
+          expected = Function "up" [Var "a"] (TernOp Unfold (Val $ Number 1.0) (Val $ Number 2.0) (Val $ Number 3.0))
       success result `shouldBe` Just (expected, "")
       let result = runParser parseStmt mempty "down b = fold == 0 1 0 3"
-          expected = Function "down" [Var "b"] (TernOp Fold (BinOp Equal (Prim $ Number 0.0) (Prim $ Number 1.0)) (Prim $ Number 0.0) (Prim $ Number 3.0))
+          expected = Function "down" [Var "b"] (TernOp Fold (BinOp Equal (Val $ Number 0.0) (Val $ Number 1.0)) (Val $ Number 0.0) (Val $ Number 3.0))
       success result `shouldBe` Just (expected, "")

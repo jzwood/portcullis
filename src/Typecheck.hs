@@ -48,7 +48,7 @@ getArgTypeByIndex (Arrow t0 t1) n = getArgTypeByIndex t0 (n - 1)
 getArgTypeByIndex _ _ = Nothing
 
 typeofExpr :: (Map Name Statement) -> Statement -> Expr -> Either TypeError TypeExpr
-typeofExpr _ _ (Prim p) =
+typeofExpr _ _ (Val p) =
   case p of
     Number n -> Right NumType
     Character c -> Right CharType

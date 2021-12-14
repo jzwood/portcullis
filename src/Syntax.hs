@@ -1,6 +1,5 @@
 module Syntax where
 
-import MiniParser
 import Data.Functor
 import Control.Applicative
 import Data.Char
@@ -50,19 +49,19 @@ data TypeExpr
   | CharType
   | AtomType
   | Unspecfied Name
-  | ListType [TypeExpr]
+  | ListType TypeExpr
   | Arrow TypeExpr TypeExpr
   deriving (Eq)
 
-data Primitive -- TODO rename this Data or something
+data Value
   = Number Double -- 34.23
   | Character Char -- 'b'
   | Atom Name -- Apple
-  | List Primitive
+  | List TypeExpr [Value] --- num [1, 2, 3]
   deriving (Eq)
 
 data Expr
-  = Prim Primitive
+  = Val Value
   | Ident Name  -- arg
   | Call Name [Expr]  -- add 12 45 (function invocation)
   | Guard [(Expr, Expr)]
@@ -80,6 +79,7 @@ data Bop
   | Equal
   | NotEqual
   | Mod
+  | Concat
   deriving (Eq)
 
 data Top
@@ -92,34 +92,34 @@ instance Show TypeExpr where
   show CharType = "Char"
   show AtomType = "Atom"
   show (Unspecfied t) = t
-  show (ListType l) = '[' : (show t) ++ "]"
-  show (Arrow tExpr1 tExpr2) = parenthize (show tExpr1 ++ (" -> ") ++ show tExpr2)
+  show (ListType t) = '[' : (show t) ++ "]"
+  show (Arrow tExpr1 tExpr2) = paren (show tExpr1 ++ (" -> ") ++ show tExpr2)
 
 instance Show Stmt where
   show (Signature name tExpr) = comment $ concat ["function ", show name, " has type ", show tExpr]
   show (Function name vars expr) = concat
     [ "function "
     , name
-    , parenthize (intercalate ", " (show <$> vars))
+    , paren (intercalate ", " (show <$> vars))
     , concat [" {\n", indent ("return " ++ (show expr) ++ ";"), "}"]
     ]
 
 showGuardCase :: (Expr, Expr) -> String
 showGuardCase (expr1, expr2) = "\n\tif (" ++ (show expr1) ++ ") {\n\t\treturn " ++ (show expr2) ++ ";\n\t}"
 
-instance Show Primitive where
+instance Show Value where
   show (Number n) = show n
   show (Character c) = '\'' : c : '\'' : []
   show (Atom n) = n
-  show (List a) = '[' : (show a) ++ "]"
+  show (List _ a) = show a
 
 instance Show Expr where
-  show (Prim p) = show p
+  show (Val p) = show p
   show (Ident name) = name
-  show (Call name exprs) = name ++ parenthize (intercalate ", " $ show <$> exprs)
-  show (BinOp bop expr1 expr2) = parenthize (show expr1 ++ (pad $ show bop) ++ show expr2)
+  show (Call name exprs) = name ++ paren (intercalate ", " $ show <$> exprs)
+  show (BinOp bop expr1 expr2) = paren . concat $ [paren . show $ expr1, show bop, paren . show $ expr2]
   show (Guard exprExprs) = concat ["(() => {", (intercalate " " $ showGuardCase <$> exprExprs), "\n})()"]
-  show (TernOp top expr1 expr2 expr3) = show top ++ parenthize (intercalate ", " $ show <$> [expr1, expr2, expr3])
+  show (TernOp top expr1 expr2 expr3) = show top ++ paren (intercalate ", " $ show <$> [expr1, expr2, expr3])
 
 instance Show Bop where
   show Plus = "+"
@@ -131,6 +131,7 @@ instance Show Bop where
   show Equal = "==="
   show NotEqual = "!=="
   show Mod = "%"
+  show Concat = ".concat"
 
 instance Show Top where
   show Fold = "fold"

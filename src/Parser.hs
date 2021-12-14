@@ -6,7 +6,7 @@ import Data.Functor
 import Control.Applicative
 import Data.Char
 import Data.List
-import Util
+import Util hiding (paren)
 
 parseStmt :: Parser Stmt
 parseStmt =  trimLeft
@@ -38,6 +38,7 @@ parseTypeExpr
 parseBop :: Parser Bop
 parseBop = (word "==" $> Equal)
        <|> (word "/=" $> NotEqual)
+       <|> (word "++" $> Concat)
        <|> (char '>' $> GreaterThan)
        <|> (char '<' $> LessThan)
        <|> (char '+' $> Plus)
@@ -69,8 +70,8 @@ parseGuard = Guard
 parseChar :: Parser Char
 parseChar = char '\'' *> anyChar <* char '\''
 
-parsePrimitive :: Parser Primitive
-parsePrimitive =  (Number <$> number)
+parseValue :: Parser Value
+parseValue =  (Number <$> number)
                <|> (Character <$> parseChar)
                <|> (Atom <$> pascal)
 
@@ -80,5 +81,5 @@ parseExpr =  trimLeft
          <|> parseBinOp
          <|> parseTernOp
          <|> parseGuard
-         <|> Prim <$> parsePrimitive
+         <|> Val <$> parseValue
          <|> Ident <$> camel
