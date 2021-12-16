@@ -76,10 +76,10 @@ parseList = List <$> parseTypeExpr <*> trimLeft (brack '[' ']' $ trim $ zeroOrMo
 
 parseValue :: Parser Value
 parseValue
-  =  (Number <$> number)
+  =  parseList
+ <|> (Number <$> number)
  <|> (Character <$> parseChar)
  <|> (Atom <$> pascal)  -- somehow fail on restricted words??
- <|> parseList
 
 parseExpr :: Parser Expr
 parseExpr =  trimLeft
