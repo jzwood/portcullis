@@ -117,8 +117,11 @@ camel = identStartsWith isLower
 pascal :: Parser String
 pascal = identStartsWith isUpper
 
+brack :: Char -> Char -> Parser a -> Parser a
+brack l r p = char l *> p <* char r
+
 paren :: Parser a -> Parser a
-paren p = char '(' *> p <* char ')'
+paren = brack '(' ')'
 
 trim :: Parser a -> Parser a
 trim p = spaces *> p <* spaces

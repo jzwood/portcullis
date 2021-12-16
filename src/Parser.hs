@@ -32,6 +32,7 @@ parseTypeExpr
    $  (NumType <$ (word $ show NumType))
   <|> (CharType <$ (word $ show CharType))
   <|> (AtomType <$ (word $ show AtomType))
+  <|> (ListType <$> (brack '[' ']' $ trim parseTypeExpr))
   <|> (Unspecfied <$> camel)
   <|> parseArrow
 
