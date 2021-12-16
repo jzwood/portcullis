@@ -3,7 +3,7 @@ module Syntax where
 import Data.Functor
 import Control.Applicative
 import Data.Char
-import Data.List
+import Data.List (intercalate)
 import Util
 
 -- Notes:
@@ -57,7 +57,7 @@ data Value
   = Number Double -- 34.23
   | Character Char -- 'b'
   | Atom Name -- Apple
-  | List TypeExpr [Value] --- num [1, 2, 3]
+  | List TypeExpr [Expr] --- num [1, 2, 3]
   deriving (Eq)
 
 data Expr
@@ -111,7 +111,7 @@ instance Show Value where
   show (Number n) = show n
   show (Character c) = '\'' : c : '\'' : []
   show (Atom n) = n
-  show (List _ a) = show a
+  show (List t a) = intercalate " " ["/*", show $ ListType t, "*/", show a]
 
 instance Show Expr where
   show (Val p) = show p

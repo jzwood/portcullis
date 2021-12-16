@@ -69,12 +69,17 @@ parseGuard = Guard
           <$> (oneOrMore $ liftA2 (,) (trim $ char '?' *> parseExpr) (trimLeft parseExpr))
 
 parseChar :: Parser Char
-parseChar = char '\'' *> anyChar <* char '\''
+parseChar = brack '\'' '\'' anyChar
+
+parseList :: Parser Value
+parseList = List <$> parseTypeExpr <*> trimLeft (brack '[' ']' $ trim $ zeroOrMore parseExpr)
 
 parseValue :: Parser Value
-parseValue =  (Number <$> number)
-               <|> (Character <$> parseChar)
-               <|> (Atom <$> pascal)
+parseValue
+  =  (Number <$> number)
+ <|> (Character <$> parseChar)
+ <|> (Atom <$> pascal)  -- somehow fail on restricted words??
+ <|> parseList
 
 parseExpr :: Parser Expr
 parseExpr =  trimLeft
