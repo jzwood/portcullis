@@ -57,7 +57,7 @@ typeofExpr _ (Statement { signature, args }) (Ident name)
    =  elemIndex (Var name) args
   >>= getArgTypeByIndex signature
   <&> Right
-   & fromMaybe (Left AritySignatureMismatch)
+   &  fromMaybe (Left AritySignatureMismatch)
 typeofExpr m _ (Call name exprs) =
   case Map.lookup name m of
     Nothing -> Left NotFunction
@@ -99,5 +99,5 @@ typeofBop bop =
     nnb = Arrow NumType (Arrow NumType AtomType)
 
 typeofTop :: Top -> TypeExpr
-typeofTop Fold = Arrow (Arrow (Unspecfied "a") (Arrow (Unspecfied "b") (Unspecfied "a"))) (Arrow (ListType (Unspecfied "a")) (Unspecfied "a"))
+typeofTop Fold = Arrow (Arrow (Unspecfied "b") (Arrow (Unspecfied "a") (Unspecfied "b"))) (Arrow (Unspecfied "b") (Arrow ((ListType (Unspecfied "a"))) (Unspecfied "b")))
 typeofTop Unfold = Arrow (Arrow (Unspecfied "a") AtomType) (Arrow (Arrow (Unspecfied "a") (Unspecfied "a")) (Arrow (Unspecfied "a") (Unspecfied "a")))
