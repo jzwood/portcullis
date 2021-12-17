@@ -27,5 +27,5 @@ fold :: ()            ->
 unfoldr :: (a -> Bool) -> (b -> Maybe (a, b)) -> b -> [a]
 
 
-unfold: (a -> Bool) -> (a -> a) -> a
+unfold: (a -> Bool) -> (a -> a) -> a  // a can be list
 fold:: (a -> b -> a) -> [b] -> a

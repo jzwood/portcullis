@@ -71,16 +71,21 @@ typeofExpr m s (Guard exprPairs) = goodPs >> goodEs
           <&>  typeofExpr m s
            &   sequence
            >>= \(p:ps) -> if all (==AtomType) (p:ps) then Right p else Left BadGuardPredicate
-    goodEs =  exprs
-          <&> typeofExpr m s
-           &  sequence
-          >>= \(t:ts) -> if all (==t) ts then Right t else Left TypeMismatch
+    goodEs =   exprs
+          <&>  typeofExpr m s
+           &   sequence
+           >>= \(t:ts) -> if all (==t) ts then Right t else Left TypeMismatch
 typeofExpr m s (BinOp bop expr1 expr2)
   = sequence [typeofExpr m s expr1, typeofExpr m s expr2]
   >>= \[t1, t2] ->
     typecheckExpr t1 (typeofBop bop)
     >>= typecheckExpr t2
-typeofExpr m s (TernOp top expr1 expr2 expr3) = undefined
+typeofExpr m s (TernOp top expr1 expr2 expr3)
+  = sequence [typeofExpr m s expr1, typeofExpr m s expr2, typeofExpr m s expr3]
+  >>= \[t1, t2, t3] ->
+    typecheckExpr t1 (typeofTop top)
+    >>= typecheckExpr t2
+    >>= typecheckExpr t3
 
 typeofBop :: Bop -> TypeExpr
 typeofBop bop =

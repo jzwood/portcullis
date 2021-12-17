@@ -8,6 +8,9 @@ import Data.Char
 import Data.List
 import Util hiding (paren)
 
+parseModule :: Parser [Stmt]
+parseModule = oneOrMore parseStmt
+
 parseStmt :: Parser Stmt
 parseStmt =  trimLeft
           $  parseFunc
