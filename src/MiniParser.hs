@@ -9,7 +9,10 @@ import Data.List (genericReplicate, foldl')
 -- APPLICATIVE PARSER
 
 data Cursor = Cursor { line :: Integer, col :: Integer}
-  deriving (Show, Eq)
+  deriving (Eq)
+
+instance Show Cursor where
+  show (Cursor { line, col}) = concat ["Syntax error at line: ", show line, ", column: ", show col]
 
 instance Semigroup Cursor where
   (<>) (Cursor l1 c1) (Cursor l2 c2) = Cursor (l1 + l2) (c1 + c2)
@@ -95,6 +98,7 @@ char c = satisfy (== c)
 
 word :: String -> Parser String
 word = traverse char
+
 
 alphaChar :: Parser Char
 alphaChar = satisfy isAlpha

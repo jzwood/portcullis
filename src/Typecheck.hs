@@ -17,9 +17,10 @@ data TypeError
   | AritySignatureMismatch
   | TypeMismatch
   deriving (Eq, Show)
-  -- | TypeMismatch TypeExpr TypeExpr
-  -- | NotFunction TypeExpr
   -- | NotInScope Name
+
+typecheckStmt :: Map Name Statement -> Name -> Either TypeError TypeExpr
+typecheckStmt = undefined
 
 typecheckExpr :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typecheckExpr t (Arrow tl tr)
