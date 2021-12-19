@@ -12,7 +12,7 @@ data CompileError = CompileError String
 parse :: String -> Either CompileError [Stmt]
 parse program =
   case runParser parseModule mempty program of
-    Left c -> Left $ CompileError (show c)
+    Left c -> Left $ CompileError (show $ ParseError c)
     Right (stms, _, _) -> Right stms
 
 semanticCheck :: [Stmt] -> Either CompileError [Statement]

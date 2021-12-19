@@ -49,7 +49,7 @@ data TypeExpr
   | CharType
   | AtomType
   | Unspecfied Name
-  | ListType TypeExpr
+  | TupType TypeExpr TypeExpr
   | Arrow TypeExpr TypeExpr
   deriving (Eq)
 
@@ -57,7 +57,7 @@ data Value
   = Number Double -- 34.23
   | Character Char -- 'b'
   | Atom Name -- Apple
-  | List TypeExpr [Expr] --- num [1, 2, 3]
+  | Tuple Expr Expr --- [1 'a']
   deriving (Eq)
 
 data Expr
@@ -92,7 +92,7 @@ instance Show TypeExpr where
   show CharType = "Char"
   show AtomType = "Atom"
   show (Unspecfied t) = t
-  show (ListType t) = '[' : (show t) ++ "]"
+  show (TupType t1 t2) = concat ["(", show t1, ", ", show t2, ")"]
   show (Arrow tExpr1 tExpr2) = paren (show tExpr1 ++ (" -> ") ++ show tExpr2)
 
 instance Show Stmt where
@@ -111,13 +111,13 @@ instance Show Value where
   show (Number n) = show n
   show (Character c) = '\'' : c : '\'' : []
   show (Atom n) = n
-  show (List t a) = intercalate " " ["/*", show $ ListType t, "*/", show a]
+  show (Tuple e1 e2) = concat ["[", show e1, ", ", show e2, "]" ]
 
 instance Show Expr where
   show (Val p) = show p
   show (Ident name) = name
   show (Call name exprs) = name ++ paren (intercalate ", " $ show <$> exprs)
-  show (BinOp bop expr1 expr2) = paren . concat $ [paren . show $ expr1, show bop, paren . show $ expr2]
+  show (BinOp bop expr1 expr2) = paren . concat $ [show expr1, show bop, show expr2]
   show (Guard exprExprs) = concat ["(() => {", (intercalate " " $ showGuardCase <$> exprExprs), "\n})()"]
   show (TernOp top expr1 expr2 expr3) = show top ++ paren (intercalate ", " $ show <$> [expr1, expr2, expr3])
 
@@ -131,7 +131,7 @@ instance Show Bop where
   show Equal = "==="
   show NotEqual = "!=="
   show Mod = "%"
-  show Concat = ".concat"
+  --show Concat = ".concat"
 
 instance Show Top where
   show Fold = "fold"

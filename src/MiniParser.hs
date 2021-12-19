@@ -9,10 +9,12 @@ import Data.List (genericReplicate, foldl')
 -- APPLICATIVE PARSER
 
 data Cursor = Cursor { line :: Integer, col :: Integer}
-  deriving (Eq)
+  deriving (Show, Eq)
 
-instance Show Cursor where
-  show (Cursor { line, col}) = concat ["Syntax error at line: ", show line, ", column: ", show col]
+data ParseError = ParseError Cursor
+
+instance Show ParseError where
+  show (ParseError (Cursor { line, col})) = concat ["Syntax error at line: ", show line, ", column: ", show col]
 
 instance Semigroup Cursor where
   (<>) (Cursor l1 c1) (Cursor l2 c2) = Cursor (l1 + l2) (c1 + c2)
@@ -121,11 +123,14 @@ camel = identStartsWith isLower
 pascal :: Parser String
 pascal = identStartsWith isUpper
 
-brack :: Char -> Char -> Parser a -> Parser a
-brack l r p = char l *> p <* char r
+wrap :: Char -> Char -> Parser a -> Parser a
+wrap l r p = char l *> p <* char r
 
 paren :: Parser a -> Parser a
-paren = brack '(' ')'
+paren = wrap '(' ')'
+
+brack :: Parser a -> Parser a
+brack = wrap '[' ']'
 
 trim :: Parser a -> Parser a
 trim p = spaces *> p <* spaces

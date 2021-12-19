@@ -16,12 +16,6 @@ parseStmt =  trimLeft
           $  parseFunc
          <|> parseSignature
 
-parseSignature :: Parser Stmt
-parseSignature = liftA2 Signature camel parseTypeExpr
-
-parseArrow :: Parser TypeExpr
-parseArrow = liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
-
 parseFunc :: Parser Stmt
 parseFunc = Function
          <$> camel
@@ -29,27 +23,36 @@ parseFunc = Function
          <*  trimLeft (char '=')
          <*> trimLeft parseExpr
 
+parseSignature :: Parser Stmt
+parseSignature = liftA2 Signature camel parseTypeExpr
+
+parseArrow :: Parser TypeExpr
+parseArrow = liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
+
+parseTupType :: Parser TypeExpr
+parseTupType = liftA2 TupType (char '[' *> parseTypeExpr) (parseTypeExpr <* spaces <* char ']')
+
 parseTypeExpr :: Parser TypeExpr
 parseTypeExpr
    =  trimLeft
-   $  (NumType <$ (word $ show NumType))
-  <|> (CharType <$ (word $ show CharType))
-  <|> (AtomType <$ (word $ show AtomType))
-  <|> (ListType <$> (brack '[' ']' $ trim parseTypeExpr))
-  <|> (Unspecfied <$> camel)
+   $  NumType <$ (word $ show NumType)
+  <|> CharType <$ (word $ show CharType)
+  <|> AtomType <$ (word $ show AtomType)
+  <|> Unspecfied <$> camel
+  <|> parseTupType
   <|> parseArrow
 
 parseBop :: Parser Bop
-parseBop = (word "==" $> Equal)
-       <|> (word "/=" $> NotEqual)
-       <|> (word "++" $> Concat)
-       <|> (char '>' $> GreaterThan)
-       <|> (char '<' $> LessThan)
-       <|> (char '+' $> Plus)
-       <|> (char '-' $> Minus)
-       <|> (char '*' $> Times)
-       <|> (char '/' $> Divide)
-       <|> (char '%' $> Mod)
+parseBop = word "==" $> Equal
+       <|> word "/=" $> NotEqual
+       <|> word "++" $> Concat
+       <|> char '>' $> GreaterThan
+       <|> char '<' $> LessThan
+       <|> char '+' $> Plus
+       <|> char '-' $> Minus
+       <|> char '*' $> Times
+       <|> char '/' $> Divide
+       <|> char '%' $> Mod
 
 parseTop :: Parser Top
 parseTop =  (word "fold" $> Fold)
@@ -72,17 +75,21 @@ parseGuard = Guard
           <$> (oneOrMore $ liftA2 (,) (trim $ char '?' *> parseExpr) (trimLeft parseExpr))
 
 parseChar :: Parser Char
-parseChar = brack '\'' '\'' anyChar
+parseChar = wrap '\'' '\'' anyChar
 
-parseList :: Parser Value
-parseList = List <$> parseTypeExpr <*> trimLeft (brack '[' ']' $ trim $ zeroOrMore parseExpr)
+parseTuple :: Parser Value
+--parseTuple = Tuple <$> liftA2 (,) parseExpr parseExpr
+parseTuple = liftA2 Tuple (char '[' *> parseExpr) (parseExpr <* spaces <* char ']')
+
+--parseList = List <$> parseTypeExpr <*> trimLeft (brack '[' ']' $ trim $ zeroOrMore parseExpr)
 
 parseValue :: Parser Value
 parseValue
-  =  parseList
- <|> (Number <$> number)
+  =  trimLeft
+  $  (Number <$> number)
  <|> (Character <$> parseChar)
  <|> (Atom <$> pascal)  -- somehow fail on restricted words??
+ <|> parseTuple
 
 parseExpr :: Parser Expr
 parseExpr =  trimLeft
