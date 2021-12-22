@@ -45,8 +45,8 @@ parseTypeExpr
 parseBop :: Parser Bop
 parseBop = word "==" $> Equal
        <|> word "/=" $> NotEqual
-       <|> word "++" $> Concat
-       <|> char '>' $> GreaterThan
+       -- <|> word "++" $> Concat
+       <|> char '>' $> GreaterThan -- eventually add GreatThanOrEqualTo and LessThanOrEqualTo (or not??)
        <|> char '<' $> LessThan
        <|> char '+' $> Plus
        <|> char '-' $> Minus
@@ -78,17 +78,14 @@ parseChar :: Parser Char
 parseChar = wrap '\'' '\'' anyChar
 
 parseTuple :: Parser Value
---parseTuple = Tuple <$> liftA2 (,) parseExpr parseExpr
 parseTuple = liftA2 Tuple (char '[' *> parseExpr) (parseExpr <* spaces <* char ']')
-
---parseList = List <$> parseTypeExpr <*> trimLeft (brack '[' ']' $ trim $ zeroOrMore parseExpr)
 
 parseValue :: Parser Value
 parseValue
   =  trimLeft
   $  (Number <$> number)
  <|> (Character <$> parseChar)
- <|> (Atom <$> pascal)  -- somehow fail on restricted words??
+ <|> (Atom <$> pascal)
  <|> parseTuple
 
 parseExpr :: Parser Expr

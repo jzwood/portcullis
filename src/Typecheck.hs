@@ -107,4 +107,5 @@ typeofBop bop =
 typeofTop :: Top -> TypeExpr
 --typeofTop Fold = Arrow (Arrow (Unspecfied "b") (Arrow (Unspecfied "a") (Unspecfied "b"))) (Arrow (Unspecfied "b") (Arrow ((ListType (Unspecfied "a"))) (Unspecfied "b")))
 typeofTop Fold = undefined
-typeofTop Unfold = Arrow (Arrow (Unspecfied "a") AtomType) (Arrow (Arrow (Unspecfied "a") (Unspecfied "a")) (Arrow (Unspecfied "a") (Unspecfied "a")))
+--typeofTop Unfold = Arrow (Arrow (Unspecfied "a") AtomType) (Arrow (Arrow (Unspecfied "a") (Unspecfied "a")) (Arrow (Unspecfied "a") (Unspecfied "a")))
+typeofTop Unfold = undefined

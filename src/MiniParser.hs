@@ -101,7 +101,6 @@ char c = satisfy (== c)
 word :: String -> Parser String
 word = traverse char
 
-
 alphaChar :: Parser Char
 alphaChar = satisfy isAlpha
 

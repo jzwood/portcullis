@@ -9,6 +9,9 @@ module Util where
 paren :: String -> String
 paren a = "(" ++ a ++ ")"
 
+bracket :: String -> String
+bracket a = "[" ++ a ++ "]"
+
 pad :: String -> String
 pad a = " " ++ a ++ " "
 

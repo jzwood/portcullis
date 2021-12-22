@@ -1,6 +1,7 @@
 module Syntax where
 
 import Data.Functor
+import Data.Function
 import Control.Applicative
 import Data.Char
 import Data.List (intercalate)
@@ -18,6 +19,18 @@ newtype Var = Var String
 
 instance Show Var where
   show (Var str) = str
+
+data BinaryTree a = Leaf | Node { node :: a
+                                , leftBranch :: BinaryTree a
+                                , rightBranch :: BinaryTree a
+                                } deriving (Eq)
+
+instance Show a => Show (BinaryTree a) where
+  show Leaf = "null"
+  show (Node v bL bR)
+    =  [show v, show bL, show bR]
+    & intercalate ", "
+    & bracket
 
 --data Stmt
   -- = Data Type
@@ -50,6 +63,7 @@ data TypeExpr
   | AtomType
   | Unspecfied Name
   | TupType TypeExpr TypeExpr
+  | TreeType TypeExpr
   | Arrow TypeExpr TypeExpr
   deriving (Eq)
 
@@ -58,6 +72,7 @@ data Value
   | Character Char -- 'b'
   | Atom Name -- Apple
   | Tuple Expr Expr --- [1 'a']
+  | Tree (BinaryTree Expr) -- ['O', ['K', null, null], null]
   deriving (Eq)
 
 data Expr
@@ -79,7 +94,7 @@ data Bop
   | Equal
   | NotEqual
   | Mod
-  | Concat
+  -- | Concat
   deriving (Eq)
 
 data Top
@@ -92,7 +107,7 @@ instance Show TypeExpr where
   show CharType = "Char"
   show AtomType = "Atom"
   show (Unspecfied t) = t
-  show (TupType t1 t2) = concat ["(", show t1, ", ", show t2, ")"]
+  show (TupType t1 t2) = concat ["[", show t1, " ", show t2, "]"]
   show (Arrow tExpr1 tExpr2) = paren (show tExpr1 ++ (" -> ") ++ show tExpr2)
 
 instance Show Stmt where
