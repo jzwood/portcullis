@@ -109,3 +109,5 @@ typeofTop :: Top -> TypeExpr
 typeofTop Fold = undefined
 --typeofTop Unfold = Arrow (Arrow (Unspecfied "a") AtomType) (Arrow (Arrow (Unspecfied "a") (Unspecfied "a")) (Arrow (Unspecfied "a") (Unspecfied "a")))
 typeofTop Unfold = undefined
+-- unfoldTree :: (b -> Maybe (b, a, b)) -> b -> Tree a
+-- typeofTop Unfold = (b -> b) -> [a, [b, b]] -> b -> TreeType a
