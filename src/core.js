@@ -17,16 +17,12 @@ function fold(tree, alg, empty) {
   const f = (tree) => {
     if (tree === emptyTree) return empty
     const [node, tree1, tree2] = tree
-    const b1 = f(tree1)
-    const b2 = fold(tree2, alg, empty)
     return alg(node, f(tree1), f(tree2))
   }
   return f(tree)
 }
 
 
-function fold([head, ...tail], alg, init) {
-  if (head === undefined) return init
-  //return fold(tail, alg, alg(init, head))
-  return alg(fold(tail, alg, init), head)
-}
+
+var tree = [4, [3, null, null], [1, [2, null, null], null]]
+var tree = [1, [2, null, null], [3, [4, null, null], null]]
