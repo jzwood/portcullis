@@ -39,13 +39,14 @@ parseTypeExpr
   <|> CharType <$ (word $ show CharType)
   <|> AtomType <$ (word $ show AtomType)
   <|> Unspecfied <$> camel
+  <|> ListType <$> (brack $ trim parseTypeExpr)
   <|> parseTupType
   <|> parseArrow
 
 parseBop :: Parser Bop
 parseBop = word "==" $> Equal
        <|> word "/=" $> NotEqual
-       -- <|> word "++" $> Concat
+       <|> word "++" $> Concat
        <|> char '>' $> GreaterThan -- eventually add GreatThanOrEqualTo and LessThanOrEqualTo (or not??)
        <|> char '<' $> LessThan
        <|> char '+' $> Plus
@@ -55,8 +56,7 @@ parseBop = word "==" $> Equal
        <|> char '%' $> Mod
 
 parseTop :: Parser Top
-parseTop =  (word "fold" $> Fold)
-        <|> (word "unfold" $> Unfold)
+parseTop =  word "slice" $> Slice
 
 parseCall :: Parser Expr
 parseCall = paren . trim
@@ -77,15 +77,19 @@ parseGuard = Guard
 parseChar :: Parser Char
 parseChar = wrap '\'' '\'' anyChar
 
+parseList :: Parser Value
+parseList = List <$> parseTypeExpr <*> trimLeft (brack $ trim $ zeroOrMore parseExpr)
+
 parseTuple :: Parser Value
 parseTuple = liftA2 Tuple (char '[' *> parseExpr) (parseExpr <* spaces <* char ']')
 
 parseValue :: Parser Value
 parseValue
   =  trimLeft
-  $  (Number <$> number)
- <|> (Character <$> parseChar)
- <|> (Atom <$> pascal)
+  $  Number <$> number
+ <|> Character <$> parseChar
+ <|> parseList
+ <|> Atom <$> pascal
  <|> parseTuple
 
 parseExpr :: Parser Expr

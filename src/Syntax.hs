@@ -20,18 +20,6 @@ newtype Var = Var String
 instance Show Var where
   show (Var str) = str
 
-data BinaryTree a = Leaf | Node { node :: a
-                                , leftBranch :: BinaryTree a
-                                , rightBranch :: BinaryTree a
-                                } deriving (Eq)
-
-instance Show a => Show (BinaryTree a) where
-  show Leaf = "null"
-  show (Node v bL bR)
-    =  [show v, show bL, show bR]
-    & intercalate ", "
-    & bracket
-
 --data Stmt
   -- = Data Type
   -- | Function Name [Var] Expr
@@ -63,7 +51,7 @@ data TypeExpr
   | AtomType
   | Unspecfied Name
   | TupType TypeExpr TypeExpr
-  | TreeType TypeExpr
+  | ListType TypeExpr
   | Arrow TypeExpr TypeExpr
   deriving (Eq)
 
@@ -72,7 +60,7 @@ data Value
   | Character Char -- 'b'
   | Atom Name -- Apple
   | Tuple Expr Expr --- [1 'a']
-  | Tree (BinaryTree Expr) -- ['O', ['K', null, null], null]
+  | List TypeExpr [Expr] --- num [1, 2, 3]
   deriving (Eq)
 
 data Expr
@@ -94,12 +82,11 @@ data Bop
   | Equal
   | NotEqual
   | Mod
-  -- | Concat
+  | Concat
   deriving (Eq)
 
 data Top
-  = Fold
-  | Unfold
+  = Slice
   deriving (Eq)
 
 instance Show TypeExpr where
@@ -107,8 +94,15 @@ instance Show TypeExpr where
   show CharType = "Char"
   show AtomType = "Atom"
   show (Unspecfied t) = t
-  show (TupType t1 t2) = concat ["[", show t1, " ", show t2, "]"]
-  show (Arrow tExpr1 tExpr2) = paren (show tExpr1 ++ (" -> ") ++ show tExpr2)
+  show (ListType t)
+    = show t
+    & bracket
+  show (TupType t1 t2)
+    =  [t1, t2]
+   <&> show
+    &  intercalate " "
+    &  bracket
+  show (Arrow tExpr1 tExpr2) = paren (show tExpr1 ++ (pad "->") ++ show tExpr2)
 
 instance Show Stmt where
   show (Signature name tExpr) = comment $ concat ["function ", show name, " has type ", show tExpr]
@@ -126,13 +120,22 @@ instance Show Value where
   show (Number n) = show n
   show (Character c) = '\'' : c : '\'' : []
   show (Atom n) = n
-  show (Tuple e1 e2) = concat ["[", show e1, ", ", show e2, "]" ]
+  show (List t a) = intercalate " " ["/*", show $ ListType t, "*/", show a]
+  show (Tuple e1 e2)
+    =  [e1, e2]
+   <&> show
+    &  intercalate ","
+    &  bracket
 
 instance Show Expr where
   show (Val p) = show p
   show (Ident name) = name
   show (Call name exprs) = name ++ paren (intercalate ", " $ show <$> exprs)
-  show (BinOp bop expr1 expr2) = paren . concat $ [show expr1, show bop, show expr2]
+  show (BinOp bop expr1 expr2)
+    =  [expr1, expr2]
+   <&> paren . show
+    &  intercalate (show bop)
+    &  paren
   show (Guard exprExprs) = concat ["(() => {", (intercalate " " $ showGuardCase <$> exprExprs), "\n})()"]
   show (TernOp top expr1 expr2 expr3) = show top ++ paren (intercalate ", " $ show <$> [expr1, expr2, expr3])
 
@@ -146,8 +149,7 @@ instance Show Bop where
   show Equal = "==="
   show NotEqual = "!=="
   show Mod = "%"
-  --show Concat = ".concat"
+  show Concat = ".concat"
 
 instance Show Top where
-  show Fold = "fold"
-  show Unfold = "unfold"
+  show Slice = "Array.prototype.slice.call"

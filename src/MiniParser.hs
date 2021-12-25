@@ -4,7 +4,7 @@ module MiniParser where
 
 import Control.Applicative
 import Data.Char
-import Data.List (genericReplicate, foldl')
+import Data.List (genericReplicate)
 
 -- APPLICATIVE PARSER
 

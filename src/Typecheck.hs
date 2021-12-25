@@ -100,14 +100,10 @@ typeofBop bop =
     NotEqual -> nnb
     GreaterThan -> nnb
     LessThan -> nnb
+    Concat -> Arrow (ListType (Unspecfied "a")) (Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a")))
   where
     nnn = Arrow NumType (Arrow NumType NumType)
     nnb = Arrow NumType (Arrow NumType AtomType)
 
 typeofTop :: Top -> TypeExpr
---typeofTop Fold = Arrow (Arrow (Unspecfied "b") (Arrow (Unspecfied "a") (Unspecfied "b"))) (Arrow (Unspecfied "b") (Arrow ((ListType (Unspecfied "a"))) (Unspecfied "b")))
-typeofTop Fold = undefined
---typeofTop Unfold = Arrow (Arrow (Unspecfied "a") AtomType) (Arrow (Arrow (Unspecfied "a") (Unspecfied "a")) (Arrow (Unspecfied "a") (Unspecfied "a")))
-typeofTop Unfold = undefined
--- unfoldTree :: (b -> Maybe (b, a, b)) -> b -> Tree a
--- typeofTop Unfold = (b -> b) -> [a, [b, b]] -> b -> TreeType a
+typeofTop Slice = Arrow (ListType (Unspecfied "a")) (Arrow NumType (Arrow NumType (ListType (Unspecfied "a"))))
