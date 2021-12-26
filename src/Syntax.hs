@@ -81,6 +81,7 @@ data Bop
   | LessThan
   | Equal
   | NotEqual
+  | Rem
   | Mod
   | Concat
   deriving (Eq)
@@ -114,7 +115,7 @@ instance Show Stmt where
     ]
 
 showGuardCase :: (Expr, Expr) -> String
-showGuardCase (expr1, expr2) = "\n\tif (" ++ (show expr1) ++ ") {\n\t\treturn " ++ (show expr2) ++ ";\n\t}"
+showGuardCase (expr1, expr2) = concat ["\n\tif (", show expr1, ") {\n\t\treturn ", show expr2,  ";\n\t}"]
 
 instance Show Value where
   show (Number n) = show n
@@ -122,22 +123,32 @@ instance Show Value where
   show (Atom n) = n
   show (List t a) = intercalate " " ["/*", show $ ListType t, "*/", show a]
   show (Tuple e1 e2)
-    =  [e1, e2]
-   <&> show
-    &  intercalate ","
-    &  bracket
+    =  show <$> [e1, e2]
+    &  bracket . (intercalate ",")
+
+prefixOp :: String -> [String] -> String
+prefixOp op = paren . (op ++) . paren . (intercalate ", ")
+
+prefixBop :: Bop -> Expr -> Expr -> String
+prefixBop bop e1 e2 = prefixOp (show bop) (show <$> [e1, e2])
+
+prefixTop :: Top -> Expr -> Expr -> Expr -> String
+prefixTop top e1 e2 e3 = prefixOp (show top) (show <$> [e1, e2, e3])
+
+infixBop :: Bop -> Expr -> Expr -> String
+infixBop bop e1 e2 = paren . (intercalate $ show bop) $ show <$> [e1, e2]
 
 instance Show Expr where
   show (Val p) = show p
   show (Ident name) = name
   show (Call name exprs) = name ++ paren (intercalate ", " $ show <$> exprs)
-  show (BinOp bop expr1 expr2)
-    =  [expr1, expr2]
-   <&> paren . show
-    &  intercalate (show bop)
-    &  paren
+  show (BinOp Equal e1 e2) = prefixBop Equal e1 e2
+  show (BinOp NotEqual e1 e2) = prefixBop NotEqual e1 e2
+  show (BinOp Concat e1 e2) = prefixBop Concat e1 e2
+  show (BinOp Mod e1 e2) = prefixBop Mod e1 e2
+  show (BinOp bop e1 e2) = infixBop bop e1 e2
   show (Guard exprExprs) = concat ["(() => {", (intercalate " " $ showGuardCase <$> exprExprs), "\n})()"]
-  show (TernOp top expr1 expr2 expr3) = show top ++ paren (intercalate ", " $ show <$> [expr1, expr2, expr3])
+  show (TernOp top e1 e2 e3) = prefixTop top e1 e2 e3
 
 instance Show Bop where
   show Plus = "+"
@@ -146,10 +157,11 @@ instance Show Bop where
   show Divide = "/"
   show GreaterThan = ">"
   show LessThan = "<"
-  show Equal = "==="
-  show NotEqual = "!=="
-  show Mod = "%"
-  show Concat = ".concat"
+  show Rem = "%"
+  show Mod = "mod"
+  show Equal = "equal"
+  show NotEqual = "notEqual"
+  show Concat = "Array.prototype.concat.call"
 
 instance Show Top where
   show Slice = "Array.prototype.slice.call"

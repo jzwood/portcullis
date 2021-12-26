@@ -47,13 +47,14 @@ parseBop :: Parser Bop
 parseBop = word "==" $> Equal
        <|> word "/=" $> NotEqual
        <|> word "++" $> Concat
+       <|> word "rem" $> Rem
+       <|> word "mod" $> Mod
        <|> char '>' $> GreaterThan -- eventually add GreatThanOrEqualTo and LessThanOrEqualTo (or not??)
        <|> char '<' $> LessThan
        <|> char '+' $> Plus
        <|> char '-' $> Minus
        <|> char '*' $> Times
        <|> char '/' $> Divide
-       <|> char '%' $> Mod
 
 parseTop :: Parser Top
 parseTop =  word "slice" $> Slice

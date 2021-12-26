@@ -96,12 +96,13 @@ typeofBop bop =
     Divide -> nnn
     Times -> nnn
     Mod -> nnn
-    Equal -> nnb
-    NotEqual -> nnb
+    Equal -> uub
+    NotEqual -> uub
     GreaterThan -> nnb
     LessThan -> nnb
     Concat -> Arrow (ListType (Unspecfied "a")) (Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a")))
   where
+    uub = Arrow (Unspecfied "a") (Arrow (Unspecfied "a") (Unspecfied "a"))
     nnn = Arrow NumType (Arrow NumType NumType)
     nnb = Arrow NumType (Arrow NumType AtomType)
 
