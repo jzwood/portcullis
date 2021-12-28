@@ -72,6 +72,11 @@ data Expr
   | TernOp Top Expr Expr Expr
   deriving (Eq)
 
+data UnOp
+  = Fst
+  | Snd
+  deriving (Eq)
+
 data Bop
   = Plus
   | Minus
@@ -82,12 +87,12 @@ data Bop
   | Equal
   | NotEqual
   | Rem
-  | Mod
   | Concat
   deriving (Eq)
 
 data Top
   = Slice
+  | Get
   deriving (Eq)
 
 instance Show TypeExpr where
@@ -127,7 +132,7 @@ instance Show Value where
     &  bracket . (intercalate ",")
 
 prefixOp :: String -> [String] -> String
-prefixOp op = paren . (op ++) . paren . (intercalate ", ")
+prefixOp op = (op ++) . paren . (intercalate ", ")
 
 prefixBop :: Bop -> Expr -> Expr -> String
 prefixBop bop e1 e2 = prefixOp (show bop) (show <$> [e1, e2])
@@ -145,10 +150,13 @@ instance Show Expr where
   show (BinOp Equal e1 e2) = prefixBop Equal e1 e2
   show (BinOp NotEqual e1 e2) = prefixBop NotEqual e1 e2
   show (BinOp Concat e1 e2) = prefixBop Concat e1 e2
-  show (BinOp Mod e1 e2) = prefixBop Mod e1 e2
   show (BinOp bop e1 e2) = infixBop bop e1 e2
   show (Guard exprExprs) = concat ["(() => {", (intercalate " " $ showGuardCase <$> exprExprs), "\n})()"]
   show (TernOp top e1 e2 e3) = prefixTop top e1 e2 e3
+
+instance Show UnOp where
+  show Fst = "fst"
+  show Snd = "snd"
 
 instance Show Bop where
   show Plus = "+"
@@ -158,10 +166,10 @@ instance Show Bop where
   show GreaterThan = ">"
   show LessThan = "<"
   show Rem = "%"
-  show Mod = "mod"
   show Equal = "equal"
   show NotEqual = "notEqual"
   show Concat = "Array.prototype.concat.call"
 
 instance Show Top where
   show Slice = "Array.prototype.slice.call"
+  show Get = "get"

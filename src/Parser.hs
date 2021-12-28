@@ -43,21 +43,25 @@ parseTypeExpr
   <|> parseTupType
   <|> parseArrow
 
+parseUnOp :: Parser UnOp
+parseUnOp =  word "fst" $> Fst
+         <|> word "snd" $> Snd
+
 parseBop :: Parser Bop
 parseBop = word "==" $> Equal
        <|> word "/=" $> NotEqual
        <|> word "++" $> Concat
-       <|> word "rem" $> Rem
-       <|> word "mod" $> Mod
-       <|> char '>' $> GreaterThan -- eventually add GreatThanOrEqualTo and LessThanOrEqualTo (or not??)
+       <|> char '>' $> GreaterThan
        <|> char '<' $> LessThan
        <|> char '+' $> Plus
        <|> char '-' $> Minus
        <|> char '*' $> Times
        <|> char '/' $> Divide
+       <|> char '%' $> Rem
 
 parseTop :: Parser Top
 parseTop =  word "slice" $> Slice
+        <|> char '!' $> Get
 
 parseCall :: Parser Expr
 parseCall = paren . trim
@@ -73,7 +77,7 @@ parseTernOp = (optionalModifier paren . trim)
 
 parseGuard :: Parser Expr
 parseGuard = Guard
-          <$> (oneOrMore $ liftA2 (,) (trim $ char '?' *> parseExpr) (trimLeft parseExpr))
+          <$> (oneOrMore $ liftA2 (,) (trim $ char '?' *> parseExpr) parseExpr)
 
 parseChar :: Parser Char
 parseChar = wrap '\'' '\'' anyChar
@@ -100,4 +104,4 @@ parseExpr =  trimLeft
          <|> parseTernOp
          <|> parseGuard
          <|> Val <$> parseValue
-         <|> Ident <$> camel
+         <|> Ident  <$> camel

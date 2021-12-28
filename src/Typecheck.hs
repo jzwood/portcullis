@@ -88,6 +88,10 @@ typeofExpr m s (TernOp top expr1 expr2 expr3)
     >>= typecheckExpr t2
     >>= typecheckExpr t3
 
+typeofUnOp :: UnOp -> TypeExpr
+typeofUnOp Fst = Arrow (TupType (Unspecfied "a") (Unspecfied "b")) (Unspecfied "a")
+typeofUnOp Snd = Arrow (TupType (Unspecfied "a") (Unspecfied "b")) (Unspecfied "b")
+
 typeofBop :: Bop -> TypeExpr
 typeofBop bop =
   case bop of
@@ -95,10 +99,10 @@ typeofBop bop =
     Minus -> nnn
     Divide -> nnn
     Times -> nnn
-    Mod -> nnn
     Equal -> uub
     NotEqual -> uub
     GreaterThan -> nnb
+    Rem -> nnb
     LessThan -> nnb
     Concat -> Arrow (ListType (Unspecfied "a")) (Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a")))
   where
@@ -108,3 +112,4 @@ typeofBop bop =
 
 typeofTop :: Top -> TypeExpr
 typeofTop Slice = Arrow (ListType (Unspecfied "a")) (Arrow NumType (Arrow NumType (ListType (Unspecfied "a"))))
+typeofTop Get = Arrow (ListType (Unspecfied "a")) (Arrow NumType (Arrow (Unspecfied "a") (Unspecfied "a")))
