@@ -10,17 +10,17 @@ empty = Num []
 length -> [a] Num
 length xs =
   ? == [] xs 0
-  ? T + 1 (length slice 0 (neg 1))
+  ? T + 1 (length !! 0 (neg 1))
 
 half -> [a] [a]
-half xs = slice xs * 0.5 (length)
+half xs = !! xs * 0.5 (length)
 
 
 head -> [a] [a]
-head xs = slice xs 0 1
+head xs = !! xs 0 1
 
 tail -> [a] [a]
-tail xs = slice xs 0 (neg 1)
+tail xs = !! xs 0 (neg 1)
 
 filter -> a -> [a] [a]
 filter x xs =
@@ -37,7 +37,7 @@ filter' f xs =
 sort -> [Num] [Num]
 sort ns =
   ? < (length ns) 2 ns
-  ? T (merge (sort slice ) (sort ))
+  ? T (merge (sort !!  ) (sort ))
 
 order -> Num -> Num [Num]
 order x y =

@@ -99,8 +99,8 @@ parseValue
 parseExpr :: Parser Expr
 parseExpr =  trimLeft
           $  parseCall
-         <|> parseBinOp
          <|> parseTernOp
+         <|> parseBinOp
          <|> parseGuard
          <|> Val <$> parseValue
          <|> Ident  <$> camel

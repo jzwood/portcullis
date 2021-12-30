@@ -145,7 +145,8 @@ instance Show Expr where
   show (Ident name) = name
   show (Call name exprs) = name ++ paren (intercalate ", " $ show <$> exprs)
   show (BinOp Equal e1 e2) = prefixBop Equal e1 e2
-  show (BinOp Concat e1 e2) = prefixBop Concat e1 e2
+  show (BinOp Concat a1 a2) = prefixBop Concat a1 a2
+  show (BinOp At a n) = prefixBop At a n ++ " ?? 0"
   show (BinOp bop e1 e2) = infixBop bop e1 e2
   show (Guard exprExprs) = concat ["(() => {", (intercalate " " $ showGuardCase <$> exprExprs), "\n})()"]
   show (TernOp top e1 e2 e3) = prefixTop top e1 e2 e3
