@@ -1,6 +1,8 @@
 module Transpile where
 
 import Data.Functor
+import Data.Function
+import Control.Applicative
 import Syntax
 import MiniParser
 import Parser
@@ -20,7 +22,7 @@ parse program =
     Right (stms, _, _) -> Right stms
 
 semanticCheck :: [Stmt] -> Either CompileError [Statement]
-semanticCheck = undefined
+semanticCheck stmts = undefined
 
 typecheck :: [Statement] -> Either CompileError [Statement]
 typecheck = undefined
@@ -28,6 +30,22 @@ typecheck = undefined
 transpile :: String -> Either CompileError String
 transpile program
   =   parse program
-  >>= semanticCheck
-  >>= typecheck
+  -- >>= semanticCheck
+  -- >>= typecheck
   <&> unlines . (map show)
+
+handle :: String -> Either CompileError String -> IO ()
+handle dest (Right js) = writeFile dest js >> print "Success"
+handle _ (Left err) = print err
+
+sortpo = "src/examples/rsort.po"
+sortjs = "dest/rsport.js"
+
+
+runTranspilation :: String -> String -> IO ()
+runTranspilation src dest = do
+  code <- readFile src <&> transpile
+  core <- readFile core
+  handle dest $ (core++) <$> code
+    where
+    core = "src/core.js"

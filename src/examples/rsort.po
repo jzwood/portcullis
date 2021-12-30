@@ -29,4 +29,4 @@ merge -> [Num] -> [Num] [Num]
 merge xs ys =
   ? == xs (empty) ys
   ? == ys (empty) xs
-  ? T ++ (order ! xs 0 0 ! xs 0 0) (merge (tail xs) (tail ys))
+  ? T ++ (order ! xs 0 0 ! ys 0 0) (merge (tail xs) (tail ys))
