@@ -1,43 +1,24 @@
 neg -> Num Num
 neg x = - 0 x
 
-nil AtomType
-nil False
+tail -> [a] [a]
+tail xs = !! xs 1 (length xs)
 
 empty [Num]
 empty = Num []
 
 length -> [a] Num
 length xs =
-  ? == [] xs 0
-  ? T + 1 (length !! 0 (neg 1))
-
-half -> [a] [a]
-half xs = !! xs * 0.5 (length)
-
-
-head -> [a] [a]
-head xs = !! xs 0 1
-
-tail -> [a] [a]
-tail xs = !! xs 0 (neg 1)
-
-filter -> a -> [a] [a]
-filter x xs =
-  ? == xs [] []
-  ? == [x] (head xs) (tail xs)
-  ? T ++ (head xs) (filter x (tail xs))
-
-filter' -> -> [a] AtomType -> [a] [a]
-filter' f xs =
-  ? == xs [] []
-  ? == f (head xs) (tail xs)
-  ? T ++ (head xs) (filter x (tail xs))
+  ? == Char [] xs 0
+  ? T + 1 (length !! xs 0 (neg 1))
 
 sort -> [Num] [Num]
-sort ns =
-  ? < (length ns) 2 ns
-  ? T (merge (sort !!  ) (sort ))
+sort ns = (sort2 (length ns) ns)
+
+sort2 -> Num -> [Num] [Num]
+sort2 len ns =
+  ? <= len 1 ns
+  ? T (merge (sort !! ns 0 / len 2) (sort !! ns / len 2 len))
 
 order -> Num -> Num [Num]
 order x y =
@@ -48,4 +29,4 @@ merge -> [Num] -> [Num] [Num]
 merge xs ys =
   ? == xs (empty) ys
   ? == ys (empty) xs
-  ? T ++ (order ! xs 0 0 ! xy 0 0) (merge (tail xs) (tail ys))
+  ? T ++ (order ! xs 0 0 ! xs 0 0) (merge (tail xs) (tail ys))

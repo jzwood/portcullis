@@ -9,6 +9,10 @@ import Parser
 data CompileError = CompileError String
   deriving (Show, Eq)
 
+-- testing util
+runp :: Parser a -> String -> Either Cursor (a, Cursor, String)
+runp p s = runParser p mempty s
+
 parse :: String -> Either CompileError [Stmt]
 parse program =
   case runParser parseModule mempty program of
