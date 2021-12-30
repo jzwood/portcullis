@@ -20,10 +20,10 @@ instance Semigroup Cursor where
   (<>) (Cursor l1 c1) (Cursor l2 c2) = Cursor (l1 + l2) (c1 + c2)
 
 instance Monoid Cursor where
-  mempty = Cursor 0 0
+  mempty = Cursor 1 1 -- text editors typically start indexs at 1
 
 nextLine :: Cursor -> Cursor
-nextLine (Cursor line col) = Cursor (line + 1) 0
+nextLine (Cursor line col) = Cursor (line + 1) 1
 
 nextChar :: Cursor -> Cursor
 nextChar (Cursor line col) = Cursor line (col + 1)

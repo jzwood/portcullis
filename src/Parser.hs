@@ -9,7 +9,7 @@ import Data.List
 import Util hiding (paren)
 
 parseModule :: Parser [Stmt]
-parseModule = oneOrMore parseStmt
+parseModule = oneOrMore parseStmt <* spaces
 
 parseStmt :: Parser Stmt
 parseStmt =  trimLeft

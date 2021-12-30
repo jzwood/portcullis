@@ -19,7 +19,7 @@ parse :: String -> Either CompileError [Stmt]
 parse program =
   case runParser parseModule mempty program of
     Left c -> Left $ CompileError (show $ ParseError c)
-    Right (stms, _, _) -> Right stms
+    Right (stms, cursor, unparsed) -> if unparsed == "" then Right stms else Left . CompileError $ show (ParseError cursor)
 
 semanticCheck :: [Stmt] -> Either CompileError [Statement]
 semanticCheck stmts = undefined
@@ -35,12 +35,14 @@ transpile program
   <&> unlines . (map show)
 
 handle :: String -> Either CompileError String -> IO ()
-handle dest (Right js) = writeFile dest js >> print "Success"
-handle _ (Left err) = print err
+handle dest (Right js)
+  =  writeFile dest js
+  >> putStrLn ">\tSuccessfully Transpiled!"
+  >> putStrLn ("+\t" ++ dest)
+handle _ (Left err) = putStrLn ("!\t" ++ show err)
 
 sortpo = "src/examples/rsort.po"
 sortjs = "dest/rsport.js"
-
 
 runTranspilation :: String -> String -> IO ()
 runTranspilation src dest = do
