@@ -100,11 +100,11 @@ typeofBop bop =
     Divide -> nnn
     Times -> nnn
     Equal -> uub
-    NotEqual -> uub
     GreaterThan -> nnb
     Rem -> nnb
     LessThan -> nnb
     Concat -> Arrow (ListType (Unspecfied "a")) (Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a")))
+    At ->     Arrow (ListType (Unspecfied "a")) (Arrow NumType (Unspecfied "a"))
   where
     uub = Arrow (Unspecfied "a") (Arrow (Unspecfied "a") (Unspecfied "a"))
     nnn = Arrow NumType (Arrow NumType NumType)
@@ -112,4 +112,3 @@ typeofBop bop =
 
 typeofTop :: Top -> TypeExpr
 typeofTop Slice = Arrow (ListType (Unspecfied "a")) (Arrow NumType (Arrow NumType (ListType (Unspecfied "a"))))
-typeofTop At = Arrow (ListType (Unspecfied "a")) (Arrow NumType (Arrow (Unspecfied "a") (Unspecfied "a")))

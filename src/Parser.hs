@@ -49,7 +49,6 @@ parseUnOp =  word "fst" $> Fst
 
 parseBop :: Parser Bop
 parseBop = word "==" $> Equal
-       <|> word "/=" $> NotEqual
        <|> word "++" $> Concat
        <|> char '>' $> GreaterThan
        <|> char '<' $> LessThan
@@ -58,10 +57,10 @@ parseBop = word "==" $> Equal
        <|> char '*' $> Times
        <|> char '/' $> Divide
        <|> char '%' $> Rem
+       <|> char '!' $> At
 
 parseTop :: Parser Top
 parseTop =  word "!!" $> Slice
-        <|> char '!' $> At
 
 parseCall :: Parser Expr
 parseCall = paren . trim

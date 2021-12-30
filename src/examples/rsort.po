@@ -37,7 +37,7 @@ filter' f xs =
 sort -> [Num] [Num]
 sort ns =
   ? < (length ns) 2 ns
-  ? T ++ (sort ) (sort )
+  ? T (merge (sort slice ) (sort ))
 
 order -> Num -> Num [Num]
 order x y =

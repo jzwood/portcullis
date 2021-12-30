@@ -85,15 +85,12 @@ data Bop
   | GreaterThan
   | LessThan
   | Equal
-  | NotEqual
   | Rem
   | Concat
-  deriving (Eq)
-
-data Top
-  = Slice
   | At
   deriving (Eq)
+
+data Top = Slice deriving (Eq)
 
 instance Show TypeExpr where
   show NumType = "Num"
@@ -148,15 +145,14 @@ instance Show Expr where
   show (Ident name) = name
   show (Call name exprs) = name ++ paren (intercalate ", " $ show <$> exprs)
   show (BinOp Equal e1 e2) = prefixBop Equal e1 e2
-  show (BinOp NotEqual e1 e2) = prefixBop NotEqual e1 e2
   show (BinOp Concat e1 e2) = prefixBop Concat e1 e2
   show (BinOp bop e1 e2) = infixBop bop e1 e2
   show (Guard exprExprs) = concat ["(() => {", (intercalate " " $ showGuardCase <$> exprExprs), "\n})()"]
   show (TernOp top e1 e2 e3) = prefixTop top e1 e2 e3
 
 instance Show UnOp where
-  show Fst = "fst"
-  show Snd = "snd"
+  show Fst = "(([a,]) => a)"
+  show Snd = "(([,b]) => b)"
 
 instance Show Bop where
   show Plus = "+"
@@ -167,9 +163,8 @@ instance Show Bop where
   show LessThan = "<"
   show Rem = "%"
   show Equal = "equal"
-  show NotEqual = "notEqual"
   show Concat = "Array.prototype.concat.call"
+  show At = "Array.prototype.at.call"
 
 instance Show Top where
   show Slice = "Array.prototype.slice.call"
-  show At = "Array.prototype.at.call"
