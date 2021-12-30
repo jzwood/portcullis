@@ -60,8 +60,8 @@ parseBop = word "==" $> Equal
        <|> char '%' $> Rem
 
 parseTop :: Parser Top
-parseTop =  word "slice" $> Slice
-        <|> char '!' $> Get
+parseTop =  word "!!" $> Slice
+        <|> char '!' $> At
 
 parseCall :: Parser Expr
 parseCall = paren . trim

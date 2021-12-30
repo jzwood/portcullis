@@ -112,4 +112,4 @@ typeofBop bop =
 
 typeofTop :: Top -> TypeExpr
 typeofTop Slice = Arrow (ListType (Unspecfied "a")) (Arrow NumType (Arrow NumType (ListType (Unspecfied "a"))))
-typeofTop Get = Arrow (ListType (Unspecfied "a")) (Arrow NumType (Arrow (Unspecfied "a") (Unspecfied "a")))
+typeofTop At = Arrow (ListType (Unspecfied "a")) (Arrow NumType (Arrow (Unspecfied "a") (Unspecfied "a")))

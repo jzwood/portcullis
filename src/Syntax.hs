@@ -92,7 +92,7 @@ data Bop
 
 data Top
   = Slice
-  | Get
+  | At
   deriving (Eq)
 
 instance Show TypeExpr where
@@ -172,4 +172,4 @@ instance Show Bop where
 
 instance Show Top where
   show Slice = "Array.prototype.slice.call"
-  show Get = "get"
+  show At = "Array.prototype.at.call"
