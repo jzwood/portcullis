@@ -43,8 +43,6 @@ data Statement = Statement
   , body :: Expr
   } deriving (Show, Eq)
 
--- data ConcreteType = NumType | CharType | AtomType
-
 data TypeExpr
   = NumType
   | CharType
