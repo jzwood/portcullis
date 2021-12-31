@@ -12,8 +12,9 @@ import Syntax
 -- Produce Atom table so final generated code contains appropriate mapping e.g. Const False = 0
 
 
+-- make this instead :: Module -> Either SemanticError [Statement]
 modToStatements :: Module -> [Statement]
-modToStatements = undefined
+modToStatements (Module _ stmts) = undefined
 
 findAtoms :: Expr -> [String]
 findAtoms expr =
@@ -36,8 +37,7 @@ findAtoms expr =
 mapAtoms :: Module -> String
 mapAtoms mod
   =  (modToStatements mod)
- <&> concat . findAtoms . body
-  &  ("False" :)
- <&> nub
-  & concat
-  -- &  concatMap \atom -> intercalate " " ["const", atom, "="]
+ <&> findAtoms . body
+  &  zip [0..] . nub . ("False" :) . concat
+ <&> (\(i, atom) -> unwords ["const", atom, "=", show i])
+  & unlines

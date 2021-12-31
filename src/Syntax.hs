@@ -105,8 +105,7 @@ instance Show TypeExpr where
   show (TupType t1 t2)
     =  [t1, t2]
    <&> show
-    &  intercalate " "
-    &  bracket
+    &  bracket . unwords
   show (Arrow tExpr1 tExpr2) = paren (show tExpr1 ++ (pad "->") ++ show tExpr2)
 
 instance Show Stmt where
@@ -125,7 +124,7 @@ instance Show Value where
   show (Number n) = show n
   show (Character c) = '\'' : c : '\'' : []
   show (Atom n) = n
-  show (List t a) = intercalate " " ["/*", show $ ListType t, "*/", show a]
+  show (List t a) = unwords ["/*", show $ ListType t, "*/", show a]
   show (Tuple e1 e2)
     =  show <$> [e1, e2]
     &  bracket . (intercalate ",")
@@ -149,7 +148,7 @@ instance Show Expr where
   show (BinOp Equal e1 e2) = prefixBop Equal e1 e2
   show (BinOp Concat a1 a2) = prefixBop Concat a1 a2
   show (BinOp bop e1 e2) = infixBop bop e1 e2
-  show (Guard exprExprs) = concat ["(() => {", (intercalate " " $ showGuardCase <$> exprExprs), "\n})()"]
+  show (Guard exprExprs) = concat ["(() => {", (unwords $ showGuardCase <$> exprExprs), "\n})()"]
   show (TernOp At a n e) = prefixOp (show At) (show <$> [a, n]) ++ " ?? " ++ show n
   show (TernOp top e1 e2 e3) = prefixTop top e1 e2 e3
 
