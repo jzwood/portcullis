@@ -28,15 +28,15 @@ nextLine (Cursor line col) = Cursor (line + 1) 1
 nextChar :: Cursor -> Cursor
 nextChar (Cursor line col) = Cursor line (col + 1)
 
-newtype Parser a = Parser { runParser :: Cursor -> String -> Either Cursor (a, Cursor, String) }
+newtype Parser a = Parser { runParser :: Cursor -> String -> Either ParseError (a, Cursor, String) }
 
 satisfy :: (Char -> Bool) -> Parser Char
 satisfy p = Parser f
   where
-    f cursor [] = Left cursor
+    f cursor [] = Left $ ParseError cursor
     f cursor (c:cs)
       | p c = Right (c, nextCursor, cs)
-      | otherwise = Left cursor
+      | otherwise = Left $ ParseError cursor
       where
         nextCursor = if c == '\n' then nextLine cursor else nextChar cursor
 
@@ -58,7 +58,7 @@ instance Applicative Parser where
       Right (f, c', s') -> runParser (f <$> p) c' s'
 
 instance Alternative Parser where
-  empty = Parser (\c _ -> Left c)
+  empty = Parser (\c _ -> Left $ ParseError c)
   Parser rp1 <|> Parser rp2 = Parser $ \c s ->
     case rp1 c s of
       Left c' -> rp2 c s

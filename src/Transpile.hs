@@ -12,13 +12,13 @@ data CompileError = CompileError String
   deriving (Show, Eq)
 
 -- testing util
-runp :: Parser a -> String -> Either Cursor (a, Cursor, String)
+runp :: Parser a -> String -> Either ParseError (a, Cursor, String)
 runp p s = runParser p mempty s
 
 parse :: String -> Either CompileError [Stmt]
 parse program =
   case runParser parseModule mempty program of
-    Left c -> Left $ CompileError (show $ ParseError c)
+    Left err -> Left $ CompileError (show err)
     Right (stms, cursor, unparsed) -> if unparsed == "" then Right stms else Left . CompileError $ show (ParseError cursor)
 
 semanticCheck :: [Stmt] -> Either CompileError [Statement]
