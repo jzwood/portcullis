@@ -12,19 +12,14 @@ parseModule :: Parser [Stmt]
 parseModule = oneOrMore parseStmt <* spaces
 
 parseStmt :: Parser Stmt
-parseStmt =  trimLeft
-          $  parseFunc
-         <|> parseSignature
-
-parseFunc :: Parser Stmt
-parseFunc = Function
-         <$> camel
-         <*> trimLeft (zeroOrMore $ Var <$> (trimLeft camel))
+parseStmt =  Function
+         <$> name
+         <*> parseTypeExpr
+         <*  name
+         <*> trimLeft (zeroOrMore $ Var <$> name)
          <*  trimLeft (char '=')
          <*> trimLeft parseExpr
-
-parseSignature :: Parser Stmt
-parseSignature = liftA2 Signature camel parseTypeExpr
+         where name = trimLeft camel
 
 parseArrow :: Parser TypeExpr
 parseArrow = liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr

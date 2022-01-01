@@ -31,10 +31,8 @@ data Module = Module Name [Stmt]
 data Pipeline
   = InOut Name
 
-data Stmt  -- aka Declaration
-  = Signature Name TypeExpr
-  | Function Name [Var] Expr
-  deriving (Eq)
+data Stmt = Function Name TypeExpr [Var] Expr
+  deriving (Show, Eq)
 
 data Statement = Statement
   { funcName :: Name
@@ -108,14 +106,14 @@ instance Show TypeExpr where
     &  bracket . unwords
   show (Arrow tExpr1 tExpr2) = paren (show tExpr1 ++ (pad "->") ++ show tExpr2)
 
-instance Show Stmt where
-  show (Signature name tExpr) = comment $ concat ["function ", show name, " has type ", show tExpr]
-  show (Function name vars expr) = concat
-    [ "function "
-    , name
-    , paren (intercalate ", " (show <$> vars))
-    , concat [" {\n", indent ("return " ++ (show expr) ++ ";"), "}"]
-    ]
+--instance Show Stmt where
+  --show (Signature name tExpr) = comment $ concat ["function ", show name, " has type ", show tExpr]
+  --show (Function name vars expr) = concat
+    --[ "function "
+    --, name
+    --, paren (intercalate ", " (show <$> vars))
+    --, concat [" {\n", indent ("return " ++ (show expr) ++ ";"), "}"]
+    --]
 
 showGuardCase :: (Expr, Expr) -> String
 showGuardCase (expr1, expr2) = concat ["\n\tif (", show expr1, ") {\n\t\treturn ", show expr2,  ";\n\t}"]

@@ -17,42 +17,6 @@ newtype SemanticError = SemanticError String deriving (Show)
 type SignatureMap = Map String TypeExpr
 type FunctionMap = Map String ([Var], Expr)
 
-stmtToName :: Statement -> String
-stmtToName (Signature name _) = name
-stmtToName (Function name _ _) = name
-
-stmtToMapAlg :: (SignatureMap, FunctionMap) -> Statement -> Either SemanticError (SignatureMap, FunctionMap)
-stmtToMapAlg (sigMap, funcMap) sig@(Signature name texp) =
-  if name `member` sigMap
-  then Left $ SemanticError $ "Signature name already exists"
-  else (Map.insert name texp, funcMap)
-stmtToMapAlg (sigMap, funcMap) func@(Function name args body) =
-  if name `member` funcMap
-  then Left $ SemanticError $ "Function name already exists"
-  else (sigMap, Map.insert name (args, body))
-
-mergeMaps :: (SignatureMap, FunctionMap) ->
-
-modToStatements :: Module -> Either SemanticError [Statement]
-modToStatements (Module _ stmts) = do
-  (sigMap, funMap) <- foldl' stmtToMapAlg (Right (Map.empty, Map.empty)) stmts
-
-  =  stmts
- <&> stmtToName
- <&>
-
-
-
--- =
--- & flip zip (singleton <$> stms)
--- & Map.fromListWith (++)
-
-    --isFun (Function _ _ _) = True
-    --isFun _ = False
-    --isSig (Signature _ _) = True
-    --isSig _ = False
-    --functions = map () filter isFun stmts
-
 findAtoms :: Expr -> [String]
 findAtoms expr =
   let
