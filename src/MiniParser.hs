@@ -11,10 +11,10 @@ import Data.List (genericReplicate)
 data Cursor = Cursor { line :: Integer, col :: Integer}
   deriving (Show, Eq)
 
-data ParseError = ParseError Cursor
+newtype ParseError = ParseError Cursor
 
 instance Show ParseError where
-  show (ParseError (Cursor { line, col})) = concat ["Syntax error at line: ", show line, ", column: ", show col]
+  show (ParseError (Cursor { line, col})) = concat ["Parse Error at line: ", show line, ", column: ", show col]
 
 instance Semigroup Cursor where
   (<>) (Cursor l1 c1) (Cursor l2 c2) = Cursor (l1 + l2) (c1 + c2)

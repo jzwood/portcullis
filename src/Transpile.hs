@@ -8,7 +8,7 @@ import MiniParser
 import Parser
 
 
-data CompileError = CompileError String
+newtype CompileError = CompileError String
   deriving (Show, Eq)
 
 -- testing util
