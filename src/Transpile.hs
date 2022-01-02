@@ -15,16 +15,16 @@ newtype CompileError = CompileError String
 runp :: Parser a -> String -> Either ParseError (a, Cursor, String)
 runp p s = runParser p mempty s
 
-parse :: String -> Either CompileError [Stmt]
+parse :: String -> Either CompileError Module
 parse program =
   case runParser parseModule mempty program of
     Left err -> Left $ CompileError (show err)
-    Right (stms, cursor, unparsed) -> if unparsed == "" then Right stms else Left . CompileError $ show (ParseError cursor)
+    Right (stms, cursor, unparsed) -> if unparsed == "" then Right (Module stms) else Left . CompileError $ show (ParseError cursor)
 
-semanticCheck :: [Stmt] -> Either CompileError [Stmt]
+semanticCheck :: Module -> Either CompileError Module
 semanticCheck stmts = undefined
 
-typecheck :: [Stmt] -> Either CompileError [Stmt]
+typecheck :: Module -> Either CompileError Module
 typecheck = undefined
 
 transpile :: String -> Either CompileError String
@@ -32,7 +32,7 @@ transpile program
   =   parse program
   -- >>= semanticCheck
   -- >>= typecheck
-  <&> unlines . (map show)
+  <&> show
 
 handle :: String -> Either CompileError String -> IO ()
 handle dest (Right js)
@@ -48,6 +48,6 @@ runTranspilation :: String -> String -> IO ()
 runTranspilation src dest = do
   code <- readFile src <&> transpile
   core <- readFile core
-  handle dest $ (core++) <$> code
+  handle dest $ (++core) <$> code
     where
     core = "src/core.js"

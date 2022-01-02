@@ -4,7 +4,7 @@ import Data.Functor
 import Data.Function
 import Control.Applicative
 import Data.Char
-import Data.List (intercalate)
+import Data.List (intercalate, nub)
 import Util
 
 -- Notes:
@@ -26,7 +26,7 @@ instance Show Var where
   -- | FunType Name [Type]
   -- | Pipe Name [Name] [Name] -- pipe name, input function names, output function names
 
-data Module = Module Name [Stmt]
+data Module = Module [Stmt]
 
 data Pipeline
   = InOut Name
@@ -36,7 +36,7 @@ data Stmt = Function
   , signature :: TypeExpr
   , args :: [Var]
   , body :: Expr
-  } deriving (Show, Eq)
+  } deriving (Eq)
 
 data TypeExpr
   = NumType
@@ -61,6 +61,7 @@ data Expr
   | Ident Name  -- arg
   | Call Name [Expr]  -- add 12 45 (function invocation)
   | Guard [(Expr, Expr)]
+  | UnOp UnOp Expr
   | BinOp Bop Expr Expr  -- + 2 3
   | TernOp Top Expr Expr Expr
   deriving (Eq)
@@ -89,6 +90,20 @@ data Top
   | At
   deriving (Eq)
 
+instance Show Module where
+  show (Module stmts) = unlines $ (readAtoms stmts) : (show <$> stmts)
+
+instance Show Stmt where
+  show (Function name tExpr vars expr)
+    = comment $ unwords ["function", show name, "has type", show tExpr]
+    ++ '\n'
+    : concat
+    [ "function "
+    , name
+    , paren (intercalate ", " (show <$> vars))
+    , concat [" {\n", indent ("return " ++ (show expr) ++ ";"), "}"]
+    ]
+
 instance Show TypeExpr where
   show NumType = "Num"
   show CharType = "Char"
@@ -102,15 +117,6 @@ instance Show TypeExpr where
    <&> show
     &  bracket . unwords
   show (Arrow tExpr1 tExpr2) = paren (show tExpr1 ++ (pad "->") ++ show tExpr2)
-
---instance Show Stmt where
-  --show (Signature name tExpr) = comment $ concat ["function ", show name, " has type ", show tExpr]
-  --show (Function name vars expr) = concat
-    --[ "function "
-    --, name
-    --, paren (intercalate ", " (show <$> vars))
-    --, concat [" {\n", indent ("return " ++ (show expr) ++ ";"), "}"]
-    --]
 
 showGuardCase :: (Expr, Expr) -> String
 showGuardCase (expr1, expr2) = concat ["\n\tif (", show expr1, ") {\n\t\treturn ", show expr2,  ";\n\t}"]
@@ -140,11 +146,12 @@ instance Show Expr where
   show (Val p) = show p
   show (Ident name) = name
   show (Call name exprs) = name ++ paren (intercalate ", " $ show <$> exprs)
+  show (UnOp unop e) = show unop ++ (paren $ show e)
   show (BinOp Equal e1 e2) = prefixBop Equal e1 e2
   show (BinOp Concat a1 a2) = prefixBop Concat a1 a2
   show (BinOp bop e1 e2) = infixBop bop e1 e2
   show (Guard exprExprs) = concat ["(() => {", (unwords $ showGuardCase <$> exprExprs), "\n})()"]
-  show (TernOp At a n e) = prefixOp (show At) (show <$> [a, n]) ++ " ?? " ++ show n
+  show (TernOp At a n e) = paren $ prefixOp (show At) (show <$> [a, n]) ++ " ?? " ++ show n
   show (TernOp top e1 e2 e3) = prefixTop top e1 e2 e3
 
 instance Show UnOp where
@@ -167,3 +174,30 @@ instance Show Bop where
 instance Show Top where
   show Slice = "Array.prototype.slice.call"
   show At = "Array.prototype.at.call"
+
+
+findAtoms :: Expr -> [String]
+findAtoms expr =
+  let
+    flatFindAtoms :: [Expr] -> [String]
+    flatFindAtoms = concatMap findAtoms
+  in case expr of
+    Val v ->
+      case v of
+        Atom n -> [n]
+        Tuple e1 e2 -> flatFindAtoms [e1, e2]
+        List _ es -> flatFindAtoms es
+        _ -> []
+    Call n [es] -> flatFindAtoms [es]
+    Guard tes -> concatMap (\(e1, e2) -> flatFindAtoms [e1, e2]) tes
+    BinOp _ e1 e2 -> flatFindAtoms [e1, e2]
+    TernOp _ e1 e2 e3 -> flatFindAtoms [e1, e2, e3]
+    _ -> []
+
+readAtoms :: [Stmt] -> String
+readAtoms stmts
+  =  concatMap (findAtoms . body) stmts
+  &  zip [0..] . nub . ("False" :)
+ <&> (\(i, atom) -> unwords ["const", atom, "=", show i])
+  &  unlines
+

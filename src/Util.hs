@@ -23,3 +23,6 @@ comment = ("// " ++)
 
 multComment :: String -> String
 multComment str = concat ["/*\n", unlines . map (" *  " ++) . lines $ str, " */"]
+
+divider :: String
+divider =  concat $ "// " : replicate 60 "#"

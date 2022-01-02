@@ -63,6 +63,10 @@ parseCall :: Parser Expr
 parseCall = paren . trim
           $ liftA2 Call camel (zeroOrMore parseExpr)
 
+parseUnaryOp :: Parser Expr
+parseUnaryOp = (optionalModifier paren . trim)
+           $ liftA2 UnOp parseUnOp parseExpr
+
 parseBinOp :: Parser Expr
 parseBinOp = (optionalModifier paren . trim)
            $ liftA3 BinOp parseBop parseExpr parseExpr
@@ -95,7 +99,8 @@ parseValue
 
 parseExpr :: Parser Expr
 parseExpr =  trimLeft
-          $  parseCall
+          $  parseUnaryOp
+         <|> parseCall
          <|> parseTernOp
          <|> parseBinOp
          <|> parseGuard

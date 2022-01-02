@@ -1,7 +1,6 @@
-// function "equal" has type (a -> (a -> Atom))
-function equal(a, b) {
-  return a === b || Array.isArray(a) ? JSON.stringify(a) === JSON.stringify(b) : false
-}
+const False = 0
+const T = 1
+
 // function "neg" has type (Num -> Num)
 function neg(x) {
 	return (0.0-x);
@@ -51,6 +50,17 @@ function order(x, y) {
 		}
 	})();
 }
+// function "cmpH" has type ([Num] -> ([Num] -> [[Num] [Num]]))
+function cmpH(xs, ys) {
+	return (() => {
+		if (((Array.prototype.at.call(xs, 0.0) ?? 0.0)<(Array.prototype.at.call(ys, 0.0) ?? 0.0))) {
+			return [xs,ys];
+		} 
+		if (T) {
+			return [ys,xs];
+		}
+	})();
+}
 // function "merge" has type ([Num] -> ([Num] -> [Num]))
 function merge(xs, ys) {
 	return (() => {
@@ -61,7 +71,15 @@ function merge(xs, ys) {
 			return xs;
 		} 
 		if (T) {
-			return Array.prototype.concat.call(order(Array.prototype.at.call(xs, 0.0) ?? 0.0, Array.prototype.at.call(ys, 0.0) ?? 0.0), merge(tail(xs), tail(ys)));
+			return merge2(cmpH(xs, ys));
 		}
 	})();
+}
+// function "merge2" has type ([[Num] [Num]] -> [Num])
+function merge2(xys) {
+	return Array.prototype.concat.call(Array.prototype.slice.call((([a,]) => a)(xys), 0.0, 1.0), merge(tail((([a,]) => a)(xys)), (([,b]) => b)(xys)));
+}
+// function "equal" has type (a -> (a -> Atom))
+function equal(a, b) {
+  return a === b || Array.isArray(a) ? JSON.stringify(a) === JSON.stringify(b) : false
 }

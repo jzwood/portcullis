@@ -25,8 +25,17 @@ order x y =
   ? < x y Num [x y]
   ? T Num [y x]
 
+cmpH -> [Num] -> [Num] [[Num] [Num]]
+cmpH xs ys =
+  ? < ! xs 0 0 ! ys 0 0 [xs ys]
+  ? T [ys xs]
+
 merge -> [Num] -> [Num] [Num]
 merge xs ys =
   ? == xs (empty) ys
   ? == ys (empty) xs
-  ? T ++ (order ! xs 0 0 ! ys 0 0) (merge (tail xs) (tail ys))
+  ? T (merge2 (cmpH xs ys))
+
+merge2 -> [[Num] [Num]] [Num]
+merge2 xys = ++ !! (fst xys) 0 1 (merge (tail fst xys) snd xys)
+
