@@ -50,7 +50,8 @@ function merge(xs, ys) {
 	return (() => {
 		if (equal(xs, empty())) {
 			return ys;
-		}if (equal(ys, empty())) {
+		}
+		if (equal(ys, empty())) {
 			return xs;
 		}
 		return merge2(cmpH(xs, ys));

@@ -126,20 +126,18 @@ instance Show TypeExpr where
 showGuard :: [(Expr, Expr)] -> Expr -> String
 showGuard cases defaultCase =
   unlines' [ "(() => {"
-          , (indent . unlines') [ concatMap showCase cases
-                     , showReturn defaultCase
-                     ]
+          , (indent . unlines') (concatMap showCase cases ++ [showReturn defaultCase])
           , "})()"
           ]
   where
     showReturn :: Expr -> String
     showReturn expr = "return " ++ show expr ++ ";"
-    showCase :: (Expr, Expr) -> String
+    showCase :: (Expr, Expr) -> [String]
     showCase (predicate, expr) =
-      unlines' $ [ "if (" ++ show predicate ++ ") {"
-                , '\t' : showReturn expr
-                , "}"
-                ]
+      [ "if (" ++ show predicate ++ ") {"
+      , '\t' : showReturn expr
+      , "}"
+      ]
 
 instance Show Value where
   show (Number n) = show n
