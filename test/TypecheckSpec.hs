@@ -10,7 +10,7 @@ spec :: Spec
 spec = do
   describe "typecheck" $ do
     it "typeofExpr (binary ops)" $ do
-      let dummyStatement = Statement { funcName = "test" , signature = NumType , args = [Var "a"] , body = Val $ Number 1 }
+      let dummyStatement = Function { funcName = "test" , signature = NumType , args = [Var "a"] , body = Val $ Number 1 }
           binop = BinOp Plus (Val $ Number 1) (Val $ Number 2)
       typeofExpr Map.empty dummyStatement binop `shouldBe` Right NumType
       let binop = BinOp Plus (BinOp Minus (Val $ Number 4) (BinOp Times (Val $ Number 1) (Val $ Number 5))) (Val $ Number 2)

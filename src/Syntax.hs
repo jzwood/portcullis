@@ -31,11 +31,8 @@ data Module = Module Name [Stmt]
 data Pipeline
   = InOut Name
 
-data Stmt = Function Name TypeExpr [Var] Expr
-  deriving (Show, Eq)
-
-data Statement = Statement
-  { funcName :: Name
+data Stmt = Function
+  { name :: Name
   , signature :: TypeExpr
   , args :: [Var]
   , body :: Expr

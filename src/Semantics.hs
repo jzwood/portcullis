@@ -2,7 +2,7 @@ module Semantics where
 
 import Data.Functor
 import Data.Function
-import Data.List (foldl')
+import Data.List (nub, foldl')
 import Data.Map (Map)
 import Syntax
 
@@ -13,9 +13,6 @@ import Syntax
 -- Produce Atom table so final generated code contains appropriate mapping e.g. Const False = 0
 
 newtype SemanticError = SemanticError String deriving (Show)
-
-type SignatureMap = Map String TypeExpr
-type FunctionMap = Map String ([Var], Expr)
 
 findAtoms :: Expr -> [String]
 findAtoms expr =
@@ -35,12 +32,11 @@ findAtoms expr =
     TernOp _ e1 e2 e3 -> flatFindAtoms [e1, e2, e3]
     _ -> []
 
-  {-
 mapAtoms :: Module -> String
-mapAtoms mod
-  =  (modToStatements mod)
+mapAtoms (Module _ stmts)
+  =  stmts
  <&> findAtoms . body
   &  zip [0..] . nub . ("False" :) . concat
  <&> (\(i, atom) -> unwords ["const", atom, "=", show i])
   &  unlines
--}
+

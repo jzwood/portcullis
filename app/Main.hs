@@ -23,8 +23,8 @@ func = unlines [ "alg -> Num -> Num Num"
                ]
 mod1 = runParser parseModule mempty func
 
---statement = Statement
-  --{ funcName :: Name
+--statement = Function
+  --{ name :: Name
   --, signature :: TypeExpr
   --, args :: [Var]
   --, body :: Expr

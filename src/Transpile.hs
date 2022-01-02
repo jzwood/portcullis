@@ -21,10 +21,10 @@ parse program =
     Left err -> Left $ CompileError (show err)
     Right (stms, cursor, unparsed) -> if unparsed == "" then Right stms else Left . CompileError $ show (ParseError cursor)
 
-semanticCheck :: [Stmt] -> Either CompileError [Statement]
+semanticCheck :: [Stmt] -> Either CompileError [Stmt]
 semanticCheck stmts = undefined
 
-typecheck :: [Statement] -> Either CompileError [Statement]
+typecheck :: [Stmt] -> Either CompileError [Stmt]
 typecheck = undefined
 
 transpile :: String -> Either CompileError String

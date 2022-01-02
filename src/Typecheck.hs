@@ -19,7 +19,7 @@ data TypeError
   deriving (Eq, Show)
   -- | NotInScope Name
 
-typecheckStmt :: Map Name Statement -> Name -> Either TypeError TypeExpr
+typecheckStmt :: Map Name Stmt -> Name -> Either TypeError TypeExpr
 typecheckStmt = undefined
 
 typecheckExpr :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
@@ -48,13 +48,13 @@ getArgTypeByIndex t 0 = Just t
 getArgTypeByIndex (Arrow t0 t1) n = getArgTypeByIndex t0 (n - 1)
 getArgTypeByIndex _ _ = Nothing
 
-typeofExpr :: (Map Name Statement) -> Statement -> Expr -> Either TypeError TypeExpr
+typeofExpr :: (Map Name Stmt) -> Stmt -> Expr -> Either TypeError TypeExpr
 typeofExpr _ _ (Val p) =
   case p of
     Number n -> Right NumType
     Character c -> Right CharType
     Atom a -> Right AtomType
-typeofExpr _ (Statement { signature, args }) (Ident name)
+typeofExpr _ (Function { signature, args }) (Ident name)
    =  elemIndex (Var name) args
   >>= getArgTypeByIndex signature
   <&> Right
@@ -62,8 +62,8 @@ typeofExpr _ (Statement { signature, args }) (Ident name)
 typeofExpr m _ (Call name exprs) =
   case Map.lookup name m of
     Nothing -> Left NotFunction
-    Just s@(Statement { signature })
-      ->  traverse (typeofExpr m s) exprs
+    Just f@(Function { signature })
+      ->  traverse (typeofExpr m f) exprs
       >>= foldl' (\s t -> s >>= typecheckExpr t) (Right signature)
 typeofExpr m s (Guard exprPairs) = goodPs >> goodEs
   where
