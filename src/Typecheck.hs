@@ -65,9 +65,9 @@ typeofExpr m _ (Call name exprs) =
     Just f@(Function { signature })
       ->  traverse (typeofExpr m f) exprs
       >>= foldl' (\s t -> s >>= typecheckExpr t) (Right signature)
-typeofExpr m s (Guard exprPairs) = goodPs >> goodEs
+typeofExpr m s (Guard cases defCase) = goodPs >> goodEs
   where
-    (predicates, exprs) = unzip exprPairs
+    (predicates, exprs) = unzip cases
     goodPs =   predicates
           <&>  typeofExpr m s
            &   sequence

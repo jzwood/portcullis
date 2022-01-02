@@ -10,7 +10,7 @@ empty = Num []
 length -> [a] Num
 length xs =
   ? == Char [] xs 0
-  ? T + 1 (length !! xs 0 (neg 1))
+  ?? + 1 (length !! xs 0 (neg 1))
 
 sort -> [Num] [Num]
 sort ns = (sort2 (length ns) ns)
@@ -18,24 +18,27 @@ sort ns = (sort2 (length ns) ns)
 sort2 -> Num -> [Num] [Num]
 sort2 len ns =
   ? <= len 1 ns
-  ? T (merge (sort !! ns 0 / len 2) (sort !! ns / len 2 len))
-
-order -> Num -> Num [Num]
-order x y =
-  ? < x y Num [x y]
-  ? T Num [y x]
+  ?? (merge (sort !! ns 0 / len 2) (sort !! ns / len 2 len))
 
 cmpH -> [Num] -> [Num] [[Num] [Num]]
 cmpH xs ys =
   ? < ! xs 0 0 ! ys 0 0 [xs ys]
-  ? T [ys xs]
+  ?? [ys xs]
 
 merge -> [Num] -> [Num] [Num]
 merge xs ys =
   ? == xs (empty) ys
   ? == ys (empty) xs
-  ? T (merge2 (cmpH xs ys))
+  ?? (merge2 (cmpH xs ys))
 
 merge2 -> [[Num] [Num]] [Num]
 merge2 xys = ++ !! (fst xys) 0 1 (merge (tail fst xys) snd xys)
 
+weird -> Num Num
+weird x =
+  ?
+    ? True T
+    ??
+      ? True T
+      ?? False T
+  ?? 4

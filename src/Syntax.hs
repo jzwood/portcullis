@@ -60,7 +60,7 @@ data Expr
   = Val Value
   | Ident Name  -- arg
   | Call Name [Expr]  -- add 12 45 (function invocation)
-  | Guard [(Expr, Expr)]
+  | Guard [(Expr, Expr)] Expr
   | UnOp UnOp Expr
   | BinOp Bop Expr Expr  -- + 2 3
   | TernOp Top Expr Expr Expr
@@ -98,10 +98,15 @@ instance Show Stmt where
     = comment $ unwords ["function", show name, "has type", show tExpr]
     ++ '\n'
     : concat
-    [ "function "
+    [
+    "function "
     , name
     , paren (intercalate ", " (show <$> vars))
-    , concat [" {\n", indent ("return " ++ (show expr) ++ ";"), "}"]
+    ]
+    ++ unlines'
+    [ " {"
+    , (indent . concat) [ "return " , show expr , ";" ]
+    , "}"
     ]
 
 instance Show TypeExpr where
@@ -118,8 +123,23 @@ instance Show TypeExpr where
     &  bracket . unwords
   show (Arrow tExpr1 tExpr2) = paren (show tExpr1 ++ (pad "->") ++ show tExpr2)
 
-showGuardCase :: (Expr, Expr) -> String
-showGuardCase (expr1, expr2) = concat ["\n\tif (", show expr1, ") {\n\t\treturn ", show expr2,  ";\n\t}"]
+showGuard :: [(Expr, Expr)] -> Expr -> String
+showGuard cases defaultCase =
+  unlines' [ "(() => {"
+          , (indent . unlines') [ concatMap showCase cases
+                     , showReturn defaultCase
+                     ]
+          , "})()"
+          ]
+  where
+    showReturn :: Expr -> String
+    showReturn expr = "return " ++ show expr ++ ";"
+    showCase :: (Expr, Expr) -> String
+    showCase (predicate, expr) =
+      unlines' $ [ "if (" ++ show predicate ++ ") {"
+                , '\t' : showReturn expr
+                , "}"
+                ]
 
 instance Show Value where
   show (Number n) = show n
@@ -150,7 +170,7 @@ instance Show Expr where
   show (BinOp Equal e1 e2) = prefixBop Equal e1 e2
   show (BinOp Concat a1 a2) = prefixBop Concat a1 a2
   show (BinOp bop e1 e2) = infixBop bop e1 e2
-  show (Guard exprExprs) = concat ["(() => {", (unwords $ showGuardCase <$> exprExprs), "\n})()"]
+  show (Guard cases defaultCase) = showGuard cases defaultCase
   show (TernOp At a n e) = paren $ prefixOp (show At) (show <$> [a, n]) ++ " ?? " ++ show n
   show (TernOp top e1 e2 e3) = prefixTop top e1 e2 e3
 
@@ -175,7 +195,7 @@ instance Show Top where
   show Slice = "Array.prototype.slice.call"
   show At = "Array.prototype.at.call"
 
-
+-- someday we might refactor AST so that we can fold it into list of Atoms
 findAtoms :: Expr -> [String]
 findAtoms expr =
   let
@@ -189,7 +209,7 @@ findAtoms expr =
         List _ es -> flatFindAtoms es
         _ -> []
     Call n [es] -> flatFindAtoms [es]
-    Guard tes -> concatMap (\(e1, e2) -> flatFindAtoms [e1, e2]) tes
+    Guard cases defCase -> flatFindAtoms $ defCase : concatMap (\(e1, e2) -> [e1, e2]) cases
     BinOp _ e1 e2 -> flatFindAtoms [e1, e2]
     TernOp _ e1 e2 e3 -> flatFindAtoms [e1, e2, e3]
     _ -> []

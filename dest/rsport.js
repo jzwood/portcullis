@@ -1,5 +1,6 @@
 const False = 0
-const T = 1
+const True = 1
+const T = 2
 
 // function "neg" has type (Num -> Num)
 function neg(x) {
@@ -18,10 +19,8 @@ function length(xs) {
 	return (() => {
 		if (equal(/* [Char] */ [], xs)) {
 			return 0.0;
-		} 
-		if (T) {
-			return (1.0+length(Array.prototype.slice.call(xs, 0.0, neg(1.0))));
 		}
+		return (1.0+length(Array.prototype.slice.call(xs, 0.0, neg(1.0))));
 	})();
 }
 // function "sort" has type ([Num] -> [Num])
@@ -33,21 +32,8 @@ function sort2(len, ns) {
 	return (() => {
 		if ((len<=1.0)) {
 			return ns;
-		} 
-		if (T) {
-			return merge(sort(Array.prototype.slice.call(ns, 0.0, (len/2.0))), sort(Array.prototype.slice.call(ns, (len/2.0), len)));
 		}
-	})();
-}
-// function "order" has type (Num -> (Num -> [Num]))
-function order(x, y) {
-	return (() => {
-		if ((x<y)) {
-			return /* [Num] */ [x,y];
-		} 
-		if (T) {
-			return /* [Num] */ [y,x];
-		}
+		return merge(sort(Array.prototype.slice.call(ns, 0.0, (len/2.0))), sort(Array.prototype.slice.call(ns, (len/2.0), len)));
 	})();
 }
 // function "cmpH" has type ([Num] -> ([Num] -> [[Num] [Num]]))
@@ -55,10 +41,8 @@ function cmpH(xs, ys) {
 	return (() => {
 		if (((Array.prototype.at.call(xs, 0.0) ?? 0.0)<(Array.prototype.at.call(ys, 0.0) ?? 0.0))) {
 			return [xs,ys];
-		} 
-		if (T) {
-			return [ys,xs];
 		}
+		return [ys,xs];
 	})();
 }
 // function "merge" has type ([Num] -> ([Num] -> [Num]))
@@ -66,18 +50,34 @@ function merge(xs, ys) {
 	return (() => {
 		if (equal(xs, empty())) {
 			return ys;
-		} 
-		if (equal(ys, empty())) {
+		}if (equal(ys, empty())) {
 			return xs;
-		} 
-		if (T) {
-			return merge2(cmpH(xs, ys));
 		}
+		return merge2(cmpH(xs, ys));
 	})();
 }
 // function "merge2" has type ([[Num] [Num]] -> [Num])
 function merge2(xys) {
 	return Array.prototype.concat.call(Array.prototype.slice.call((([a,]) => a)(xys), 0.0, 1.0), merge(tail((([a,]) => a)(xys)), (([,b]) => b)(xys)));
+}
+// function "weird" has type (Num -> Num)
+function weird(x) {
+	return (() => {
+		if ((() => {
+			if (True) {
+				return T;
+			}
+			return (() => {
+				if (True) {
+					return T;
+				}
+				return False;
+			})();
+		})()) {
+			return T;
+		}
+		return 4.0;
+	})();
 }
 // function "equal" has type (a -> (a -> Atom))
 function equal(a, b) {

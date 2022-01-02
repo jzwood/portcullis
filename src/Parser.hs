@@ -78,6 +78,7 @@ parseTernOp = (optionalModifier paren . trim)
 parseGuard :: Parser Expr
 parseGuard = Guard
           <$> (oneOrMore $ liftA2 (,) (trim $ char '?' *> parseExpr) parseExpr)
+          <*> (trim $ word "??" *> parseExpr)
 
 parseChar :: Parser Char
 parseChar = wrap '\'' '\'' anyChar

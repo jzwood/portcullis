@@ -5,7 +5,7 @@ import MiniParser
 import Syntax
 import Parser
 
-success :: Either Cursor (a, Cursor, String) -> Maybe (a, String)
+success :: Either ParseError (a, Cursor, String) -> Maybe (a, String)
 success (Left _) = Nothing
 success (Right (a, _, b)) = Just (a, b)
 
