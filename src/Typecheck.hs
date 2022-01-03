@@ -16,11 +16,20 @@ data TypeError
   | BadGuardPredicate
   | AritySignatureMismatch
   | TypeMismatch
+  | FunctionNotFound
   deriving (Eq, Show)
   -- | NotInScope Name
 
+
+modToStmtMap :: Module -> Map Name Stmt
+modToStmtMap (Module stms)
+  =  stms
+ <&> (\func@(Function { name }) -> (name, func))
+  &  Map.fromList
+
+-- we don't really need this -- typecheckExpr covers it, right?
 typecheckStmt :: Map Name Stmt -> Name -> Either TypeError TypeExpr
-typecheckStmt = undefined
+typecheckStmt funcMap name = undefined
 
 typecheckExpr :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typecheckExpr t (Arrow tl tr)
