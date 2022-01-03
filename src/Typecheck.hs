@@ -27,9 +27,13 @@ modToStmtMap (Module stms)
  <&> (\func@(Function { name }) -> (name, func))
   &  Map.fromList
 
--- we don't really need this -- typecheckExpr covers it, right?
-typecheckStmt :: Map Name Stmt -> Name -> Either TypeError TypeExpr
-typecheckStmt funcMap name = undefined
+
+-- TODO
+--typecheckStmt :: Map Name Stmt -> Name -> Either TypeError TypeExpr
+--typecheckStmt funcMap name =
+  --case Map.lookup name funcMap of
+    --Nothing -> Left FunctionNotFound
+    --Just (Function { signature, body }) -> typecheck signature (typeofExpr funcMap body)
 
 typecheckExpr :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typecheckExpr t (Arrow tl tr)
