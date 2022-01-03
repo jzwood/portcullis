@@ -21,9 +21,6 @@ unlines' = init . unlines
 indent :: String -> String
 indent = unlines' . fmap ('\t' :) . lines
 
---indent :: String -> String
---indent str = concatMap (\c -> if c == '\n' then "\n\t" else [c]) str
-
 comment :: String -> String
 comment = ("// " ++)
 

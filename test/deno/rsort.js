@@ -22,7 +22,7 @@ function length(xs) {
 	})();
 }
 // function "sort" has type ([Num] -> [Num])
-function sort(ns) {
+export function sort(ns) {
 	return sort2(length(ns), ns);
 }
 // function "sort2" has type (Num -> ([Num] -> [Num]))

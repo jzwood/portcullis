@@ -33,12 +33,3 @@ merge xs ys =
 
 merge2 -> [[Num] [Num]] [Num]
 merge2 xys = ++ !! @1 xys 0 1 (merge (tail @1 xys) @2 xys)
-
-weird -> Num Num
-weird x =
-  ?
-    ? True T
-    ??
-      ? True T
-      ?? False T
-  ?? 4
