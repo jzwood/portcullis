@@ -39,8 +39,8 @@ parseTypeExpr
   <|> parseArrow
 
 parseUnOp :: Parser UnOp
-parseUnOp =  word "fst" $> Fst
-         <|> word "snd" $> Snd
+parseUnOp =  word "@1" $> Fst
+         <|> word "@2" $> Snd
 
 parseBop :: Parser Bop
 parseBop = word "==" $> Equal
