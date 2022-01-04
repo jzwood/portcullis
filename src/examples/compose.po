@@ -1,0 +1,2 @@
+compose -> -> a b -> a b
+compose f g x = (f (g x))
