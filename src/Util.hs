@@ -29,3 +29,11 @@ multComment str = concat ["/*\n", unlines . map (" *  " ++) . lines $ str, " */"
 
 divider :: String
 divider =  concat $ "// " : replicate 60 "#"
+
+head' :: a -> [a] -> a
+head' x [] = x
+head' _ (x:xs) = x
+
+tail' :: [a] -> [a]
+tail' [] = []
+tail' (x:xs) = xs

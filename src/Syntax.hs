@@ -14,12 +14,6 @@ import Util
 
 type Name = String
 
-newtype Var = Var String
-  deriving (Eq)
-
-instance Show Var where
-  show (Var str) = str
-
 --data Stmt
   -- = Data Type
   -- | Function Name [Var] Expr
@@ -34,7 +28,7 @@ data Pipeline
 data Stmt = Function
   { name :: Name
   , signature :: TypeExpr
-  , args :: [Var]
+  , args :: [Name]
   , body :: Expr
   } deriving (Eq)
 
@@ -101,11 +95,11 @@ instance Show Stmt where
     [
     "function "
     , name
-    , paren (intercalate ", " (show <$> vars))
+    , (paren . head' "") vars
     ]
     ++ unlines'
     [ " {"
-    , (indent . concat) [ "return " , show expr , ";" ]
+    , (indent . concat) [ "return " , concatMap (\arg -> paren arg ++ " => ") (tail' vars) , show expr , ";" ]
     , "}"
     ]
 

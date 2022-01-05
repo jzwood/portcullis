@@ -68,7 +68,7 @@ typeofExpr _ _ (Val p) =
     Character c -> Right CharType
     Atom a -> Right AtomType
 typeofExpr _ (Function { signature, args }) (Ident name)
-   =  elemIndex (Var name) args
+   =  elemIndex name args
   >>= getArgTypeByIndex signature
   <&> Right
    &  fromMaybe (Left AritySignatureMismatch)

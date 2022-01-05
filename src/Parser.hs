@@ -12,13 +12,14 @@ parseModule :: Parser [Stmt]
 parseModule = oneOrMore parseStmt <* spaces
 
 parseStmt :: Parser Stmt
-parseStmt =  Function
+parseStmt =  trimLeft
+          $  Function
          <$> name
          <*> parseTypeExpr
          <*  name
-         <*> trimLeft (zeroOrMore $ Var <$> name)
+         <*> zeroOrMore name
          <*  trimLeft (char '=')
-         <*> trimLeft parseExpr
+         <*> parseExpr
          where name = trimLeft camel
 
 parseArrow :: Parser TypeExpr
