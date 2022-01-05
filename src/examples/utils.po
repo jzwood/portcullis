@@ -2,9 +2,12 @@ filter -> a -> [a] [a]
 filter x xs =
   ? == xs Num [] Num []
   ? == Num [x] (head xs) (tail xs)
-  ? T ++ (head xs) (filter x (tail xs))
+  ?? ++ (head xs) (filter x (tail xs))
 
 not -> -> a -> a Atom -> a -> a Atom
 not f a b =
   ? == False (f a b) True
-  ? T False
+  ?? False
+
+add -> Num -> Num Num
+add a b = + a b

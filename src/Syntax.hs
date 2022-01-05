@@ -99,7 +99,7 @@ instance Show Stmt where
     ]
     ++ unlines'
     [ " {"
-    , (indent . concat) [ "return " , concatMap (\arg -> paren arg ++ " => ") (tail' vars) , show expr , ";" ]
+    , (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , show expr , ";" ]
     , "}"
     ]
 
@@ -157,7 +157,10 @@ infixBop bop e1 e2 = paren . (intercalate $ show bop) $ show <$> [e1, e2]
 instance Show Expr where
   show (Val p) = show p
   show (Ident name) = name
-  show (Call name exprs) = name ++ paren (intercalate ", " $ show <$> exprs)
+  show (Call name exprs) = name ++
+    case exprs of
+      [] -> "()"
+      _ -> concatMap (paren . show) exprs
   show (UnOp unop e) = show unop ++ (paren $ show e)
   show (BinOp Equal e1 e2) = prefixBop Equal e1 e2
   show (BinOp Concat a1 a2) = prefixBop Concat a1 a2
