@@ -43,22 +43,6 @@ spec = do
       success result `shouldBe` Just (123.456, "abc")
 
     it "parse Stmt" $ do
-      let result = runParser parseStmt mempty "divide ->   -> Num Num   Num"
-          expected = Signature "divide" (Arrow (Arrow NumType NumType) NumType)
-      success result `shouldBe` Just (expected, "")
-      let result = runParser parseStmt mempty "divide   num den   = /   num den  "
-          expected = Function "divide" [Var "num",Var "den"] (BinOp Divide (Ident "num") (Ident "den"))
-      success result `shouldBe` Just (expected, "")
-
-    it "parse guard" $ do
-      let result = runParser parseStmt mempty "guard a =\n ? > a 1 34 \n ? == a 0 0 \n ? 1 0"
-          expected = Function "guard" [Var "a"] (Guard [(BinOp GreaterThan (Ident "a") (Val $ Number 1.0),Val $ Number 34.0),(BinOp Equal (Ident "a") (Val $ Number 0.0),Val $ Number 0.0),(Val $ Number 1.0,Val $ Number 0.0)])
-      success result `shouldBe` Just (expected, "")
-
-    it "parse fold" $ do
-      let result = runParser parseStmt mempty "up a = unfold 1 2 3"
-          expected = Function "up" [Var "a"] (TernOp Unfold (Val $ Number 1.0) (Val $ Number 2.0) (Val $ Number 3.0))
-      success result `shouldBe` Just (expected, "")
-      let result = runParser parseStmt mempty "down b = fold == 0 1 0 3"
-          expected = Function "down" [Var "b"] (TernOp Fold (BinOp Equal (Val $ Number 0.0) (Val $ Number 1.0)) (Val $ Number 0.0) (Val $ Number 3.0))
+      let result = runParser parseStmt mempty "divide ->   -> Num Num   Num   \n divide   num den   = /   num den  "
+          expected = Function "divide" (Arrow (Arrow NumType NumType) NumType) ["num","den"] (BinOp Divide (Ident "num") (Ident "den"))
       success result `shouldBe` Just (expected, "")
