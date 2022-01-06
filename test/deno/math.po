@@ -1,0 +1,2 @@
+avg -> Num -> Num Num
+avg a b = * 0.5 + a b
