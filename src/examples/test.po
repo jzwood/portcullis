@@ -1,16 +1,5 @@
-add -> Num -> Num Num
-add a b = + a b
+sum -> [Num] Num
+sum xs =
+  ?  == 0 _ xs
+  ?? + 1 (tail xs)
 
-add1 -> Num Num
-add1 x = (add 1 x)
-
-add3 -> Num -> Num -> Num Num
-add3 a b c = + + a b c
-
-add2 -> Num -> Num Num
-add2 x y = (add3 1 x y)
-
-filter -> (-> a Atom) -> [a] [a]
-filter f xs =
-  ?  == xs Num [] Num []
-  ?? ! xs 0 nil a

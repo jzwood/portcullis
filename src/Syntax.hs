@@ -63,6 +63,7 @@ data Expr
 data UnOp
   = Fst
   | Snd
+  | Length
   deriving (Eq)
 
 data Bop

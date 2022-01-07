@@ -1,8 +1,71 @@
 const False = 0
 
+// function "neg" has type (Num -> Num)
+export function neg(x) {
+	return (0.0-x);
+}
+// function "tail" has type ([a] -> [a])
+export function tail(xs) {
+	return Array.prototype.slice.call(xs, 1.0, ((arr) => arr.length)(xs));
+}
+// function "empty" has type [Num]
+export function empty() {
+	return /* [Num] */ [];
+}
+// function "sort" has type ([Num] -> [Num])
+export function sort(ns) {
+	return sort2(((arr) => arr.length)(ns))(ns);
+}
+// function "sort2" has type (Num -> ([Num] -> [Num]))
+export function sort2(len) {
+	return (ns) => (() => {
+		if ((len<=1.0)) {
+			return ns;
+		}
+		return merge(sort(Array.prototype.slice.call(ns, 0.0, (len/2.0))))(sort(Array.prototype.slice.call(ns, (len/2.0), len)));
+	})();
+}
+// function "cmpH" has type ([Num] -> ([Num] -> [[Num] [Num]]))
+export function cmpH(xs) {
+	return (ys) => (() => {
+		if (((Array.prototype.at.call(xs, 0.0) ?? 0.0)<(Array.prototype.at.call(ys, 0.0) ?? 0.0))) {
+			return [xs,ys];
+		}
+		return [ys,xs];
+	})();
+}
+// function "merge" has type ([Num] -> ([Num] -> [Num]))
+export function merge(xs) {
+	return (ys) => (() => {
+		if (equal(xs, empty())) {
+			return ys;
+		}
+		if (equal(ys, empty())) {
+			return xs;
+		}
+		return merge2(cmpH(xs)(ys));
+	})();
+}
+// function "merge2" has type ([[Num] [Num]] -> [Num])
+export function merge2(xys) {
+	return Array.prototype.concat.call(Array.prototype.slice.call((([a,]) => a)(xys), 0.0, 1.0), merge(tail((([a,]) => a)(xys)))((([,b]) => b)(xys)));
+}
 // function "avg" has type (Num -> (Num -> Num))
 export function avg(a) {
 	return (b) => (0.5*(a+b));
+}
+// function "mean" has type ([a] -> Num)
+export function mean(xs) {
+	return (sum(xs)/((arr) => arr.length)(xs));
+}
+// function "sum" has type ([Num] -> Num)
+export function sum(xs) {
+	return (() => {
+		if (equal(0.0, ((arr) => arr.length)(xs))) {
+			return 0.0;
+		}
+		return ((Array.prototype.at.call(xs, 0.0) ?? 0.0)+tail(xs));
+	})();
 }
 // function "equal" has type (a -> (a -> Atom))
 function equal(a, b) {

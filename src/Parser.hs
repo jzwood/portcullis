@@ -43,6 +43,7 @@ parseTypeExpr
 parseUnOp :: Parser UnOp
 parseUnOp =  word "@1" $> Fst
          <|> word "@2" $> Snd
+         <|> char '_' $> Length
 
 parseBop :: Parser Bop
 parseBop = word "==" $> Equal

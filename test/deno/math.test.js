@@ -13,3 +13,16 @@ Deno.test("avg", () => {
     assertEquals(avg(x)(y), average(x, y))
   })
 })
+
+//neg -> Num Num
+//tail -> [a] [a]
+//empty [Num]
+//sort -> [Num] [Num]
+//sort2 -> Num -> [Num] [Num]
+//cmpH -> [Num] -> [Num] [[Num] [Num]]
+//merge -> [Num] -> [Num] [Num]
+//merge2 -> [[Num] [Num]] [Num]
+//avg -> Num -> Num Num
+//mean -> [a] Num
+//sum -> [Num] Num
+

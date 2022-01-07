@@ -1,2 +1,42 @@
+neg -> Num Num
+neg x = - 0 x
+
+tail -> [a] [a]
+tail xs = !! xs 1 _ xs
+
+empty [Num]
+empty = Num []
+
+sort -> [Num] [Num]
+sort ns = (sort2 _ ns ns)
+
+sort2 -> Num -> [Num] [Num]
+sort2 len ns =
+  ? <= len 1 ns
+  ?? (merge (sort !! ns 0 / len 2) (sort !! ns / len 2 len))
+
+cmpH -> [Num] -> [Num] [[Num] [Num]]
+cmpH xs ys =
+  ? < ! xs 0 0 ! ys 0 0 [xs ys]
+  ?? [ys xs]
+
+merge -> [Num] -> [Num] [Num]
+merge xs ys =
+  ? == xs (empty) ys
+  ? == ys (empty) xs
+  ?? (merge2 (cmpH xs ys))
+
+merge2 -> [[Num] [Num]] [Num]
+merge2 xys = ++ !! @1 xys 0 1 (merge (tail @1 xys) @2 xys)
+
 avg -> Num -> Num Num
 avg a b = * 0.5 + a b
+
+mean -> [a] Num
+mean xs = / (sum xs) _ xs
+
+sum -> [Num] Num
+sum xs =
+  ?  == 0 _ xs 0
+  ?? + ! xs 0 0 (tail xs)
+

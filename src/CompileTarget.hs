@@ -68,6 +68,7 @@ instance Show Expr where
 instance Show UnOp where
   show Fst = "(([a,]) => a)"
   show Snd = "(([,b]) => b)"
+  show Length = "((arr) => arr.length)"
 
 instance Show Bop where
   show Plus = "+"

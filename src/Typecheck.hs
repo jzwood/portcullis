@@ -104,6 +104,7 @@ typeofExpr m s (TernOp top expr1 expr2 expr3)
 typeofUnOp :: UnOp -> TypeExpr
 typeofUnOp Fst = Arrow (TupType (Unspecfied "a") (Unspecfied "b")) (Unspecfied "a")
 typeofUnOp Snd = Arrow (TupType (Unspecfied "a") (Unspecfied "b")) (Unspecfied "b")
+typeofUnOp Length = Arrow (ListType (Unspecfied "a")) NumType
 
 typeofBop :: Bop -> TypeExpr
 typeofBop bop =
