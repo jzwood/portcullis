@@ -29,7 +29,6 @@ library
       Parser
       Semantics
       Syntax
-      Test
       Transpile
       Typecheck
       Util

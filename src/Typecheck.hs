@@ -18,22 +18,25 @@ data TypeError
   | TypeMismatch
   | FunctionNotFound
   deriving (Eq, Show)
-  -- | NotInScope Name
 
+typecheckModule :: Module -> Either TypeError Module
+typecheckModule mod@(Module stms) = Right mod
+  where
+    !stmtMap = modToStmtMap mod
+
+
+typecheckStmt :: Map Name Stmt -> Name -> Either TypeError TypeExpr
+typecheckStmt stmtMap name =
+  case Map.lookup name stmtMap of
+    Nothing -> Left FunctionNotFound
+    Just stmt@(Function { signature, body }) ->
+      (typeofExpr stmtMap stmt body) >>= typecheckExpr signature
 
 modToStmtMap :: Module -> Map Name Stmt
 modToStmtMap (Module stms)
   =  stms
  <&> (\func@(Function { name }) -> (name, func))
   &  Map.fromList
-
-
--- TODO
---typecheckStmt :: Map Name Stmt -> Name -> Either TypeError TypeExpr
---typecheckStmt funcMap name =
-  --case Map.lookup name funcMap of
-    --Nothing -> Left FunctionNotFound
-    --Just (Function { signature, body }) -> typecheck signature (typeofExpr funcMap body)
 
 typecheckExpr :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typecheckExpr t (Arrow tl tr)
@@ -113,7 +116,7 @@ typeofBop bop =
     Minus -> nnn
     Divide -> nnn
     Times -> nnn
-    Equal -> uub
+    Equal -> Arrow (Unspecfied "a") (Arrow (Unspecfied "b") AtomType)
     GreaterThan -> nnb
     GreaterThanOrEqual -> nnb
     Rem -> nnb
