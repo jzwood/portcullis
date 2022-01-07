@@ -38,5 +38,5 @@ mean xs = / (sum xs) _ xs
 sum -> [Num] Num
 sum xs =
   ?  == 0 _ xs 0
-  ?? + ! xs 0 0 (tail xs)
+  ?? + ! xs 0 0 (sum (tail xs))
 

@@ -64,7 +64,7 @@ export function sum(xs) {
 		if (equal(0.0, ((arr) => arr.length)(xs))) {
 			return 0.0;
 		}
-		return ((Array.prototype.at.call(xs, 0.0) ?? 0.0)+tail(xs));
+		return ((Array.prototype.at.call(xs, 0.0) ?? 0.0)+sum(tail(xs)));
 	})();
 }
 // function "equal" has type (a -> (a -> Atom))
