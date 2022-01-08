@@ -72,11 +72,14 @@ argsToList (Arrow t0 t1) = t0 : (argsToList t1)
 argsToList t = [t]
 
 typeofExpr :: (Map Name Stmt) -> Stmt -> Expr -> Either TypeError TypeExpr
-typeofExpr _ _ (Val p) =
+typeofExpr m s (Val p) =
   case p of
     Number n -> Right NumType
     Character c -> Right CharType
     Atom a -> Right AtomType
+    Tuple expr1 expr2 -> sequence [typeofExpr m s expr1, typeofExpr m s expr2]
+      <&> \[e1, e2] -> TupType e1 e2
+    List typeExpr exprs -> Right $ ListType typeExpr
 typeofExpr _ (Function { signature, args }) (Ident name)
    =  elemIndex name args
   >>= (!?) (argsToList signature)
@@ -99,7 +102,9 @@ typeofExpr m s (Guard cases defCase) = goodPs >> goodEs
           <&>  typeofExpr m s
            &   sequence
            >>= \(t:ts) -> if all (==t) ts then Right t else Left $ TypeMismatch (t:ts) "(typeofExpr)"
-typeofExpr m s (UnOp unop expr) = undefined
+typeofExpr m s (UnOp unop expr)
+  = typeofExpr m s expr
+  >>= \t -> typecheckExpr t (typeofUnOp unop)
 typeofExpr m s (BinOp bop expr1 expr2)
   = sequence [typeofExpr m s expr1, typeofExpr m s expr2]
   >>= \[t1, t2] ->
