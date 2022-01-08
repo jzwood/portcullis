@@ -9,26 +9,35 @@ import Data.Map (Map)
 import Data.Maybe (fromMaybe)
 import Data.Traversable
 import Syntax
+import CompileTarget
+import Util
 import qualified Data.Map as Map
 
 data TypeError
   = NotFunction
-  | BadGuardPredicate
+  | BadGuardPredicate [TypeExpr]
   | AritySignatureMismatch
-  | TypeMismatch
-  deriving (Eq, Show)
+  | TypeMismatch [TypeExpr]
+  deriving (Show, Eq)
 
-typecheckModule :: Module -> Either TypeError Module
+data TypecheckError = TypecheckError Stmt TypeError
+
+instance Show TypecheckError where
+  show (TypecheckError (Function { name, signature, args }) typeError)
+    = "Typecheck Error in function " ++ name ++ ": " ++ show typeError
+
+typecheckModule :: Module -> Either TypecheckError Module
 typecheckModule mod@(Module stmts)
   =  (stmts
  <&> (typecheckStmt (modToStmtMap mod))
   &  sequence)
   $> mod
 
-typecheckStmt :: Map Name Stmt -> Stmt -> Either TypeError TypeExpr
+typecheckStmt :: Map Name Stmt -> Stmt -> Either TypecheckError TypeExpr
 typecheckStmt stmtMap stmt@(Function { body, signature })
   =   (typeofExpr stmtMap stmt body)
   >>= typecheckExpr signature
+  & mapLeft (\err -> TypecheckError stmt err)
 
 modToStmtMap :: Module -> Map Name Stmt
 modToStmtMap (Module stms)
@@ -40,17 +49,17 @@ typecheckExpr :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typecheckExpr t (Arrow tl tr)
   = typecheck t tl Map.empty  -- compare type with sig
   <&> applyTypeMap tr
-typecheckExpr _ _ = Left NotFunction -- we cannot apply expr(s) any non-arrow type
+typecheckExpr t1 t2 = Left $ TypeMismatch [t1, t2]
 
 typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map Name TypeExpr)
 typecheck t (Unspecfied n) m =
   case Map.lookup n m of
     Nothing -> Right $ Map.insert n t m
-    Just t' -> if t == t' then Right m else Left TypeMismatch
+    Just t' -> if t == t' then Right m else Left $ TypeMismatch [t, t']
 typecheck (Arrow t0 t1) (Arrow t2 t3) m = typecheck t0 t2 m >>= typecheck t1 t3
 typecheck t1 t2 m =
   if t1 == t2 then Right m
-              else Left TypeMismatch
+              else Left $ TypeMismatch [t1, t2]
 
 applyTypeMap :: TypeExpr -> Map Name TypeExpr -> TypeExpr
 applyTypeMap t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
@@ -73,7 +82,7 @@ typeofExpr _ (Function { signature, args }) (Ident name)
   >>= getArgTypeByIndex signature
   <&> Right
    &  fromMaybe (Left AritySignatureMismatch)
-typeofExpr m _ (Call name exprs) =
+typeofExpr m (Function { signature }) (Call name exprs) =
   case Map.lookup name m of
     Nothing -> Left NotFunction
     Just f@(Function { signature })
@@ -85,11 +94,11 @@ typeofExpr m s (Guard cases defCase) = goodPs >> goodEs
     goodPs =   predicates
           <&>  typeofExpr m s
            &   sequence
-           >>= \(p:ps) -> if all (==AtomType) (p:ps) then Right p else Left BadGuardPredicate
+           >>= \(p:ps) -> if all (==AtomType) (p:ps) then Right p else Left $ BadGuardPredicate (p:ps)
     goodEs =   exprs
           <&>  typeofExpr m s
            &   sequence
-           >>= \(t:ts) -> if all (==t) ts then Right t else Left TypeMismatch
+           >>= \(t:ts) -> if all (==t) ts then Right t else Left $ TypeMismatch (t:ts)
 typeofExpr m s (BinOp bop expr1 expr2)
   = sequence [typeofExpr m s expr1, typeofExpr m s expr2]
   >>= \[t1, t2] ->

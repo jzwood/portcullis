@@ -7,6 +7,7 @@ import Syntax
 import MiniParser
 import Parser
 import Typecheck (typecheckModule)
+import Util (mapLeft)
 
 newtype CompileError = CompileError String
   deriving (Show, Eq)
@@ -25,10 +26,9 @@ semanticCheck :: Module -> Either CompileError Module
 semanticCheck stmts = undefined
 
 typecheck :: Module -> Either CompileError Module
-typecheck mod =
-  case typecheckModule mod of
-    Left err -> Left $ CompileError (show err)
-    Right mod -> Right mod
+typecheck mod
+  = typecheckModule mod
+  & mapLeft (\err -> CompileError (show err))
 
 transpile :: String -> Either CompileError String
 transpile program
