@@ -6,7 +6,7 @@ import Control.Applicative
 import Syntax
 import MiniParser
 import Parser
-
+import Typecheck (typecheckModule)
 
 newtype CompileError = CompileError String
   deriving (Show, Eq)
@@ -25,13 +25,16 @@ semanticCheck :: Module -> Either CompileError Module
 semanticCheck stmts = undefined
 
 typecheck :: Module -> Either CompileError Module
-typecheck = undefined
+typecheck mod =
+  case typecheckModule mod of
+    Left err -> Left $ CompileError (show err)
+    Right mod -> Right mod
 
 transpile :: String -> Either CompileError String
 transpile program
   =   parse program
   -- >>= semanticCheck
-  -- >>= typecheck
+  >>= typecheck
   <&> show
 
 handle :: String -> Either CompileError String -> IO ()

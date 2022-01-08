@@ -16,21 +16,19 @@ data TypeError
   | BadGuardPredicate
   | AritySignatureMismatch
   | TypeMismatch
-  | FunctionNotFound
   deriving (Eq, Show)
 
 typecheckModule :: Module -> Either TypeError Module
-typecheckModule mod@(Module stms) = Right mod
-  where
-    !stmtMap = modToStmtMap mod
+typecheckModule mod@(Module stmts)
+  =  (stmts
+ <&> (typecheckStmt (modToStmtMap mod))
+  &  sequence)
+  $> mod
 
-
-typecheckStmt :: Map Name Stmt -> Name -> Either TypeError TypeExpr
-typecheckStmt stmtMap name =
-  case Map.lookup name stmtMap of
-    Nothing -> Left FunctionNotFound
-    Just stmt@(Function { signature, body }) ->
-      (typeofExpr stmtMap stmt body) >>= typecheckExpr signature
+typecheckStmt :: Map Name Stmt -> Stmt -> Either TypeError TypeExpr
+typecheckStmt stmtMap stmt@(Function { body, signature })
+  =   (typeofExpr stmtMap stmt body)
+  >>= typecheckExpr signature
 
 modToStmtMap :: Module -> Map Name Stmt
 modToStmtMap (Module stms)
