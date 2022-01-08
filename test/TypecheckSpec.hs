@@ -54,9 +54,6 @@ spec = do
                           , args = ["x"]
                           , body = BinOp Minus (Val $ Number 0) (Ident "x")
                           }
-          map = Map.singleton "neg" stmt
-      typeofExpr map stmt (body stmt) `shouldBe` (Right NumType)
-      --typecheckStmt Map.empty stmt `shouldBe` (Right NumType)
-
--- typeofExpr :: (Map Name Stmt) -> Stmt -> Expr -> Either TypeError TypeExpr
-
+          m = Map.singleton "neg" stmt
+      typeofExpr m stmt (body stmt) `shouldBe` (Right NumType)
+      typecheckStmt m stmt `shouldBe` (Right NumType)

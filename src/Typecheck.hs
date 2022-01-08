@@ -37,8 +37,8 @@ typecheckModule mod@(Module stmts)
 typecheckStmt :: Map Name Stmt -> Stmt -> Either TypecheckError TypeExpr
 typecheckStmt stmtMap stmt@(Function { body, signature })
   =   (typeofExpr stmtMap stmt body)
-  >>= typecheckExpr signature
-  & mapLeft (\err -> TypecheckError stmt err)
+  >>= flip typecheckExpr signature
+  &   mapLeft (TypecheckError stmt)
 
 modToStmtMap :: Module -> Map Name Stmt
 modToStmtMap (Module stms)

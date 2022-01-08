@@ -6,6 +6,7 @@ module Util where
 (.||) :: (a -> Bool) -> (a -> Bool) -> a -> Bool
 (.||) f1 f2 a = f1 a || f2 a
 
+-- copied from https://hackage.haskell.org/package/extra-1.7.10/docs/Data-List-Extra.html
 (!?) :: [a] -> Int -> Maybe a
 xs !? n
   | n < 0     = Nothing

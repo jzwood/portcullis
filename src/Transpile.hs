@@ -28,7 +28,7 @@ semanticCheck stmts = undefined
 typecheck :: Module -> Either CompileError Module
 typecheck mod
   = typecheckModule mod
-  & mapLeft (\err -> CompileError (show err))
+  & mapLeft (CompileError . show)
 
 transpile :: String -> Either CompileError String
 transpile program
