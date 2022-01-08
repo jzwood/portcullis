@@ -17,10 +17,11 @@ data TypeError
   = NotFunction
   | BadGuardPredicate [TypeExpr]
   | AritySignatureMismatch
-  | TypeMismatch [TypeExpr]
+  | TypeMismatch [TypeExpr] String
   deriving (Show, Eq)
 
 data TypecheckError = TypecheckError Stmt TypeError
+  deriving (Eq)
 
 instance Show TypecheckError where
   show (TypecheckError (Function { name, signature, args }) typeError)
@@ -49,27 +50,26 @@ typecheckExpr :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typecheckExpr t (Arrow tl tr)
   = typecheck t tl Map.empty  -- compare type with sig
   <&> applyTypeMap tr
-typecheckExpr t1 t2 = Left $ TypeMismatch [t1, t2]
+typecheckExpr t1 t2 = Left $ TypeMismatch [t1, t2] "typecheckExpr"
 
 typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map Name TypeExpr)
 typecheck t (Unspecfied n) m =
   case Map.lookup n m of
     Nothing -> Right $ Map.insert n t m
-    Just t' -> if t == t' then Right m else Left $ TypeMismatch [t, t']
+    Just t' -> if t == t' then Right m else Left $ TypeMismatch [t, t'] "typecheck a"
 typecheck (Arrow t0 t1) (Arrow t2 t3) m = typecheck t0 t2 m >>= typecheck t1 t3
 typecheck t1 t2 m =
   if t1 == t2 then Right m
-              else Left $ TypeMismatch [t1, t2]
+              else Left $ TypeMismatch [t1, t2] "typecheck b"
 
 applyTypeMap :: TypeExpr -> Map Name TypeExpr -> TypeExpr
 applyTypeMap t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
 applyTypeMap (Arrow tl tr) m = Arrow (applyTypeMap tl m) (applyTypeMap tr m)
 applyTypeMap t _ = t
 
-getArgTypeByIndex :: TypeExpr -> Int -> Maybe TypeExpr
-getArgTypeByIndex t 0 = Just t
-getArgTypeByIndex (Arrow t0 t1) n = getArgTypeByIndex t0 (n - 1)
-getArgTypeByIndex _ _ = Nothing
+argsToList :: TypeExpr -> [TypeExpr]
+argsToList (Arrow t0 t1) = t0 : (argsToList t1)
+argsToList t = [t]
 
 typeofExpr :: (Map Name Stmt) -> Stmt -> Expr -> Either TypeError TypeExpr
 typeofExpr _ _ (Val p) =
@@ -79,7 +79,7 @@ typeofExpr _ _ (Val p) =
     Atom a -> Right AtomType
 typeofExpr _ (Function { signature, args }) (Ident name)
    =  elemIndex name args
-  >>= getArgTypeByIndex signature
+  >>= (!?) (argsToList signature)
   <&> Right
    &  fromMaybe (Left AritySignatureMismatch)
 typeofExpr m (Function { signature }) (Call name exprs) =
@@ -98,7 +98,8 @@ typeofExpr m s (Guard cases defCase) = goodPs >> goodEs
     goodEs =   exprs
           <&>  typeofExpr m s
            &   sequence
-           >>= \(t:ts) -> if all (==t) ts then Right t else Left $ TypeMismatch (t:ts)
+           >>= \(t:ts) -> if all (==t) ts then Right t else Left $ TypeMismatch (t:ts) "(typeofExpr)"
+typeofExpr m s (UnOp unop expr) = undefined
 typeofExpr m s (BinOp bop expr1 expr2)
   = sequence [typeofExpr m s expr1, typeofExpr m s expr2]
   >>= \[t1, t2] ->

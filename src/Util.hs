@@ -6,6 +6,13 @@ module Util where
 (.||) :: (a -> Bool) -> (a -> Bool) -> a -> Bool
 (.||) f1 f2 a = f1 a || f2 a
 
+(!?) :: [a] -> Int -> Maybe a
+xs !? n
+  | n < 0     = Nothing
+  | otherwise = foldr (\x r k -> case k of
+                                   0 -> Just x
+                                   _ -> r (k-1)) (const Nothing) xs n
+
 paren :: String -> String
 paren a = "(" ++ a ++ ")"
 

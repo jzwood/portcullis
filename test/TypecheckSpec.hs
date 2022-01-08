@@ -1,9 +1,13 @@
 module TypecheckSpec (spec) where
 
 import Test.Hspec
+import Data.Function
+import Data.Functor
 import Syntax
 import CompileTarget
+import Parser
 import Typecheck
+import Transpile
 import qualified Data.Map as Map
 
 
@@ -36,3 +40,23 @@ spec = do
           ts = Arrow (Arrow (Unspecfied "a") (Unspecfied "b")) (Arrow (Unspecfied "a") (Unspecfied "b"))
           te = Right $ Arrow AtomType CharType
       typecheckExpr t ts `shouldBe` te
+
+    it "argsToList" $ do
+      argsToList NumType `shouldBe` [NumType]
+      argsToList (Arrow AtomType CharType) `shouldBe` [AtomType, CharType]
+      argsToList (Arrow AtomType CharType) `shouldBe` [AtomType, CharType]
+      argsToList (Arrow (Arrow NumType AtomType) CharType) `shouldBe` [Arrow NumType AtomType, CharType]
+      argsToList (Arrow (Arrow NumType AtomType) (Arrow AtomType CharType)) `shouldBe` [Arrow NumType AtomType, AtomType, CharType]
+
+    it "typecheck neg" $ do
+      let stmt = Function { name = "neg"
+                          , signature = Arrow NumType NumType
+                          , args = ["x"]
+                          , body = BinOp Minus (Val $ Number 0) (Ident "x")
+                          }
+          map = Map.singleton "neg" stmt
+      typeofExpr map stmt (body stmt) `shouldBe` (Right NumType)
+      --typecheckStmt Map.empty stmt `shouldBe` (Right NumType)
+
+-- typeofExpr :: (Map Name Stmt) -> Stmt -> Expr -> Either TypeError TypeExpr
+
