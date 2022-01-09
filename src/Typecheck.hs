@@ -57,8 +57,9 @@ typecheck t (Unspecfied n) m =
   case Map.lookup n m of
     Nothing -> Right $ Map.insert n t m
     Just t' -> if t == t' then Right m else Left $ TypeMismatch [t, t'] "typecheck a"
+typecheck t (TupType te1 te2) m = undefined
+typecheck t (ListType te) m = undefined
 typecheck (Arrow t0 t1) (Arrow t2 t3) m = typecheck t0 t2 m >>= typecheck t1 t3
--- typecheck _ _ = undefined    -- MISSING A CASE HERE e.g. [a] ([a] -> Num)
 typecheck t1 t2 m =
   if t1 == t2 then Right m
               else Left $ TypeMismatch [t1, t2] ("typecheck b " ++ (show m))

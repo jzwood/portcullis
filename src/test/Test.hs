@@ -28,14 +28,15 @@ b = typeofExpr m stmt $ Ident "xs"
 c = (typeofExpr m stmt) (UnOp Length (Ident "xs"))
 
 tce = typecheckExpr (ListType (Unspecfied "x")) (typeofUnOp Length)
-tc = Typecheck.typecheck (ListType (Unspecfied "x")) (typeofUnOp Length) Map.empty  -- compare type with sig
+--tc = Typecheck.typecheck (ListType (Unspecfied "x")) (typeofUnOp Length) Map.empty  -- compare type with sig
 
+
+huhu = Typecheck.typecheck (Unspecfied "a") (Unspecfied "b") Map.empty
 
 main :: IO ()
 main = do
   --print $ xx
   --print b
   --print c
-  print tc
-
-
+  --print tce
+  print huhu

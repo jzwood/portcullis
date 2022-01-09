@@ -46,8 +46,8 @@ spec = do
       typecheckExpr t ts `shouldBe` te
 
     -- typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map Name TypeExpr)
-    it "typecheck" $ do
-      Typecheck.typecheck NumType (Arrow NumType NumType) Map.empty `shouldBe` Right (Map.fromList [])
+    --it "typecheck" $ do
+      --Typecheck.typecheck NumType (Arrow NumType NumType) Map.empty `shouldBe` Right (Map.fromList [])
 
     it "argsToList" $ do
       argsToList NumType `shouldBe` [NumType]
