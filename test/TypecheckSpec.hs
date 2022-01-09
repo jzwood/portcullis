@@ -39,7 +39,15 @@ spec = do
       let t = Arrow AtomType CharType
           ts = Arrow (Arrow (Unspecfied "a") (Unspecfied "b")) (Arrow (Unspecfied "a") (Unspecfied "b"))
           te = Right $ Arrow AtomType CharType
+      typecheckExpr t ts `shouldBe` te  -- same as previous but but with unspecified types named differently
+      let t = Arrow AtomType CharType
+          ts = Arrow (Arrow (Unspecfied "x") (Unspecfied "z")) (Arrow (Unspecfied "x") (Unspecfied "z"))
+          te = Right $ Arrow AtomType CharType
       typecheckExpr t ts `shouldBe` te
+
+    -- typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map Name TypeExpr)
+    it "typecheck" $ do
+      Typecheck.typecheck NumType (Arrow NumType NumType) Map.empty `shouldBe` Right (Map.fromList [])
 
     it "argsToList" $ do
       argsToList NumType `shouldBe` [NumType]
@@ -57,3 +65,50 @@ spec = do
           m = Map.singleton "neg" stmt
       typeofExpr m stmt (body stmt) `shouldBe` (Right NumType)
       typecheckStmt m stmt `shouldBe` (Right NumType)
+
+    it "typecheck tail" $ do
+      let stmt = Function { name = "tail"
+                          , signature = Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a"))
+                          , args = ["xs"]
+                          , body = TernOp Slice (Ident "xs") (Val $ Number 1) (UnOp Length (Ident "xs"))
+                          }
+          m = Map.singleton "tail" stmt
+      typeofExpr m stmt (body stmt) `shouldBe` (Right $ ListType (Unspecfied "a"))
+      typecheckStmt m stmt `shouldBe` (Right $ ListType (Unspecfied "a"))
+
+    it "typecheck identity" $ do
+      let stmt = Function { name = "id"
+                          , signature = Arrow (Unspecfied "x") (Unspecfied "x")
+                          , args = ["x"]
+                          , body = Ident "x"
+                          }
+          m = Map.singleton "id" stmt
+      typeofExpr m stmt (body stmt) `shouldBe` (Right $ Unspecfied "x")
+      typecheckStmt m stmt `shouldBe` (Right $ Unspecfied "x")
+
+    --it "typecheck length" $ do
+      --let stmt = Function { name = "len"
+                          --, signature = Arrow (ListType (Unspecfied "x")) NumType
+                          --, args = ["xs"]
+                          --, body = UnOp Length (Ident "xs")
+                          --}
+          --m = Map.singleton "leng" stmt
+      --typeofExpr m stmt (body stmt) `shouldBe` (Right $ Unspecfied "x")
+
+      --typecheckStmt m stmt `shouldBe` (Right $ Unspecfied "x")
+
+    --it "typecheck tail different unspecified naming" $ do
+      --let stmt = Function { name = "tail"
+                          --, signature = Arrow (ListType (Unspecfied "x")) (ListType (Unspecfied "x"))
+                          --, args = ["xs"]
+                          --, body = TernOp Slice (Ident "xs") (Val $ Number 1) (UnOp Length (Ident "xs"))
+                          --}
+          --m = Map.singleton "tail" stmt
+      --typeofExpr m stmt (body stmt) `shouldBe` (Right $ ListType (Unspecfied "a"))
+      --typecheckStmt m stmt `shouldBe` (Right $ ListType (Unspecfied "a"))
+
+--tail -> [a] [a]
+--tail xs = !! xs 1 _ xs
+
+--empty [Num]
+--empty = Num []
