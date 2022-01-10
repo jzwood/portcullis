@@ -86,26 +86,25 @@ spec = do
       typeofExpr m stmt (body stmt) `shouldBe` (Right $ Unspecfied "x")
       typecheckStmt m stmt `shouldBe` (Right $ Unspecfied "x")
 
-    --it "typecheck length" $ do
-      --let stmt = Function { name = "len"
-                          --, signature = Arrow (ListType (Unspecfied "x")) NumType
-                          --, args = ["xs"]
-                          --, body = UnOp Length (Ident "xs")
-                          --}
-          --m = Map.singleton "leng" stmt
-      --typeofExpr m stmt (body stmt) `shouldBe` (Right $ Unspecfied "x")
-
+    it "typecheck length" $ do
+      let stmt = Function { name = "len"
+                          , signature = Arrow (ListType (Unspecfied "x")) NumType
+                          , args = ["xs"]
+                          , body = UnOp Length (Ident "xs")
+                          }
+          m = Map.singleton "leng" stmt
+      typeofExpr m stmt (body stmt) `shouldBe` (Right NumType)
       --typecheckStmt m stmt `shouldBe` (Right $ Unspecfied "x")
 
-    --it "typecheck tail different unspecified naming" $ do
-      --let stmt = Function { name = "tail"
-                          --, signature = Arrow (ListType (Unspecfied "x")) (ListType (Unspecfied "x"))
-                          --, args = ["xs"]
-                          --, body = TernOp Slice (Ident "xs") (Val $ Number 1) (UnOp Length (Ident "xs"))
-                          --}
-          --m = Map.singleton "tail" stmt
-      --typeofExpr m stmt (body stmt) `shouldBe` (Right $ ListType (Unspecfied "a"))
-      --typecheckStmt m stmt `shouldBe` (Right $ ListType (Unspecfied "a"))
+    it "typecheck tail different unspecified naming" $ do
+      let stmt = Function { name = "tail"
+                          , signature = Arrow (ListType (Unspecfied "x")) (ListType (Unspecfied "x"))
+                          , args = ["xs"]
+                          , body = TernOp Slice (Ident "xs") (Val $ Number 1) (UnOp Length (Ident "xs"))
+                          }
+          m = Map.singleton "tail" stmt
+      typeofExpr m stmt (body stmt) `shouldBe` (Right $ ListType (Unspecfied "a"))
+      typecheckStmt m stmt `shouldBe` (Right $ ListType (Unspecfied "x"))
 
 --tail -> [a] [a]
 --tail xs = !! xs 1 _ xs

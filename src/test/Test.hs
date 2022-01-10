@@ -31,7 +31,7 @@ tce = typecheckExpr (ListType (Unspecfied "x")) (typeofUnOp Length)
 --tc = Typecheck.typecheck (ListType (Unspecfied "x")) (typeofUnOp Length) Map.empty  -- compare type with sig
 
 
-huhu = Typecheck.typecheck (Unspecfied "a") (Unspecfied "b") Map.empty
+huhu = Typecheck.typecheck (ListType $ Unspecfied "a") (ListType $ Unspecfied "b") Map.empty
 
 main :: IO ()
 main = do
