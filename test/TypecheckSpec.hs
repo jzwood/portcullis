@@ -92,9 +92,9 @@ spec = do
                           , args = ["xs"]
                           , body = UnOp Length (Ident "xs")
                           }
-          m = Map.singleton "leng" stmt
+          m = Map.singleton "len" stmt
       typeofExpr m stmt (body stmt) `shouldBe` (Right NumType)
-      --typecheckStmt m stmt `shouldBe` (Right $ Unspecfied "x")
+      typecheckStmt m stmt `shouldBe` (Right $ Unspecfied "x")
 
     it "typecheck tail different unspecified naming" $ do
       let stmt = Function { name = "tail"

@@ -34,10 +34,12 @@ typecheckModule mod@(Module stmts)
   &  sequence)
   $> mod
 
+-- OK I think we need to rethink this. We get the type expression for the body no probably.
+-- we know the type expression of the signature -- we're just comparing them incorrectly
 typecheckStmt :: Map Name Stmt -> Stmt -> Either TypecheckError TypeExpr
 typecheckStmt stmtMap stmt@(Function { body, signature })
   =   (typeofExpr stmtMap stmt body)
-  >>= flip typecheckExpr signature
+--  >>= flip typecheckExpr signature
   &   mapLeft (TypecheckError stmt)
 
 modToStmtMap :: Module -> Map Name Stmt

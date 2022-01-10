@@ -18,25 +18,23 @@ te = typecheckExpr (Arrow NumType NumType) NumType
 
  -- ====================
 
-stmt = Function { name = "tail"
-                , signature = Arrow (ListType (Unspecfied "x")) (ListType (Unspecfied "x"))
-                , args = ["xs"]
-                , body = TernOp Slice (Ident "xs") (Val $ Number 1) (UnOp Length (Ident "xs"))
-                }
-m = Map.singleton "tail" stmt
-b = typeofExpr m stmt $ Ident "xs"
-c = (typeofExpr m stmt) (UnOp Length (Ident "xs"))
+stmt = Function { name = "len"
+                    , signature = Arrow (ListType (Unspecfied "x")) NumType
+                    , args = ["xs"]
+                    , body = UnOp Length (Ident "xs")
+                    }
+m = Map.singleton "len" stmt
+toe = typeofExpr m stmt (body stmt)
+tce = typecheckExpr NumType (signature stmt)
+tc = Typecheck.typecheck NumType (ListType (Unspecfied "x")) Map.empty
+--tc = Typecheck.typecheck Num tl Map.empty
 
-tce = typecheckExpr (ListType (Unspecfied "x")) (typeofUnOp Length)
---tc = Typecheck.typecheck (ListType (Unspecfied "x")) (typeofUnOp Length) Map.empty  -- compare type with sig
 
-
-huhu = Typecheck.typecheck (ListType $ Unspecfied "a") (ListType $ Unspecfied "b") Map.empty
+--h = Typecheck.typecheck t tl Map.empty
+--h = Typecheck.typecheck (ListType $ Unspecfied "a") (ListType $ Unspecfied "b") Map.empty
 
 main :: IO ()
 main = do
-  --print $ xx
-  --print b
-  --print c
-  --print tce
-  print huhu
+  print toe
+  print tce
+  print tc
