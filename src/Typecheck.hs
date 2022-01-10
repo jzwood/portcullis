@@ -4,7 +4,7 @@ module Typecheck where
 
 import Data.Function
 import Data.Functor
-import Data.List (elemIndex, foldl')
+import Data.List (elemIndex, foldl', drop)
 import Data.Map (Map)
 import Data.Maybe (fromMaybe)
 import Data.Traversable
@@ -16,7 +16,7 @@ import qualified Data.Map as Map
 data TypeError
   = NotFunction
   | BadGuardPredicate [TypeExpr]
-  | AritySignatureMismatch
+  | AritySignatureMismatch String
   | TypeMismatch [TypeExpr] String
   deriving (Show, Eq)
 
@@ -37,10 +37,18 @@ typecheckModule mod@(Module stmts)
 -- OK I think we need to rethink this. We get the type expression for the body no probably.
 -- we know the type expression of the signature -- we're just comparing them incorrectly
 typecheckStmt :: Map Name Stmt -> Stmt -> Either TypecheckError TypeExpr
-typecheckStmt stmtMap stmt@(Function { body, signature })
-  =   (typeofExpr stmtMap stmt body)
---  >>= flip typecheckExpr signature
+typecheckStmt stmtMap stmt@(Function { body, args, signature }) = do
+  typeofBody <- typeofExpr stmtMap stmt body
+  expectedTypeOfBody <- typecheckExpr argsTypeExpr signature
+  cmp expectedTypeOfBody typeofBody
   &   mapLeft (TypecheckError stmt)
+    where
+      argsTypeExpr :: TypeExpr
+      argsTypeExpr = typeExprToList signature
+                  & take (length args)
+                  & typeExprFromList
+      cmp :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
+      cmp te1 te2 = if te1 == te2 then Right te1 else Left $ AritySignatureMismatch $ show (te1, te2)
 
 modToStmtMap :: Module -> Map Name Stmt
 modToStmtMap (Module stms)
@@ -71,9 +79,14 @@ applyTypeMap t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
 applyTypeMap (Arrow tl tr) m = Arrow (applyTypeMap tl m) (applyTypeMap tr m)
 applyTypeMap t _ = t
 
-argsToList :: TypeExpr -> [TypeExpr]
-argsToList (Arrow t0 t1) = t0 : (argsToList t1)
-argsToList t = [t]
+typeExprToList :: TypeExpr -> [TypeExpr]
+typeExprToList (Arrow t0 t1) = t0 : (typeExprToList t1)
+typeExprToList t = [t]
+
+typeExprFromList :: [TypeExpr] -> TypeExpr
+typeExprFromList [te] = te
+typeExprFromList (te:tes) = Arrow te (typeExprFromList tes)
+typeExprFromList [] = error "typeExprFromList must be non-empty"
 
 typeofExpr :: (Map Name Stmt) -> Stmt -> Expr -> Either TypeError TypeExpr
 typeofExpr m s (Val p) =
@@ -86,9 +99,9 @@ typeofExpr m s (Val p) =
     List typeExpr exprs -> Right $ ListType typeExpr
 typeofExpr _ (Function { signature, args }) (Ident name)
    =  elemIndex name args
-  >>= (!?) (argsToList signature)
+  >>= (!?) (typeExprToList signature)
   <&> Right
-   &  fromMaybe (Left AritySignatureMismatch)
+   &  fromMaybe (Left $ AritySignatureMismatch "")
 typeofExpr m (Function { signature }) (Call name exprs) =
   case Map.lookup name m of
     Nothing -> Left NotFunction
