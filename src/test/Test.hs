@@ -1,47 +1,27 @@
 module Test where
 
+import Data.Function
+import Data.Functor
 import Syntax
 import Transpile
 import Typecheck
 import qualified Data.Map as Map
 
---x = sequence [typeofExpr m s (Val $ Number 0), typeofExpr m s (Ident "x")]
 
-{-
-exprType = x
-  >>= \[t1, t2] ->
-    typecheckExpr t1 (typeofBop Minus)
-      >>= typecheckExpr t2
-
-te = typecheckExpr (Arrow NumType NumType) NumType
--}
-
- -- ====================
-
-stmt = Function { name = "len"
-                , signature = Arrow (ListType (Unspecfied "x")) NumType
-                , args = ["xs"]
-                , body = UnOp Length (Ident "xs")
+stmt = Function { name = "avg"
+                , signature = Arrow NumType (Arrow NumType NumType)
+                , args = ["num1", "num2"]
+                , body = BinOp Times (BinOp Plus (Ident "num1") (Ident "num2")) (Val $ Number 0.5)
                 }
-m = Map.singleton "len" stmt
-toe = typeofExpr m stmt (body stmt)
-tce = typecheckExpr (ListType (Unspecfied "u")) (signature stmt)
---tc = Typecheck.typecheck NumType (ListType (Unspecfied "x")) Map.empty
-
---tc = Typecheck.typecheck NumType (ListType (Unspecfied "x")) Map.empty
---tc = Typecheck.typecheck Num tl Map.empty
-
---h = Typecheck.typecheck t tl Map.empty
---h = Typecheck.typecheck (ListType $ Unspecfied "a") (ListType $ Unspecfied "b") Map.empty
-
-stmt' = Function { name = "tail"
-                , signature = Arrow (ListType (Unspecfied "x")) (ListType (Unspecfied "x"))
-                , args = ["xs"]
-                , body = TernOp Slice (Ident "xs") (Val $ Number 1) (UnOp Length (Ident "xs"))
-                }
-m' = Map.singleton "tail" stmt
-x = typeofExpr m stmt (body stmt')
+m = Map.singleton "avg" stmt
+typeofBody = typeofExpr m stmt (body stmt)
+argsTypeExpr = typeExprToList (signature stmt)
+             & take (length (args stmt))
+             & typeExprFromList
+expectedTypeOfBody = typecheckExpr argsTypeExpr (signature stmt)
 
 main :: IO ()
 main = do
-  print x
+  print typeofBody
+  print argsTypeExpr
+  print expectedTypeOfBody

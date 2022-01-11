@@ -104,4 +104,48 @@ spec = do
                           }
           m = Map.singleton "tail" stmt
       typeofExpr m stmt (body stmt) `shouldBe` (Right $ ListType (Unspecfied "x"))
-      typecheckStmt m stmt `shouldBe` (Right $ ListType (Unspecfied "x"))  -- FIGURE OUT WHY typeofExpr thinks this is [a]
+      typecheckStmt m stmt `shouldBe` (Right $ ListType (Unspecfied "x"))
+
+    --it "typecheck empty" $ do
+      --let stmt = Function { name = "empty"
+                          --, signature = ListType NumType
+                          --, args = []
+                          --, body = Val $ List NumType []
+                          --}
+          --m = Map.singleton "empty" stmt
+      --typeofExpr m stmt (body stmt) `shouldBe` (Right $ ListType NumType)
+      --typecheckStmt m stmt `shouldBe` (Right $ ListType NumType)
+
+    it "typecheck avg" $ do
+      let stmt = Function { name = "avg"
+                          , signature = Arrow NumType (Arrow NumType NumType)
+                          , args = ["num1", "num2"]
+                          , body = BinOp Times (BinOp Plus (Ident "num1") (Ident "num2")) (Val $ Number 0.5)
+                          }
+          m = Map.singleton "avg" stmt
+      typeofExpr m stmt (body stmt) `shouldBe` (Right NumType)
+      typecheckStmt m stmt `shouldBe` (Right NumType)
+
+    it "typecheck sum and mean" $ do
+      let tail = Function { name = "tail"
+                          , signature = Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a"))
+                          , args = ["xs"]
+                          , body = TernOp Slice (Ident "xs") (Val $ Number 1) (UnOp Length (Ident "xs"))
+                          }
+          mean = Function { name = "mean"
+                          , signature = Arrow NumType (Arrow NumType NumType)
+                          , args = ["nums"]
+                          , body = BinOp Divide (Call "sum" [Ident "nums"]) (UnOp Length (Ident "nums"))
+                          }
+          sum = Function { name = "sum"
+                          , signature = Arrow (ListType NumType) NumType
+                          , args = ["xs"]
+                          , body = Guard [(BinOp Equal (Val $ Number 0) (UnOp Length (Ident "xs")), Val $ Number 1)] (BinOp Plus (TernOp At (Ident "xs") (Val $ Number 0) (Val $ Number 0)) (Call "sum" [Call "tail" [Ident "xs"]]))
+                          }
+          m = Map.fromList [("tail", tail), ("mean", mean), ("sum", sum)]
+      typeofExpr m tail (body tail) `shouldBe` (Right $ ListType NumType)
+      typecheckStmt m tail `shouldBe` (Right $ ListType NumType)
+      typeofExpr m mean (body mean) `shouldBe` (Right NumType)
+      typecheckStmt m mean `shouldBe` (Right NumType)
+      typeofExpr m sum (body sum) `shouldBe` (Right NumType)
+      typecheckStmt m sum `shouldBe` (Right NumType)
