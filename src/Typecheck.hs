@@ -76,6 +76,8 @@ typecheck t1 t2 m =
 
 applyTypeMap :: TypeExpr -> Map Name TypeExpr -> TypeExpr
 applyTypeMap t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
+applyTypeMap t@(TupType t1 t2) m = TupType (applyTypeMap t1 m) (applyTypeMap t2 m)
+applyTypeMap (ListType t) m = ListType (applyTypeMap t m)
 applyTypeMap (Arrow tl tr) m = Arrow (applyTypeMap tl m) (applyTypeMap tr m)
 applyTypeMap t _ = t
 
