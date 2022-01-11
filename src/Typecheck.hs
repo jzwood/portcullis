@@ -39,13 +39,12 @@ typecheckModule mod@(Module stmts)
 typecheckStmt :: Map Name Stmt -> Stmt -> Either TypecheckError TypeExpr
 typecheckStmt stmtMap stmt@(Function { body, args, signature }) = do
   typeofBody <- typeofExpr stmtMap stmt body
-  expectedTypeOfBody <- typecheckExpr argsTypeExpr signature
   cmp expectedTypeOfBody typeofBody
   &   mapLeft (TypecheckError stmt)
     where
-      argsTypeExpr :: TypeExpr
-      argsTypeExpr = typeExprToList signature
-                  & take (length args)
+      expectedTypeOfBody :: TypeExpr
+      expectedTypeOfBody = typeExprToList signature
+                  & drop (length args)
                   & typeExprFromList
       cmp :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
       cmp te1 te2 = if te1 == te2 then Right te1 else Left $ AritySignatureMismatch $ show (te1, te2)

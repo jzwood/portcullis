@@ -106,15 +106,15 @@ spec = do
       typeofExpr m stmt (body stmt) `shouldBe` (Right $ ListType (Unspecfied "x"))
       typecheckStmt m stmt `shouldBe` (Right $ ListType (Unspecfied "x"))
 
-    --it "typecheck empty" $ do
-      --let stmt = Function { name = "empty"
-                          --, signature = ListType NumType
-                          --, args = []
-                          --, body = Val $ List NumType []
-                          --}
-          --m = Map.singleton "empty" stmt
-      --typeofExpr m stmt (body stmt) `shouldBe` (Right $ ListType NumType)
-      --typecheckStmt m stmt `shouldBe` (Right $ ListType NumType)
+    it "typecheck empty" $ do
+      let stmt = Function { name = "empty"
+                          , signature = ListType NumType
+                          , args = []
+                          , body = Val $ List NumType []
+                          }
+          m = Map.singleton "empty" stmt
+      typeofExpr m stmt (body stmt) `shouldBe` (Right $ ListType NumType)
+      typecheckStmt m stmt `shouldBe` (Right $ ListType NumType)
 
     it "typecheck avg" $ do
       let stmt = Function { name = "avg"
