@@ -103,10 +103,10 @@ typeofExpr _ (Function { signature, args }) (Ident name)
   >>= (!?) (typeExprToList signature)
   <&> Right
    &  fromMaybe (Left $ AritySignatureMismatch $ show ('B', name, args))
-typeofExpr m _ (Call name exprs) =
+typeofExpr m f (Call name exprs) =
   case Map.lookup name m of
     Nothing -> Left NotFunction
-    Just f@(Function { signature })
+    Just (Function { signature })
       ->  traverse (typeofExpr m f) exprs
       >>= foldl' (\s t -> s >>= typecheckExpr t) (Right signature)
 typeofExpr m s (Guard cases defCase) = goodPs >> goodEs
