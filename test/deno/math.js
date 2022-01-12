@@ -58,16 +58,7 @@ export function avg(a) {
 export function mean(xs) {
 	return (sum(xs)/((arr) => arr.length)(xs));
 }
-// function "sum" has type ([Num] -> Num)
-export function sum(xs) {
-	return (() => {
-		if (equal(0.0, ((arr) => arr.length)(xs))) {
-			return 0.0;
-		}
-		return ((Array.prototype.at.call(xs, 0.0) ?? 0.0)+sum(tail(xs)));
-	})();
-}
 // function "equal" has type (a -> (a -> Atom))
 function equal(a, b) {
-  return a === b || Array.isArray(a) ? JSON.stringify(a) === JSON.stringify(b) : false
+  return +(a === b || Array.isArray(a) ? JSON.stringify(a) === JSON.stringify(b) : false)
 }

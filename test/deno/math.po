@@ -34,8 +34,3 @@ avg a b = * 0.5 + a b
 
 mean -> [a] Num
 mean xs = / (sum xs) _ xs
-
-sum -> [Num] Num
-sum xs =
-  ?  == 0 _ xs 0
-  ?? + ! xs 0 0 (sum (tail xs))

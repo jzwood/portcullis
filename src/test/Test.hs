@@ -5,23 +5,33 @@ import Data.Functor
 import Syntax
 import Transpile
 import Typecheck
+import Data.List
 import qualified Data.Map as Map
 
+id1 = Function { name = "id1"
+               , signature = Arrow (Unspecfied "z") (Unspecfied "z")
+               , args = ["val"]
+               , body = Ident "val"
+               }
+id2 = Function { name = "id2"
+               , signature = Arrow (Unspecfied "p") (Unspecfied "p")
+               , args = ["x"]
+               , body = Call "id1" [Ident "x"]
+               }
 
-stmt = Function { name = "avg"
-                , signature = Arrow NumType (Arrow NumType NumType)
-                , args = ["num1", "num2"]
-                , body = BinOp Times (BinOp Plus (Ident "num1") (Ident "num2")) (Val $ Number 0.5)
-                }
-m = Map.singleton "avg" stmt
-typeofBody = typeofExpr m stmt (body stmt)
-argsTypeExpr = typeExprToList (signature stmt)
-             & take (length (args stmt))
-             & typeExprFromList
-expectedTypeOfBody = typecheckExpr argsTypeExpr (signature stmt)
+m = Map.fromList [("id1", id1), ("id2", id2)]
+
+exprs = [Ident "x"]
+a  = traverse (typeofExpr m id2) exprs
+      >>= foldl' (\s t -> s >>= typecheckExpr t) (Right $ signature id1)
+
+a' = traverse (typeofExpr m id1) exprs
+      >>= foldl' (\s t -> s >>= typecheckExpr t) (Right $ signature id2)
+
+b = typeofExpr m id2 (body id2)
 
 main :: IO ()
 main = do
-  print typeofBody
-  print argsTypeExpr
-  print expectedTypeOfBody
+  print a
+  print a'
+  print b

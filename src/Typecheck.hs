@@ -47,7 +47,7 @@ typecheckStmt stmtMap stmt@(Function { body, args, signature }) = do
                   & drop (length args)
                   & typeExprFromList
       cmp :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
-      cmp te1 te2 = if te1 == te2 then Right te1 else Left $ AritySignatureMismatch $ show (te1, te2)
+      cmp te1 te2 = if te1 == te2 then Right te1 else Left $ AritySignatureMismatch $ show ('A', te1, te2)
 
 modToStmtMap :: Module -> Map Name Stmt
 modToStmtMap (Module stms)
@@ -102,8 +102,8 @@ typeofExpr _ (Function { signature, args }) (Ident name)
    =  elemIndex name args
   >>= (!?) (typeExprToList signature)
   <&> Right
-   &  fromMaybe (Left $ AritySignatureMismatch "")
-typeofExpr m (Function { signature }) (Call name exprs) =
+   &  fromMaybe (Left $ AritySignatureMismatch $ show ('B', name, args))
+typeofExpr m _ (Call name exprs) =
   case Map.lookup name m of
     Nothing -> Left NotFunction
     Just f@(Function { signature })
