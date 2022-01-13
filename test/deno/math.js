@@ -54,9 +54,18 @@ export function merge2(xys) {
 export function avg(a) {
 	return (b) => (0.5*(a+b));
 }
-// function "mean" has type ([a] -> Num)
+// function "mean" has type ([Num] -> Num)
 export function mean(xs) {
 	return (sum(xs)/((arr) => arr.length)(xs));
+}
+// function "sum" has type ([Num] -> Num)
+export function sum(xs) {
+	return (() => {
+		if (equal(0.0, ((arr) => arr.length)(xs))) {
+			return 0.0;
+		}
+		return ((Array.prototype.at.call(xs, 0.0) ?? 0.0)+sum(tail(xs)));
+	})();
 }
 // function "equal" has type (a -> (a -> Atom))
 function equal(a, b) {

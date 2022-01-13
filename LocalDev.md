@@ -18,6 +18,11 @@
     ```
 
 ### Testing
+
+**hspec tests**
+- `stack test`
+
+**Deno Tests**
 - install deno
 - run tests
     - `deno test`

@@ -32,5 +32,10 @@ merge2 xys = ++ !! @1 xys 0 1 (merge (tail @1 xys) @2 xys)
 avg -> Num -> Num Num
 avg a b = * 0.5 + a b
 
-mean -> [a] Num
+mean -> [Num] Num
 mean xs = / (sum xs) _ xs
+
+sum -> [Num] Num
+sum xs =
+  ?  == 0 _ xs 0
+  ?? + ! xs 0 0 (sum (tail xs))

@@ -183,6 +183,3 @@ spec = do
       typecheckStmt m sum `shouldBe` (Right NumType)
       typeofExpr m mean (body mean) `shouldBe` (Right NumType)
       typecheckStmt m mean `shouldBe` (Right NumType)
-
---mean -> [Num] Num
---mean xs = / (sum xs) _ xs

@@ -12,7 +12,27 @@ Many languages claim to be simple but few truly are. Portcullis's simplicity bor
 | 2-Tuple | `['A' True]` | `@1` `@2` `==` |
 | Array | `Num [1 2 3 4]`, `Char ['j' 'a' 'k' 'e']` | `!` `!!` |
 
-_* All operators are prefix (ie not infix)._
+_* All operators are prefix (ie not infix)_
+
+## Operators
+| Unary | Name | Signature | Example |
+| --- | --- | --- | --- |
+| `@1` | fst | `-> [a b] a` | `` |
+| `@2` | snd | `-> [a b] b` | `` |
+
+| Binary | Name | Signature | Example |
+| --- | --- | --- | --- |
+| `+` `-` `*` `/` | |  `-> Num -> Num Num` | `+ 3 4` |
+| `%` | rem | `-> Num -> Num Num` | `+ 3 4` |
+| `>` `<` `>=` `<=` | | `-> Num -> Num Atom` | asdf |
+| `==` | | `-> a -> a Atom` | asdf |
+| `++` | concat | `-> [a] -> [a] [a]` | asdf |
+
+
+| Ternary | Name | Signature | Example |
+| --- | --- | --- | -- |
+| `!` | At | `-> [a] -> Num -> a a` | `+ 3 4` |
+| `!!` | Slice | `-> [a] -> Num -> Num [a]` | `+ 3 4` |
 
 ### Types
 
@@ -61,11 +81,3 @@ Guards are the only mechanism for controling program flow
 ```
 
 Guards expect 1 or more cases of a predicate followed by an expression. A predicate, in this context, is an expression that resolves to an `Atom`. The first atom that is not `False` is the path that is picked. If all case predicates resolve to `False` then default case is used (ie the `??` case).
-
-### Function Declaration
-All functions are composed of a signature and a function declaration which includes parameters and a body expression.
-
-## Syntax
-- unary operators
-- binary operators
-- ternary operators
