@@ -3,6 +3,7 @@ module TypecheckSpec (spec) where
 import Test.Hspec
 import Data.Function
 import Data.Functor
+import Data.Either (isLeft)
 import Syntax
 import CompileTarget
 import Parser
@@ -183,3 +184,41 @@ spec = do
       typecheckStmt m sum `shouldBe` (Right NumType)
       typeofExpr m mean (body mean) `shouldBe` (Right NumType)
       typecheckStmt m mean `shouldBe` (Right NumType)
+
+
+    it "typecheck call vs ident function" $ do
+      let one1 = Function { name = "one1"
+                          , signature = NumType
+                          , args = []
+                          , body = Val $ Number 1
+                          }
+          one2 = Function { name = "one2"
+                          , signature = NumType
+                          , args = []
+                          , body = Call "one1" []
+                          }
+          one3 = Function { name = "one3"
+                          , signature = NumType
+                          , args = []
+                          , body = Ident "one1"
+                          }
+          m = Map.fromList [("one1", one1), ("one2", one2), ("one3", one3)]
+      typecheckStmt m one1 `shouldBe` (Right NumType)
+      typecheckStmt m one2 `shouldBe` (Right NumType)
+      isLeft (typecheckStmt m one3) `shouldBe` True
+
+    it "typecheck map" $ do
+      let map' = Function { name = "map"
+                          , signature = Arrow (Arrow (Unspecfied "x") (Unspecfied "y")) (Arrow (Unspecfied "x") (Unspecfied "y"))
+                          , args = ["f", "a"]
+                          , body = Call "f" [Ident "a"]
+                          }
+          m = Map.fromList [("map", map')]
+      typeofExpr m map' (body map') `shouldBe` (Right $ Unspecfied "y")
+      --typecheckStmt m map' `shouldBe` (Right $ Unspecfied "y")
+
+--map -> -> a b -> a b
+--map f a = (f a)
+
+--compose -> -> a b -> a b
+--compose f g x = (f (g x))

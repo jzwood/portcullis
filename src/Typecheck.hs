@@ -7,6 +7,8 @@ import Data.Functor
 import Data.List (elemIndex, foldl', drop)
 import Data.Map (Map)
 import Data.Maybe (fromMaybe)
+import Data.Either (lefts)
+import Control.Applicative
 import Data.Traversable
 import Syntax
 import CompileTarget
@@ -27,15 +29,15 @@ instance Show TypecheckError where
   show (TypecheckError (Function { name, signature, args }) typeError)
     = "Typecheck Error in function " ++ name ++ ": " ++ show typeError
 
-typecheckModule :: Module -> Either TypecheckError Module
+typecheckModule :: Module -> Either [TypecheckError] Module
 typecheckModule mod@(Module stmts)
-  =  (stmts
- <&> (typecheckStmt (modToStmtMap mod))
-  &  sequence)
-  $> mod
+  = if null typeErrors then Right mod else Left typeErrors
+    where
+      !typeErrors
+        =  stmts
+       <&> (typecheckStmt $ modToStmtMap mod)
+        &  lefts
 
--- OK I think we need to rethink this. We get the type expression for the body no probably.
--- we know the type expression of the signature -- we're just comparing them incorrectly
 typecheckStmt :: Map Name Stmt -> Stmt -> Either TypecheckError TypeExpr
 typecheckStmt stmtMap stmt@(Function { body, args, signature }) = do
   typeofBody <- typeofExpr stmtMap stmt body
@@ -89,6 +91,11 @@ typeExprFromList [te] = te
 typeExprFromList (te:tes) = Arrow te (typeExprFromList tes)
 typeExprFromList [] = error "typeExprFromList must be non-empty"
 
+argToMaybeSig :: Name -> [Name] -> TypeExpr -> Maybe TypeExpr
+argToMaybeSig arg args sig
+  =   elemIndex arg args
+  >>= (!?) (typeExprToList sig)
+
 typeofExpr :: (Map Name Stmt) -> Stmt -> Expr -> Either TypeError TypeExpr
 typeofExpr m s (Val p) =
   case p of
@@ -99,16 +106,16 @@ typeofExpr m s (Val p) =
       <&> \[e1, e2] -> TupType e1 e2
     List typeExpr exprs -> Right $ ListType typeExpr
 typeofExpr _ (Function { signature, args }) (Ident name)
-   =  elemIndex name args
-  >>= (!?) (typeExprToList signature)
+   =  argToMaybeSig name args signature
   <&> Right
    &  fromMaybe (Left $ AritySignatureMismatch $ show ('B', name, args))
-typeofExpr m f (Call name exprs) =
-  case Map.lookup name m of
-    Nothing -> Left NotFunction
-    Just (Function { signature })
-      ->  traverse (typeofExpr m f) exprs
-      >>= foldl' (\s t -> s >>= typecheckExpr t) (Right signature)
+typeofExpr m f@(Function { signature = sig, args }) (Call name exprs)
+  =  argToMaybeSig name args sig
+ <|> (Map.lookup name m <&> signature)
+ <&> (\s ->  traverse (typeofExpr m f) exprs
+         >>= foldl' (\s t -> s >>= typecheckExpr t) (Right s)
+     )
+  &  fromMaybe (Left NotFunction)
 typeofExpr m s (Guard cases defCase) = goodPs >> goodEs
   where
     (predicates, exprs) = unzip cases
