@@ -27,7 +27,7 @@ parseArrow :: Parser TypeExpr
 parseArrow = liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
 
 parseTupType :: Parser TypeExpr
-parseTupType = liftA2 TupType (char '[' *> parseTypeExpr) (parseTypeExpr <* spaces <* char ']')
+parseTupType = liftA2 TupType (char '{' *> parseTypeExpr) (parseTypeExpr <* spaces <* char '}')
 
 parseTypeExpr :: Parser TypeExpr
 parseTypeExpr
@@ -90,7 +90,7 @@ parseList :: Parser Value
 parseList = List <$> parseTypeExpr <*> trimLeft (brack $ trim $ zeroOrMore parseExpr)
 
 parseTuple :: Parser Value
-parseTuple = liftA2 Tuple (char '[' *> parseExpr) (parseExpr <* spaces <* char ']')
+parseTuple = liftA2 Tuple (char '{' *> parseExpr) (parseExpr <* spaces <* char '}')
 
 parseValue :: Parser Value
 parseValue

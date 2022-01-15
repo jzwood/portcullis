@@ -1,4 +1,5 @@
 const False = 0
+const Chipmunk = 1
 
 // function "neg" has type (Num -> Num)
 export function neg(x) {
@@ -70,6 +71,15 @@ export function sum(xs) {
 // function "compose" has type ((b -> c) -> ((a -> b) -> (a -> c)))
 export function compose(f) {
 	return (g) => (x) => f(g(x));
+}
+// function "rankPet" has type (Atom -> (Atom -> [Atom Atom]))
+export function rankPet(p1) {
+	return (p2) => (() => {
+		if (equal(Chipmunk, p1)) {
+			return [p1,p2];
+		}
+		return [p2,p1];
+	})();
 }
 // function "equal" has type (a -> (a -> Atom))
 function equal(a, b) {
