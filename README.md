@@ -1,9 +1,9 @@
-# portcullis
+# Portcullis
 
 A *simple* programming language
 
 
-**src/fibonacci.po**
+**source fibonacci.po**
 
 ```
 fib -> Num Num
@@ -12,7 +12,7 @@ fib n =
   ?? + (fib - n 1) (fib - n 2)
 ```
 
-**dest/fibonacci.js**
+**compiled fibonacci.js**
 
 ```js
 // function "fib" has type (Num -> Num)
@@ -27,4 +27,6 @@ function fib(n) {
 ```
 
 ### more
-- [portcullis developer setup](LocalDev.md)
+- [Language Guide](Docs.md)
+- [User Guide](UserGuide.md)
+- [Developer Guide](LocalDev.md)

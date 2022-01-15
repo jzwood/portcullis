@@ -9,7 +9,7 @@ Many languages claim to be simple but few truly are. Portcullis's simplicity bor
 | Number | `2.3` | `+` `-` `*` `/` `%` `>` `<` `>=` `<=` `==` |
 | Character | `'c'` | `==` |
 | Atom | `One`, `True` | `==` |
-| 2-Tuple | `['A' True]` | `@1` `@2` `==` |
+| 2-Tuple | `{'A' True}` | `@1` `@2` `==` |
 | Array | `Num [1 2 3 4]`, `Char ['j' 'a' 'k' 'e']` | `!` `!!` |
 
 
@@ -19,8 +19,8 @@ _All operators are prefix (ie not infix)._
 
 | Operator(s) | Name | Arity | Signature | Example |
 | --- | --- | --- | --- | --- |
-| `@1` | fst | unary | `-> [a b] a` | `@1 ['a' 3]`  →  `'a'` |
-| `@2` | snd | unary | `-> [a b] b` | `@2 ['a' 3]`  →  `3` |
+| `@1` | fst | unary | `-> [a b] a` | `@1 {'a' 3}`  →  `'a'` |
+| `@2` | snd | unary | `-> [a b] b` | `@2 {'a' 3}`  →  `3` |
 | `+` `-` `*` `/` | | binary |  `-> Num -> Num Num` | `+ 3 4`  →  `7` |
 | `%` | rem | binary | `-> Num -> Num Num` | `% 7 2`  →  `1` |
 | `>` `<` `>=` `<=` | | binary | `-> Num -> Num Atom` | `> 1 4`  →  `False` |
@@ -38,7 +38,7 @@ _All operators are prefix (ie not infix)._
 | Character | `Char` |
 | Atom | `Atom` |
 | Unspecified | `a`, `x` |
-| 2-Tuple | `[<type> <type>]` |
+| 2-Tuple | `{<type> <type>}` |
 | Array | `[<type>]` |
 | Arrow | `-> <type <type>>` |
 
@@ -62,7 +62,7 @@ compose(double, double, 3)
 
 Functions are comprised of a **name**, **type signature**, **arguments**, and body **expression**:
 ```
-<name <type>>
+<name> <type>
 <name> [args...] = <expr>
 ```
 
