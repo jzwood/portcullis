@@ -22,9 +22,6 @@ parse program =
     Left err -> Left $ CompileError (show err)
     Right (stms, cursor, unparsed) -> if unparsed == "" then Right (Module stms) else Left . CompileError $ show (ParseError cursor)
 
-semanticCheck :: Module -> Either CompileError Module
-semanticCheck stmts = undefined
-
 typecheck :: Module -> Either CompileError Module
 typecheck mod
   = typecheckModule mod
@@ -33,7 +30,6 @@ typecheck mod
 transpile :: String -> Either CompileError String
 transpile program
   =   parse program
-  -- >>= semanticCheck
   >>= typecheck
   <&> show
 

@@ -116,7 +116,6 @@ prefixTop top e1 e2 e3 = prefixOp (show top) (show <$> [e1, e2, e3])
 infixBop :: Bop -> Expr -> Expr -> String
 infixBop bop e1 e2 = paren . (intercalate $ show bop) $ show <$> [e1, e2]
 
--- someday we might refactor AST so that we can fold it into list of Atoms
 findAtoms :: Expr -> [String]
 findAtoms expr =
   let

@@ -27,7 +27,6 @@ library
       CompileTarget
       MiniParser
       Parser
-      Semantics
       Syntax
       Transpile
       Typecheck

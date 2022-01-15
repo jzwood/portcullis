@@ -1,3 +1,3 @@
 #!/bin/bash
 
-find src -type f | xargs cat | grep -E "[^\n]" | wc -l
+find app src -type f -d 1 -name \*.hs | xargs cat | grep -E "[^\n]" | wc -l
