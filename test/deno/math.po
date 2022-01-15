@@ -10,6 +10,10 @@ empty = Num []
 sort -> [Num] [Num]
 sort ns = (sort2 _ ns ns)
 
+#
+sort2 is a helper for sort
+#
+
 sort2 -> Num -> [Num] [Num]
 sort2 len ns =
   ? <= len 1 ns
@@ -43,7 +47,14 @@ sum xs =
 compose -> -> b c -> -> a b -> a c
 compose f g x = (f (g x))
 
+# this is a comment #
 rankPet -> Atom -> Atom {Atom Atom}
 rankPet p1 p2 =
   ?  == Chipmunk p1 {p1 p2}
   ?? {p2 p1}
+
+
+
+# end comment #
+
+

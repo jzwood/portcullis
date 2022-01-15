@@ -66,6 +66,14 @@ Functions are comprised of a **name**, **type signature**, **arguments**, and bo
 <name> [args...] = <expr>
 ```
 
+Bracket comments with `#`s. Comments are only allowed between function statements.
+
+```
+# comment here #
+one Num
+one = 1
+```
+
 _Portcullis does not have lambda functions._
 
 ### Control Flow:

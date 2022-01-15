@@ -10,7 +10,14 @@ import Data.List
 import Util hiding (paren)
 
 parseModule :: Parser [Stmt]
-parseModule = oneOrMore parseStmt <* spaces
+parseModule = oneOrMore (comments *> parseStmt <* comments) <* spaces
+  where
+    comments = zeroOrMore $ trimLeft parseComment
+
+parseComment :: Parser String
+parseComment =  (char '#')
+             *> (oneOrMore (satisfy (/= '#')))
+             <* (char '#')
 
 parseStmt :: Parser Stmt
 parseStmt =  trimLeft
