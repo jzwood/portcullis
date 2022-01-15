@@ -1,6 +1,6 @@
 import _ from 'https://deno.land/x/lodash@4.17.15-es/lodash.js'
 import { assert, assertEquals } from "https://deno.land/std@0.119.0/testing/asserts.ts"
-import { avg, neg, tail, sort, sum, mean } from './math.js'
+import { avg, neg, tail, sort, sum, mean, compose } from './math.js'
 
 const generateNumArray = () => Array(Math.floor(100 * Math.random()))
     .fill(0)
@@ -58,4 +58,13 @@ Deno.test("mean", () => {
     const arr = generateNumArray()
     assert(fuzzyEqual(mean(arr), _.mean(arr)))
   }
+})
+
+Deno.test("mean", () => {
+  const add1 = x => x + 1
+  const mult2 = x => 2 * x
+  const arr = generateNumArray()
+  arr.forEach(num => {
+    assertEquals(compose(mult2)(add1)(num), 2 * (num + 1))
+  })
 })

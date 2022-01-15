@@ -215,10 +215,14 @@ spec = do
                           }
           m = Map.fromList [("map", map')]
       typeofExpr m map' (body map') `shouldBe` (Right $ Unspecfied "y")
-      --typecheckStmt m map' `shouldBe` (Right $ Unspecfied "y")
+      typecheckStmt m map' `shouldBe` (Right $ Unspecfied "y")
 
---map -> -> a b -> a b
---map f a = (f a)
-
---compose -> -> a b -> a b
---compose f g x = (f (g x))
+    it "typecheck compose" $ do
+      let compose = Function { name = "compose"
+                             , signature = Arrow (Arrow (Unspecfied "b") (Unspecfied "c")) (Arrow (Arrow (Unspecfied "a") (Unspecfied "b")) (Arrow (Unspecfied "a") (Unspecfied "c")))
+                             , args = ["f", "g", "x"]
+                             , body = Call "f" [Call "g" [Ident "x"]]
+                             }
+          m = Map.fromList [("compose", compose)]
+      typeofExpr m compose (body compose) `shouldBe` (Right $ Unspecfied "c")
+      typecheckStmt m compose `shouldBe` (Right $ Unspecfied "c")

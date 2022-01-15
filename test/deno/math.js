@@ -67,6 +67,10 @@ export function sum(xs) {
 		return ((Array.prototype.at.call(xs, 0.0) ?? 0.0)+sum(tail(xs)));
 	})();
 }
+// function "compose" has type ((b -> c) -> ((a -> b) -> (a -> c)))
+export function compose(f) {
+	return (g) => (x) => f(g(x));
+}
 // function "equal" has type (a -> (a -> Atom))
 function equal(a, b) {
   return +(a === b || Array.isArray(a) ? JSON.stringify(a) === JSON.stringify(b) : false)

@@ -12,27 +12,23 @@ Many languages claim to be simple but few truly are. Portcullis's simplicity bor
 | 2-Tuple | `['A' True]` | `@1` `@2` `==` |
 | Array | `Num [1 2 3 4]`, `Char ['j' 'a' 'k' 'e']` | `!` `!!` |
 
-_* All operators are prefix (ie not infix)_
 
-## Operators
-| Unary | Name | Signature | Example |
-| --- | --- | --- | --- |
-| `@1` | fst | `-> [a b] a` | `` |
-| `@2` | snd | `-> [a b] b` | `` |
+## Operators *
 
-| Binary | Name | Signature | Example |
-| --- | --- | --- | --- |
-| `+` `-` `*` `/` | |  `-> Num -> Num Num` | `+ 3 4` |
-| `%` | rem | `-> Num -> Num Num` | `+ 3 4` |
-| `>` `<` `>=` `<=` | | `-> Num -> Num Atom` | asdf |
-| `==` | | `-> a -> a Atom` | asdf |
-| `++` | concat | `-> [a] -> [a] [a]` | asdf |
+_All operators are prefix (ie not infix)._
 
+| Operator(s) | Name | Arity | Signature | Example |
+| --- | --- | --- | --- | --- |
+| `@1` | fst | unary | `-> [a b] a` | `@1 ['a' 3]`  →  `'a'` |
+| `@2` | snd | unary | `-> [a b] b` | `@2 ['a' 3]`  →  `3` |
+| `+` `-` `*` `/` | | binary |  `-> Num -> Num Num` | `+ 3 4`  →  `7` |
+| `%` | rem | binary | `-> Num -> Num Num` | `% 7 2`  →  `1` |
+| `>` `<` `>=` `<=` | | binary | `-> Num -> Num Atom` | `> 1 4`  →  `False` |
+| `==` | | binary | `-> a -> a Atom` | `== [1] [1]`  →  `True`|
+| `++` | concat | binary | `-> [a] -> [a] [a]` | `++ [1] [2 3]`  →  `[1 2 3]` |
+| `!` | At | ternary | `-> [a] -> Num -> a a` | `! ['a'] 0 'z'`  →  `'a'`, <br> `! ['b'] 3 'z'`  →  `'z'` |
+| `!!` | Slice | ternary | `-> [a] -> Num -> Num [a]` | `!! ['j' 'a' 'k' 'e'] 1 3`  →  `['a' 'k']` |
 
-| Ternary | Name | Signature | Example |
-| --- | --- | --- | -- |
-| `!` | At | `-> [a] -> Num -> a a` | `+ 3 4` |
-| `!!` | Slice | `-> [a] -> Num -> Num [a]` | `+ 3 4` |
 
 ### Types
 

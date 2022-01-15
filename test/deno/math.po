@@ -39,3 +39,6 @@ sum -> [Num] Num
 sum xs =
   ?  == 0 _ xs 0
   ?? + ! xs 0 0 (sum (tail xs))
+
+compose -> -> b c -> -> a b -> a c
+compose f g x = (f (g x))
