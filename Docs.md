@@ -5,7 +5,7 @@ Many languages claim to be simple but few truly are. Portcullis's simplicity bor
 ### Data Types
 
 | Data Type | Example | Operators* |
-| --- | --- | --- | --- |
+| --- | --- | --- |
 | Number | `2.3` | `+` `-` `*` `/` `%` `>` `<` `>=` `<=` `==` |
 | Character | `'c'` | `==` |
 | Atom | `One`, `True` | `==` |
@@ -33,7 +33,7 @@ _All operators are prefix (ie not infix)._
 ### Types
 
 | Type | Syntax |
-| --- | --- | --- |
+| --- | --- |
 | Number | `Num` |
 | Character | `Char` |
 | Atom | `Atom` |
