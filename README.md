@@ -5,12 +5,7 @@ A *simple* programming language
 
 **source fibonacci.po**
 
-```
-fib -> Num Num
-fib n =
-  ?  <= n 1 1
-  ?? + (fib - n 1) (fib - n 2)
-```
+<img src="fib.po.png" alt="fib -> Num Num fib n = ?  <= n 1 1 ?? + (fib - n 1) (fib - n 2)">
 
 **compiled fibonacci.js**
 
@@ -30,3 +25,4 @@ function fib(n) {
 - [Language Guide](Docs.md)
 - [User Guide](UserGuide.md)
 - [Developer Guide](LocalDev.md)
+- [Vim Syntax Highlighting](https://github.com/jzwood/portcullis-vim)

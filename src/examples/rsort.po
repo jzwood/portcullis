@@ -25,11 +25,16 @@ cmpH xs ys =
   ? < ! xs 0 0 ! ys 0 0 [xs ys]
   ?? [ys xs]
 
+#
+ comment
+    here
+#
 merge -> [Num] -> [Num] [Num]
 merge xs ys =
   ? == xs (empty) ys
   ? == ys (empty) xs
   ?? (merge2 (cmpH xs ys))
 
+# comment here #
 merge2 -> [[Num] [Num]] [Num]
 merge2 xys = ++ !! @1 xys 0 1 (merge (tail @1 xys) @2 xys)
