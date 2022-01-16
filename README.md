@@ -5,7 +5,10 @@ A *simple* programming language
 
 **source fibonacci.po**
 
-<img src="fib.po.png" alt="fib -> Num Num fib n = ?  <= n 1 1 ?? + (fib - n 1) (fib - n 2)">
+<img src="fib.po.png" alt="portcullis source code for Fibonacci function" title="fib -> Num Num
+fib n =
+  ?  <= n 1 1
+  ?? + (fib - n 1) (fib - n 2)">
 
 **compiled fibonacci.js**
 
