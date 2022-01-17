@@ -1,0 +1,20 @@
+<svg viewBox="0 0 100 100" fill="#676676" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- #port is window cut out of middle-->
+    <mask id="port">
+      <rect x="0" y="0"
+        width="100"
+        height="100"
+        fill="white" />
+      <rect x="45" y="40" width="10" height="16.18" fill="black" shape-rendering="crispEdges" />
+    </mask>
+  </defs>
+
+  <rect x="20" y="6" width="10" height="16.18" />
+  <rect x="36.5" y="6" width="10" height="16.18" />
+  <rect x="53.5" y="6" width="10" height="16.18" />
+  <rect x="70" y="6" width="10" height="16.18" />
+
+  <rect x="25" y="19" width="50" height="81" mask="url(#port)" />
+</svg>
+

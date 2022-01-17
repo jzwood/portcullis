@@ -36,7 +36,7 @@ transpile program
 handle :: String -> Either CompileError String -> IO ()
 handle dest (Right js)
   =  writeFile dest js
-  >> putStrLn ">\tSuccessfully Transpiled!"
+  >> putStrLn ">\tSuccessfully Compiled!"
   >> putStrLn ("+\t" ++ dest)
 handle _ (Left err) = putStrLn ("!\t" ++ show err)
 

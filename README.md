@@ -1,16 +1,21 @@
-# Portcullis
+<p align="center">
+	<img src="./assets/logo.svg" width="150"/>
+</p>
 
-A *simple* programming language
+<p align="center">
+	<h1 align="center">Portcullis</h1>
+  <h4 align="center">A simple programming language.</h4>
+</p>
 
 
-**source fibonacci.po**
+fib.po
 
-<img src="fib.po.png" alt="portcullis source code for Fibonacci function" title="fib -> Num Num
+<img src="./assets/fib.po.png" alt="portcullis source code for Fibonacci function" title="fib -> Num Num
 fib n =
   ?  <= n 1 1
   ?? + (fib - n 1) (fib - n 2)">
 
-**compiled fibonacci.js**
+compiles to fib.js
 
 ```js
 // function "fib" has type (Num -> Num)
