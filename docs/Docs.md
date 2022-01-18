@@ -1,6 +1,11 @@
 # Portcullis Language Guide
 
-Many languages claim to be simple but few truly are. Portcullis's simplicity borders on annoying. The entirety of the language consists of function declaration, function invocation, and a handful of datatypes and built-in operators.
+Many languages claim to be simple but few truly are. While Portcullis's compiler is arguably simple, clocking in under 650 LOC, writing Portcullis programs can be a bit of a puzzle. This is mostly the result of its restricted and minimalist syntax and uncommon design decisions:
+
+There are no looping constructs (use recursion), no variable declaration, no built-in `Booleans` (use `Atoms`), no `if-else` control flow (use `guards`), and no `null` or `error` types.
+
+The entirety of the language consists of function declaration, function invocation, and a handful of datatypes and built-in operators. A compiled Portcullis module cannot be run. It produces JavaScript functions which can be imported and run by other JS programs.
+
 
 ### Data Types
 
