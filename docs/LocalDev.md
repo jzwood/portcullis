@@ -1,6 +1,6 @@
 # Portcullis Developer Guide
 
-### Transpile Portcullis Program
+### Compile Portcullis Program
 - install stack
 - build compiler
     - `stack install`
@@ -9,9 +9,9 @@
     neg -> Num Num
     neg x = - 0 x
     ```
-- run transpiler
+- compile
     - `portcullis-exe path/to/src.po path/to/dest.js`
-- examine output
+- see output
     ```
     // function "neg" has type (Num -> Num)
     function neg(x) {

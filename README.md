@@ -29,8 +29,11 @@ function fib(n) {
 }
 ```
 
-### more
-- [Language Guide](Docs.md)
-- [User Guide](UserGuide.md)
-- [Developer Guide](LocalDev.md)
+## About
+
+I wrote the compiler for Portcullis purely for my own education and amusement. Painfully specific goals guided the development of this project and account for both the language features I chose to include as well as omit.
+
+## # More
+- [Language Guide](./docs/Docs.md)
+- [Developer Guide](./docs/LocalDev.md)
 - [Vim Syntax Highlighting](https://github.com/jzwood/portcullis-vim)
