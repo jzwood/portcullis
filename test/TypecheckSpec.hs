@@ -136,10 +136,10 @@ spec = do
 
     it "typecheck id" $ do
       let id1 = Function { name = "id1"
-                        , signature = Arrow (Unspecfied "z") (Unspecfied "z")
-                        , args = ["val"]
-                        , body = Ident "val"
-                        }
+                         , signature = Arrow (Unspecfied "z") (Unspecfied "z")
+                         , args = ["val"]
+                         , body = Ident "val"
+                         }
           id2 = Function { name = "id2"
                          , signature = Arrow (Unspecfied "p") (Unspecfied "p")
                          , args = ["x"]
@@ -218,11 +218,23 @@ spec = do
       typecheckStmt m map' `shouldBe` (Right $ Unspecfied "y")
 
     it "typecheck compose" $ do
-      let compose = Function { name = "compose"
+      let id1 = Function { name = "id1"
+                         , signature = Arrow (Unspecfied "z") (Unspecfied "z")
+                         , args = ["val"]
+                         , body = Ident "val"
+                         }
+          id2 = Function { name = "id2"
+                         , signature = Arrow (Unspecfied "y") (Unspecfied "y")
+                         , args = ["z"]
+                         , body = Call "compose" [Ident "id1", Ident "id1", Ident "z"]
+                         }
+          compose = Function { name = "compose"
                              , signature = Arrow (Arrow (Unspecfied "b") (Unspecfied "c")) (Arrow (Arrow (Unspecfied "a") (Unspecfied "b")) (Arrow (Unspecfied "a") (Unspecfied "c")))
                              , args = ["f", "g", "x"]
                              , body = Call "f" [Call "g" [Ident "x"]]
                              }
-          m = Map.fromList [("compose", compose)]
+          m = Map.fromList [("id1", id1), ("id1", id1), ("compose", compose)]
       typeofExpr m compose (body compose) `shouldBe` (Right $ Unspecfied "c")
       typecheckStmt m compose `shouldBe` (Right $ Unspecfied "c")
+      typeofExpr m id2 (body id2) `shouldBe` (Right $ Unspecfied "y")
+      --typecheckStmt m compose `shouldBe` (Right $ Unspecfied "c")

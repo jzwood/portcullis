@@ -1,0 +1,8 @@
+compose -> -> b c -> -> a b -> a c
+compose f g x = (f (g x))
+
+id1 -> x x
+id1 x = x
+
+id2 -> Num Num
+id2 x = (compose id1 id1 x)
