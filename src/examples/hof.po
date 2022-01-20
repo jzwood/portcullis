@@ -6,3 +6,19 @@ id1 x = x
 
 id2 -> Num Num
 id2 x = (compose id1 id1 x)
+
+
+#
+one1 = Function { name = "one1" , signature = NumType , args = [] , body = Val $ Number 1 }
+one2 = Function { name = "one2" , signature = NumType , args = [] , body = Call "one1" [] }
+one3 = Function { name = "one3" , signature = NumType , args = [] , body = Ident "one1" }
+#
+
+one1 Num
+one1 = 1
+
+one2 Num
+one2 = (one1)
+
+one3 Num
+one3 = one1

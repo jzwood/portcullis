@@ -205,7 +205,9 @@ spec = do
           m = Map.fromList [("one1", one1), ("one2", one2), ("one3", one3)]
       typecheckStmt m one1 `shouldBe` (Right NumType)
       typecheckStmt m one2 `shouldBe` (Right NumType)
-      isLeft (typecheckStmt m one3) `shouldBe` True
+
+      typecheckStmt m one3 `shouldBe` (Right NumType)  -- HERE
+      isLeft (typecheckStmt m one3) `shouldBe` True  -- HERE
 
     it "typecheck map" $ do
       let map' = Function { name = "map"
@@ -223,18 +225,30 @@ spec = do
                          , args = ["val"]
                          , body = Ident "val"
                          }
-          id2 = Function { name = "id2"
-                         , signature = Arrow (Unspecfied "y") (Unspecfied "y")
-                         , args = ["z"]
-                         , body = Call "compose" [Ident "id1", Ident "id1", Ident "z"]
-                         }
+          add1 = Function { name = "add1"
+                          , signature = Arrow NumType NumType
+                          , args = ["n"]
+                          , body = BinOp Plus (Val $ Number 1) (Ident "n")
+                          }
           compose = Function { name = "compose"
                              , signature = Arrow (Arrow (Unspecfied "b") (Unspecfied "c")) (Arrow (Arrow (Unspecfied "a") (Unspecfied "b")) (Arrow (Unspecfied "a") (Unspecfied "c")))
                              , args = ["f", "g", "x"]
                              , body = Call "f" [Call "g" [Ident "x"]]
                              }
-          m = Map.fromList [("id1", id1), ("id1", id1), ("compose", compose)]
+          id2 = Function { name = "id2"
+                         , signature = Arrow (Unspecfied "y") (Unspecfied "y")
+                         , args = ["z"]
+                         , body = Call "compose" [Ident "id1", Ident "id1", Ident "z"]
+                         }
+          add2 = Function { name = "add2"
+                          , signature = Arrow NumType NumType
+                          , args = ["n"]
+                          , body = Call "compose" [ Ident "add1", Ident "add1", Ident "n"]
+                          }
+          m = Map.fromList [("id1", id1), ("id1", id1), ("compose", compose), ("add1", add1)]
       typeofExpr m compose (body compose) `shouldBe` (Right $ Unspecfied "c")
       typecheckStmt m compose `shouldBe` (Right $ Unspecfied "c")
       typeofExpr m id2 (body id2) `shouldBe` (Right $ Unspecfied "y")
-      --typecheckStmt m compose `shouldBe` (Right $ Unspecfied "c")
+      typecheckStmt m compose `shouldBe` (Right $ Unspecfied "c")
+      typeofExpr m add2 (body add2) `shouldBe` (Right NumType)
+      typecheckStmt m compose `shouldBe` (Right NumType)

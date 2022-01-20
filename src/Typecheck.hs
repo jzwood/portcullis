@@ -49,7 +49,7 @@ typecheckStmt stmtMap stmt@(Function { body, args, signature }) = do
                   & drop (length args)
                   & typeExprFromList
       cmp :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
-      cmp te1 te2 = if te1 == te2 then Right te1 else Left $ AritySignatureMismatch $ show ('A', te1, te2)
+      cmp te1 te2 = if te1 == te2 then Right te1 else Left $ AritySignatureMismatch $ show ("(typecheckStmt)", te1, te2)
 
 modToStmtMap :: Module -> Map Name Stmt
 modToStmtMap (Module stms)
@@ -73,7 +73,7 @@ typecheck (TupType te0 te1) (TupType te2 te3) m = typecheck te0 te2 m >>= typech
 typecheck (ListType te0) (ListType te1) m = typecheck te0 te1 m
 typecheck t1 t2 m =
   if t1 == t2 then Right m
-              else Left $ TypeMismatch [t1, t2] ("typecheck b " ++ (show m))
+              else Left $ TypeMismatch [t1, t2] ("typecheck b")
 
 applyTypeMap :: TypeExpr -> Map Name TypeExpr -> TypeExpr
 applyTypeMap t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
@@ -89,7 +89,7 @@ typeExprToList t = [t]
 typeExprFromList :: [TypeExpr] -> TypeExpr
 typeExprFromList [te] = te
 typeExprFromList (te:tes) = Arrow te (typeExprFromList tes)
-typeExprFromList [] = error "typeExprFromList must be non-empty"
+typeExprFromList [] = error "TODO make this an AritySignatureMismatch in typeExprFromList"
 
 argToMaybeSig :: Name -> [Name] -> TypeExpr -> Maybe TypeExpr
 argToMaybeSig arg args sig
@@ -105,10 +105,11 @@ typeofExpr m s (Val p) =
     Tuple expr1 expr2 -> sequence [typeofExpr m s expr1, typeofExpr m s expr2]
       <&> \[e1, e2] -> TupType e1 e2
     List typeExpr exprs -> Right $ ListType typeExpr
-typeofExpr _ (Function { signature, args }) (Ident name)
-   =  argToMaybeSig name args signature
+typeofExpr m (Function { signature = sig, args }) (Ident name)
+   =  argToMaybeSig name args sig
+  -- <|> (Map.lookup name m <&> signature)  -- ????
   <&> Right
-   &  fromMaybe (Left $ AritySignatureMismatch $ show ('B', name, args))
+   &  fromMaybe (Left $ AritySignatureMismatch $ show ("(typeofExpr Ident)", name, args))
 typeofExpr m f@(Function { signature = sig, args }) (Call name exprs)
   =  argToMaybeSig name args sig
  <|> (Map.lookup name m <&> signature)

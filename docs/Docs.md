@@ -55,14 +55,31 @@ double x = * 2 x
 ```
 
 ```
-compose -> -> a b -> a b
-compose f g x = (f (g x))
+
+add3 -> Num -> Num -> Num Num
+add3 a b c = + + a b c
 ```
+
 Compiling the above portcullis functions results in exportable/runnable JS functions:
 
 ```
-compose(double, double, 3)
-// 12
+// function "double" has type (Num -> Num)
+export function double(x) {
+	return (x) => (2*x);
+}
+
+// function "add3" has type (Num -> (Num -> (Num -> Num)))
+export function add3(a) {
+	return (b) => (c) => ((a+b)+c);
+}
+```
+
+```
+double(5)
+// 10
+
+add3(3)(5)(1)
+// 9
 ```
 
 Functions are comprised of a **name**, **type signature**, **arguments**, and body **expression**:

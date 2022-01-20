@@ -1,9 +1,3 @@
-filter -> a -> [a] [a]
-filter x xs =
-  ? == xs Num [] Num []
-  ? == Num [x] (head xs) (tail xs)
-  ?? ++ (head xs) (filter x (tail xs))
-
 not -> -> a -> a Atom -> a -> a Atom
 not f a b =
   ? == False (f a b) True
