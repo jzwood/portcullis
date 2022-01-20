@@ -1,0 +1,24 @@
+id -> x x
+id x = x
+
+#
+filter ...
+#
+
+compose -> -> b c -> -> a b -> a c
+compose f g x = (f (g x))
+
+double -> Num Num
+double x = * 2 x
+
+quadruple -> Num Num
+quadruple n = (compose double double n)
+
+id2 x
+id2 x = (compose id id x)
+
+one1 Num
+one1 = 1
+
+one2 Num
+one2 = (compose id id (one1))
