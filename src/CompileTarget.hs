@@ -143,7 +143,7 @@ findAtoms expr =
 readAtoms :: [Stmt] -> String
 readAtoms stmts
   =  concatMap (findAtoms . body) stmts
-  &  zip [0..] . nub . ("False" :)
+  &  zip [0..] . nub . ("False" :) . ("True" :)
  <&> (\(i, atom) -> unwords ["const", atom, "=", show i])
   &  unlines
 
