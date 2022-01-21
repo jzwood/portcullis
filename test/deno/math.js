@@ -1,6 +1,8 @@
 const False = 0
 const Chipmunk = 1
 
+export const empty = $empty()
+
 // function "neg" has type (Num -> Num)
 export function neg(x) {
 	return (0.0-x);
@@ -10,7 +12,7 @@ export function tail(xs) {
 	return Array.prototype.slice.call(xs, 1.0, ((arr) => arr.length)(xs));
 }
 // function "empty" has type [Num]
-export function empty() {
+export function $empty() {
 	return /* [Num] */ [];
 }
 // function "sort" has type ([Num] -> [Num])
@@ -38,10 +40,10 @@ export function cmpH(xs) {
 // function "merge" has type ([Num] -> ([Num] -> [Num]))
 export function merge(xs) {
 	return (ys) => (() => {
-		if (equal(xs, empty())) {
+		if (equal(xs, empty)) {
 			return ys;
 		}
-		if (equal(ys, empty())) {
+		if (equal(ys, empty)) {
 			return xs;
 		}
 		return merge2(cmpH(xs)(ys));

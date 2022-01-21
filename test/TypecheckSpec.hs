@@ -207,7 +207,7 @@ spec = do
       typecheckStmt m one2 `shouldBe` (Right NumType)
 
       typecheckStmt m one3 `shouldBe` (Right NumType)  -- HERE
-      isLeft (typecheckStmt m one3) `shouldBe` True  -- HERE
+      --isLeft (typecheckStmt m one3) `shouldBe` True  -- HERE
 
     it "typecheck map" $ do
       let map' = Function { name = "map"
@@ -251,4 +251,4 @@ spec = do
       typeofExpr m id2 (body id2) `shouldBe` (Right $ Unspecfied "y")
       typecheckStmt m compose `shouldBe` (Right $ Unspecfied "c")
       typeofExpr m add2 (body add2) `shouldBe` (Right NumType)
-      typecheckStmt m compose `shouldBe` (Right NumType)
+      typecheckStmt m add2 `shouldBe` (Right NumType)

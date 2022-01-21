@@ -106,7 +106,7 @@ typeofExpr m s (Val p) =
     List typeExpr exprs -> Right $ ListType typeExpr
 typeofExpr m (Function { signature = sig, args }) (Ident name)
    =  argToMaybeSig name args sig
-  -- <|> (Map.lookup name m <&> signature)  -- ????
+  <|> (Map.lookup name m <&> signature)  -- ????
   <&> Right
    &  fromMaybe (Left $ AritySignatureMismatch $ show ("(typeofExpr Ident)", name, args))
 typeofExpr m f@(Function { signature = sig, args }) (Call name exprs)

@@ -9,9 +9,26 @@ import Data.List (intercalate, nub)
 import Util
 
 instance Show Module where
-  show (Module stmts) = unlines $ (readAtoms stmts) : (show <$> stmts)
+  show (Module stmts) = unlines
+                      $ (readAtoms stmts)
+                      : (readZeroArityFunctions stmts)
+                      : (show <$> stmts)
 
 instance Show Stmt where
+  show (Function name tExpr [] expr)
+    = comment $ unwords ["function", show name, "has type", show tExpr]
+    ++ '\n'
+    : concat
+    [
+    "export function $"
+    , name
+    , "()"
+    ]
+    ++ unlines'
+    [ " {"
+    , (indent . concat) [ "return ", show expr , ";" ]
+    , "}"
+    ]
   show (Function name tExpr vars expr)
     = comment $ unwords ["function", show name, "has type", show tExpr]
     ++ '\n'
@@ -55,7 +72,7 @@ instance Show Expr where
   show (Ident name) = name
   show (Call name exprs) = name ++
     case exprs of
-      [] -> "()"
+      [] -> ""  -- functions without arguments are interpreted as values
       _ -> concatMap (paren . show) exprs
   show (UnOp unop e) = show unop ++ (paren $ show e)
   show (BinOp Equal e1 e2) = prefixBop Equal e1 e2
@@ -139,4 +156,12 @@ readAtoms stmts
   =  concatMap (findAtoms . body) stmts
   &  zip [0..] . nub . ("False" :)
  <&> (\(i, atom) -> unwords ["const", atom, "=", show i])
+  &  unlines
+
+readZeroArityFunctions :: [Stmt] -> String
+readZeroArityFunctions stmts
+  =  stmts
+  &  filter ((==0) . length . args)
+ <&> name
+ <&> (\name -> unwords ["export", "const", name, "=", '$' : name ++ "()" ])
   &  unlines
