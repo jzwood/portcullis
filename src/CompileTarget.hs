@@ -15,26 +15,11 @@ instance Show Module where
                       : (show <$> stmts)
 
 instance Show Stmt where
-  show (Function name tExpr [] expr)
-    = comment $ unwords ["function", show name, "has type", show tExpr]
-    ++ '\n'
-    : concat
-    [
-    "export function $"
-    , name
-    , "()"
-    ]
-    ++ unlines'
-    [ " {"
-    , (indent . concat) [ "return ", show expr , ";" ]
-    , "}"
-    ]
   show (Function name tExpr vars expr)
     = comment $ unwords ["function", show name, "has type", show tExpr]
     ++ '\n'
     : concat
-    [
-    "export function "
+    [ def
     , name
     , (paren . head' "") vars
     ]
@@ -43,6 +28,10 @@ instance Show Stmt where
     , (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , show expr , ";" ]
     , "}"
     ]
+      where
+        def = case vars of
+          []  -> "function $"
+          _ -> "export function "
 
 instance Show TypeExpr where
   show NumType = "Num"

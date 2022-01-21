@@ -12,7 +12,7 @@ export function tail(xs) {
 	return Array.prototype.slice.call(xs, 1.0, ((arr) => arr.length)(xs));
 }
 // function "empty" has type [Num]
-export function $empty() {
+function $empty() {
 	return /* [Num] */ [];
 }
 // function "sort" has type ([Num] -> [Num])

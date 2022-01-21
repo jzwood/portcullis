@@ -24,11 +24,11 @@ export function id2(x) {
 	return compose(id)(id)(x);
 }
 // function "one1" has type Num
-export function $one1() {
+function $one1() {
 	return 1.0;
 }
 // function "one2" has type Num
-export function $one2() {
+function $one2() {
 	return compose(id)(id)(one1);
 }
 // function "equal" has type (a -> (a -> Atom))

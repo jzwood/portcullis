@@ -1,6 +1,6 @@
 # Portcullis Language Guide
 
-Many languages claim to be simple but few truly are. While Portcullis's compiler is arguably simple, clocking in under 650 LOC, writing Portcullis programs can be a bit of a puzzle. This is mostly the result of its restricted and minimalist syntax and uncommon design decisions:
+Many languages claim to be simple but few truly are. While Portcullis's compiler is arguably simple, clocking in under 700 LOC, writing Portcullis programs can be a bit of a puzzle. This is mostly the result of its restricted and minimalist syntax and uncommon design decisions:
 
 There are no looping constructs (use recursion), no variable declaration, no built-in `Booleans` (use `Atoms`), no `if-else` control flow (use `guards`), and no `null` or `error` types.
 
