@@ -1,4 +1,4 @@
-module Transpile where
+module Compile where
 
 import Data.Functor
 import Data.Function
@@ -27,8 +27,8 @@ typecheck mod
   = typecheckModule mod
   & mapLeft (CompileError . show)
 
-transpile :: String -> Either CompileError String
-transpile program
+compile :: String -> Either CompileError String
+compile program
   =   parse program
   >>= typecheck
   <&> show
@@ -43,9 +43,9 @@ handle _ (Left err) = putStrLn ("!\t" ++ show err)
 sortpo = "src/examples/rsort.po"
 sortjs = "dest/rsport.js"
 
-runTranspilation :: String -> String -> IO ()
-runTranspilation src dest = do
-  code <- readFile src <&> transpile
+runCompilation :: String -> String -> IO ()
+runCompilation src dest = do
+  code <- readFile src <&> compile
   core <- readFile core
   handle dest $ (++core) <$> code
     where

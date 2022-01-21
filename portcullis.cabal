@@ -24,11 +24,11 @@ source-repository head
 
 library
   exposed-modules:
+      Compile
       CompileTarget
       MiniParser
       Parser
       Syntax
-      Transpile
       Typecheck
       Util
   other-modules:

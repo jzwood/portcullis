@@ -31,8 +31,8 @@
 
 - add tests
     - write po file in `test/deno/<name>.po`
-    - update `test/deno/TranspileTests.hs` to include new program
-    - run transpilation `stack runhaskell test/deno/TranspileTests`
+    - update `test/deno/CompileTests.hs` to include new program
+    - run compilation `stack runhaskell test/deno/CompileTests`
         - `test/deno/<name>.js` should now exist
     - write js test file, `test/deno/<name>.test.js`, that imports functions from `test/deno/<name>.js`
     - you can now call `deno test`

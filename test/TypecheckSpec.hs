@@ -8,7 +8,7 @@ import Syntax
 import CompileTarget
 import Parser
 import Typecheck
-import Transpile
+import Compile
 import qualified Data.Map as Map
 
 
