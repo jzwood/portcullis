@@ -1,4 +1,5 @@
 const False = 0
+const True = 1
 
 export const one1 = $one1()
 export const one2 = $one2()

@@ -1,5 +1,6 @@
 const False = 0
-const Chipmunk = 1
+const True = 1
+const Chipmunk = 2
 
 export const empty = $empty()
 
@@ -15,21 +16,21 @@ export function tail(xs) {
 function $empty() {
 	return /* [Num] */ [];
 }
-// function "sort" has type ([Num] -> [Num])
-export function sort(ns) {
-	return sort2(((arr) => arr.length)(ns))(ns);
+// function "msort" has type ([Num] -> [Num])
+export function msort(ns) {
+	return msort2(((arr) => arr.length)(ns))(ns);
 }
-// function "sort2" has type (Num -> ([Num] -> [Num]))
-export function sort2(len) {
+// function "msort2" has type (Num -> ([Num] -> [Num]))
+export function msort2(len) {
 	return (ns) => (() => {
 		if ((len<=1.0)) {
 			return ns;
 		}
-		return merge(sort(Array.prototype.slice.call(ns, 0.0, (len/2.0))))(sort(Array.prototype.slice.call(ns, (len/2.0), len)));
+		return merge(msort(Array.prototype.slice.call(ns, 0.0, (len/2.0))))(msort(Array.prototype.slice.call(ns, (len/2.0), len)));
 	})();
 }
-// function "cmpH" has type ([Num] -> ([Num] -> [[Num] [Num]]))
-export function cmpH(xs) {
+// function "cmpHead" has type ([Num] -> ([Num] -> [[Num] [Num]]))
+export function cmpHead(xs) {
 	return (ys) => (() => {
 		if (((Array.prototype.at.call(xs, 0.0) ?? 0.0)<(Array.prototype.at.call(ys, 0.0) ?? 0.0))) {
 			return [xs,ys];
@@ -40,13 +41,13 @@ export function cmpH(xs) {
 // function "merge" has type ([Num] -> ([Num] -> [Num]))
 export function merge(xs) {
 	return (ys) => (() => {
-		if (equal(xs, empty)) {
+		if (equal(0.0, ((arr) => arr.length)(xs))) {
 			return ys;
 		}
-		if (equal(ys, empty)) {
+		if (equal(0.0, ((arr) => arr.length)(ys))) {
 			return xs;
 		}
-		return merge2(cmpH(xs)(ys));
+		return merge2(cmpHead(xs)(ys));
 	})();
 }
 // function "merge2" has type ([[Num] [Num]] -> [Num])

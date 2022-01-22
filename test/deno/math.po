@@ -7,28 +7,25 @@ tail xs = !! xs 1 _ xs
 empty [Num]
 empty = Num []
 
-sort -> [Num] [Num]
-sort ns = (sort2 _ ns ns)
+msort -> [Num] [Num]
+msort ns = (msort2 _ ns ns)
 
-#
-sort2 is a helper for sort
-#
-
-sort2 -> Num -> [Num] [Num]
-sort2 len ns =
+# msort2 is a helper for msort #
+msort2 -> Num -> [Num] [Num]
+msort2 len ns =
   ? <= len 1 ns
-  ?? (merge (sort !! ns 0 / len 2) (sort !! ns / len 2 len))
+  ?? (merge (msort !! ns 0 / len 2) (msort !! ns / len 2 len))
 
-cmpH -> [Num] -> [Num] {[Num] [Num]}
-cmpH xs ys =
+cmpHead -> [Num] -> [Num] {[Num] [Num]}
+cmpHead xs ys =
   ? < ! xs 0 0 ! ys 0 0 {xs ys}
   ?? {ys xs}
 
 merge -> [Num] -> [Num] [Num]
 merge xs ys =
-  ? == xs (empty) ys
-  ? == ys (empty) xs
-  ?? (merge2 (cmpH xs ys))
+  ? == 0 _ xs ys
+  ? == 0 _ ys xs
+  ?? (merge2 (cmpHead xs ys))
 
 merge2 -> {[Num] [Num]} [Num]
 merge2 xys = ++ !! @1 xys 0 1 (merge (tail @1 xys) @2 xys)
