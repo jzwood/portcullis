@@ -29,7 +29,11 @@ qsortP pivot xs =
   ++ (filter (eq pivot) xs) (qsort (filter (gt pivot) xs))
 
 # BAD #
-hof -> -> a Atom -> [a] [a]
-hof f xs =
-  ? (f xs) xs
+hofBad -> -> a Atom -> [a] [a]
+hofBad f xs =
+  ?  (f xs) xs
   ?? xs
+#
+hofGood -> -> a Atom -> [a] [a]
+hofGood f xs = (f xs)
+#

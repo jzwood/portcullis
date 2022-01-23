@@ -116,14 +116,14 @@ typeofExpr m f@(Function { signature = sig, args }) (Call name exprs)
          >>= foldl' (\s t -> s >>= typecheckExpr t) (Right s)
      )
   &  fromMaybe (Left NotFunction)
-typeofExpr m s (Guard cases defCase) = goodPs >> goodEs
+typeofExpr m s (Guard cases defExpr) = goodPs >> goodEs
   where
     (predicates, exprs) = unzip cases
     goodPs =   predicates
           <&>  typeofExpr m s
            &   sequence
            >>= \(p:ps) -> if all (==AtomType) (p:ps) then Right p else Left $ BadGuardPredicate (p:ps)
-    goodEs =   exprs
+    goodEs =   (defExpr: exprs)
           <&>  typeofExpr m s
            &   sequence
            >>= \(t:ts) -> if all (==t) ts then Right t else Left $ TypeMismatch (t:ts) "(typeofExpr)"

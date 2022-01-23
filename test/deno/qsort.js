@@ -43,8 +43,8 @@ export function qsort(xs) {
 export function qsortP(pivot) {
 	return (xs) => Array.prototype.concat.call(qsort(filter(lt(pivot))(xs)), Array.prototype.concat.call(filter(eq(pivot))(xs), qsort(filter(gt(pivot))(xs))));
 }
-// function "hof" has type ((a -> Atom) -> ([a] -> [a]))
-export function hof(f) {
+// function "hofBad" has type ((a -> Atom) -> ([a] -> [a]))
+export function hofBad(f) {
 	return (xs) => (() => {
 		if (f(xs)) {
 			return xs;
