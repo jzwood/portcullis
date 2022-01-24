@@ -1,7 +1,7 @@
 not -> -> a -> a Atom -> a -> a Atom
 not f a b =
   ? == False (f a b) True
-  ?? False
+    False
 
 add -> Num -> Num Num
 add a b = + a b

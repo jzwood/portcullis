@@ -17,7 +17,6 @@ import qualified Data.Map as Map
 
 data TypeError
   = NotFunction
-  | BadGuardPredicate [TypeExpr]
   | AritySignatureMismatch String
   | TypeMismatch [TypeExpr] String
   deriving (Show, Eq)
@@ -60,7 +59,7 @@ typecheckExpr :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typecheckExpr t (Arrow tl tr)
   = typecheck t tl Map.empty  -- compare type with sig
   <&> applyTypeMap tr
-typecheckExpr t1 t2 = Left $ TypeMismatch [t1, t2] "typecheckExpr"
+typecheckExpr t1 t2 = Left $ AritySignatureMismatch $ show (t1, t2)
 
 typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map Name TypeExpr)
 typecheck t (Unspecfied n) m =
@@ -116,17 +115,6 @@ typeofExpr m f@(Function { signature = sig, args }) (Call name exprs)
          >>= foldl' (\s t -> s >>= typecheckExpr t) (Right s)
      )
   &  fromMaybe (Left NotFunction)
-typeofExpr m s (Guard cases defExpr) = goodPs >> goodEs
-  where
-    (predicates, exprs) = unzip cases
-    goodPs =   predicates
-          <&>  typeofExpr m s
-           &   sequence
-           >>= \(p:ps) -> if all (==AtomType) (p:ps) then Right p else Left $ BadGuardPredicate (p:ps)
-    goodEs =   (defExpr: exprs)
-          <&>  typeofExpr m s
-           &   sequence
-           >>= \(t:ts) -> if all (==t) ts then Right t else Left $ TypeMismatch (t:ts) "(typeofExpr)"
 typeofExpr m s (UnOp unop expr)
   = typeofExpr m s expr
   >>= \t -> typecheckExpr t (typeofUnOp unop)
@@ -169,3 +157,4 @@ typeofBop bop =
 typeofTop :: Top -> TypeExpr
 typeofTop Slice = Arrow (ListType (Unspecfied "a")) (Arrow NumType (Arrow NumType (ListType (Unspecfied "a"))))
 typeofTop At = Arrow (ListType (Unspecfied "a")) (Arrow NumType (Arrow (Unspecfied "a") (Unspecfied "a")))
+typeofTop If = Arrow AtomType (Arrow (Unspecfied "a") (Arrow (Unspecfied "a") (Unspecfied "a")))

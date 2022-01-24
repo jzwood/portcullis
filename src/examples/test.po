@@ -1,5 +1,0 @@
-sum -> [Num] Num
-sum xs =
-  ?  == 0 _ xs
-  ?? + 1 (tail xs)
-

@@ -22,33 +22,15 @@ export function msort(ns) {
 }
 // function "msort2" has type (Num -> ([Num] -> [Num]))
 export function msort2(len) {
-	return (ns) => (() => {
-		if ((len<=1.0)) {
-			return ns;
-		}
-		return merge(msort(Array.prototype.slice.call(ns, 0.0, (len/2.0))))(msort(Array.prototype.slice.call(ns, (len/2.0), len)));
-	})();
+	return (ns) => ((pred, ifB, elseB) => pred ? ifB() : elseB())((len<=1.0), () => ns, () => merge(msort(Array.prototype.slice.call(ns, 0.0, (len/2.0))))(msort(Array.prototype.slice.call(ns, (len/2.0), len))));
 }
 // function "cmpHead" has type ([Num] -> ([Num] -> [[Num] [Num]]))
 export function cmpHead(xs) {
-	return (ys) => (() => {
-		if (((Array.prototype.at.call(xs, 0.0) ?? 0.0)<(Array.prototype.at.call(ys, 0.0) ?? 0.0))) {
-			return [xs,ys];
-		}
-		return [ys,xs];
-	})();
+	return (ys) => ((pred, ifB, elseB) => pred ? ifB() : elseB())(((Array.prototype.at.call(xs, 0.0) ?? 0.0)<(Array.prototype.at.call(ys, 0.0) ?? 0.0)), () => [xs,ys], () => [ys,xs]);
 }
 // function "merge" has type ([Num] -> ([Num] -> [Num]))
 export function merge(xs) {
-	return (ys) => (() => {
-		if (equal(0.0, ((arr) => arr.length)(xs))) {
-			return ys;
-		}
-		if (equal(0.0, ((arr) => arr.length)(ys))) {
-			return xs;
-		}
-		return merge2(cmpHead(xs)(ys));
-	})();
+	return (ys) => ((pred, ifB, elseB) => pred ? ifB() : elseB())(equal(0.0, ((arr) => arr.length)(xs)), () => ys, () => ((pred, ifB, elseB) => pred ? ifB() : elseB())(equal(0.0, ((arr) => arr.length)(ys)), () => xs, () => merge2(cmpHead(xs)(ys))));
 }
 // function "merge2" has type ([[Num] [Num]] -> [Num])
 export function merge2(xys) {
@@ -64,12 +46,7 @@ export function mean(xs) {
 }
 // function "sum" has type ([Num] -> Num)
 export function sum(xs) {
-	return (() => {
-		if (equal(0.0, ((arr) => arr.length)(xs))) {
-			return 0.0;
-		}
-		return ((Array.prototype.at.call(xs, 0.0) ?? 0.0)+sum(tail(xs)));
-	})();
+	return ((pred, ifB, elseB) => pred ? ifB() : elseB())(equal(0.0, ((arr) => arr.length)(xs)), () => 0.0, () => ((Array.prototype.at.call(xs, 0.0) ?? 0.0)+sum(tail(xs))));
 }
 // function "compose" has type ((b -> c) -> ((a -> b) -> (a -> c)))
 export function compose(f) {
@@ -77,12 +54,7 @@ export function compose(f) {
 }
 // function "rankPet" has type (Atom -> (Atom -> [Atom Atom]))
 export function rankPet(p1) {
-	return (p2) => (() => {
-		if (equal(Chipmunk, p1)) {
-			return [p1,p2];
-		}
-		return [p2,p1];
-	})();
+	return (p2) => ((pred, ifB, elseB) => pred ? ifB() : elseB())(equal(Chipmunk, p1), () => [p1,p2], () => [p2,p1]);
 }
 // function "equal" has type (a -> (a -> Atom))
 function equal(a, b) {

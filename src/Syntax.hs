@@ -54,7 +54,6 @@ data Expr
   = Val Value
   | Ident Name  -- arg
   | Call Name [Expr]  -- add 12 45 (function invocation)
-  | Guard [(Expr, Expr)] Expr
   | UnOp UnOp Expr
   | BinOp Bop Expr Expr  -- + 2 3
   | TernOp Top Expr Expr Expr
@@ -83,4 +82,5 @@ data Bop
 data Top
   = Slice
   | At
+  | If
   deriving (Eq)

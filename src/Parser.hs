@@ -68,6 +68,7 @@ parseBop = word "==" $> Equal
 parseTop :: Parser Top
 parseTop =  word "!!" $> Slice
         <|> char '!' $> At
+        <|> char '?' $> If
 
 parseCall :: Parser Expr
 parseCall = paren . trim
@@ -84,11 +85,6 @@ parseBinOp = (optionalModifier paren . trim)
 parseTernOp :: Parser Expr
 parseTernOp = (optionalModifier paren . trim)
             $ TernOp <$> parseTop <*> parseExpr <*> parseExpr <*> parseExpr
-
-parseGuard :: Parser Expr
-parseGuard = Guard
-          <$> (oneOrMore $ liftA2 (,) (trim $ char '?' *> parseExpr) parseExpr)
-          <*> (trim $ word "??" *> parseExpr)
 
 parseChar :: Parser Char
 parseChar = wrap '\'' '\'' anyChar
@@ -114,6 +110,5 @@ parseExpr =  trimLeft
          <|> parseCall
          <|> parseTernOp
          <|> parseBinOp
-         <|> parseGuard
          <|> Val <$> parseValue
          <|> Ident  <$> camel

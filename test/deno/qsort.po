@@ -1,9 +1,9 @@
 # UTILS #
 filter -> -> [a] Atom -> [a] [a]
 filter f xs =
-  ?  == 0 _ xs xs
-  ?  (f xs) ++ !! xs 0 1 (filter f (tail xs))
-  ?? (filter f (tail xs))
+  ? == 0 _ xs xs
+  ? (f xs) ++ !! xs 0 1 (filter f (tail xs))
+    (filter f (tail xs))
 
 tail -> [a] [a]
 tail xs = !! xs 1 _ xs
@@ -20,8 +20,8 @@ gt p xs = > ! xs 0 0 p
 # QUICK SORT #
 qsort -> [Num] [Num]
 qsort xs =
-  ?  >= 1 _ xs xs
-  ?? (qsortP ! xs 0 0 xs)
+  ? >= 1 _ xs xs
+    (qsortP ! xs 0 0 xs)
 
 qsortP -> Num -> [Num] [Num]
 qsortP pivot xs =
@@ -31,8 +31,8 @@ qsortP pivot xs =
 # BAD #
 hofBad -> -> a Atom -> [a] [a]
 hofBad f xs =
-  ?  (f xs) xs
-  ?? xs
+  ? (f xs) xs
+    xs
 #
 hofGood -> -> a Atom -> [a] [a]
 hofGood f xs = (f xs)

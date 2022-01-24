@@ -14,18 +14,18 @@ msort ns = (msort2 _ ns ns)
 msort2 -> Num -> [Num] [Num]
 msort2 len ns =
   ? <= len 1 ns
-  ?? (merge (msort !! ns 0 / len 2) (msort !! ns / len 2 len))
+    (merge (msort !! ns 0 / len 2) (msort !! ns / len 2 len))
 
 cmpHead -> [Num] -> [Num] {[Num] [Num]}
 cmpHead xs ys =
   ? < ! xs 0 0 ! ys 0 0 {xs ys}
-  ?? {ys xs}
+    {ys xs}
 
 merge -> [Num] -> [Num] [Num]
 merge xs ys =
   ? == 0 _ xs ys
   ? == 0 _ ys xs
-  ?? (merge2 (cmpHead xs ys))
+    (merge2 (cmpHead xs ys))
 
 merge2 -> {[Num] [Num]} [Num]
 merge2 xys = ++ !! @1 xys 0 1 (merge (tail @1 xys) @2 xys)
@@ -38,8 +38,8 @@ mean xs = / (sum xs) _ xs
 
 sum -> [Num] Num
 sum xs =
-  ?  == 0 _ xs 0
-  ?? + ! xs 0 0 (sum (tail xs))
+  ? == 0 _ xs 0
+    + ! xs 0 0 (sum (tail xs))
 
 compose -> -> b c -> -> a b -> a c
 compose f g x = (f (g x))
@@ -47,8 +47,7 @@ compose f g x = (f (g x))
 # this is a comment #
 rankPet -> Atom -> Atom {Atom Atom}
 rankPet p1 p2 =
-  ?  == Chipmunk p1 {p1 p2}
-  ?? {p2 p1}
+  ? == Chipmunk p1 {p1 p2} {p2 p1}
 
 
 

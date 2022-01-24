@@ -67,7 +67,6 @@ instance Show Expr where
   show (BinOp Equal e1 e2) = prefixBop Equal e1 e2
   show (BinOp Concat a1 a2) = prefixBop Concat a1 a2
   show (BinOp bop e1 e2) = infixBop bop e1 e2
-  show (Guard cases defaultCase) = showGuard cases defaultCase
   show (TernOp At a n e) = paren $ prefixOp (show At) (show <$> [a, n]) ++ " ?? " ++ show n
   show (TernOp top e1 e2 e3) = prefixTop top e1 e2 e3
 
@@ -90,25 +89,9 @@ instance Show Bop where
   show Concat = "Array.prototype.concat.call"
 
 instance Show Top where
+  show If = "((pred, ifB, elseB) => pred ? ifB() : elseB())"
   show Slice = "Array.prototype.slice.call"
   show At = "Array.prototype.at.call"
-
-
-showGuard :: [(Expr, Expr)] -> Expr -> String
-showGuard cases defaultCase =
-  unlines' [ "(() => {"
-          , (indent . unlines') (concatMap showCase cases ++ [showReturn defaultCase])
-          , "})()"
-          ]
-  where
-    showReturn :: Expr -> String
-    showReturn expr = "return " ++ show expr ++ ";"
-    showCase :: (Expr, Expr) -> [String]
-    showCase (predicate, expr) =
-      [ "if (" ++ show predicate ++ ") {"
-      , '\t' : showReturn expr
-      , "}"
-      ]
 
 prefixOp :: String -> [String] -> String
 prefixOp op = (op ++) . paren . (intercalate ", ")
@@ -117,6 +100,7 @@ prefixBop :: Bop -> Expr -> Expr -> String
 prefixBop bop e1 e2 = prefixOp (show bop) (show <$> [e1, e2])
 
 prefixTop :: Top -> Expr -> Expr -> Expr -> String
+prefixTop If  e1 e2 e3 = prefixOp (show If) [show e1, "() => " ++ show e2, "() => " ++ show e3] -- using lambdas for conditions allows us to short-circuit unused branch
 prefixTop top e1 e2 e3 = prefixOp (show top) (show <$> [e1, e2, e3])
 
 infixBop :: Bop -> Expr -> Expr -> String
@@ -135,7 +119,6 @@ findAtoms expr =
         List _ es -> flatFindAtoms es
         _ -> []
     Call n [es] -> flatFindAtoms [es]
-    Guard cases defCase -> flatFindAtoms $ defCase : concatMap (\(e1, e2) -> [e1, e2]) cases
     BinOp _ e1 e2 -> flatFindAtoms [e1, e2]
     TernOp _ e1 e2 e3 -> flatFindAtoms [e1, e2, e3]
     _ -> []
