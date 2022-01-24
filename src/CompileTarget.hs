@@ -5,7 +5,7 @@ import Data.Functor
 import Data.Function
 import Control.Applicative
 import Data.Char
-import Data.List (intercalate, nub)
+import Data.List (intercalate, intersperse, nub)
 import Util
 
 instance Show Module where
@@ -68,7 +68,13 @@ instance Show Expr where
   show (BinOp Concat a1 a2) = prefixBop Concat a1 a2
   show (BinOp bop e1 e2) = infixBop bop e1 e2
   show (TernOp At a n e) = paren $ prefixOp (show At) (show <$> [a, n]) ++ " ?? " ++ show n
-  show (TernOp top e1 e2 e3) = prefixTop top e1 e2 e3
+  show (TernOp If e1 e2 e3)
+    = ((show If ++) . paren . ('\n':) . (++"\n") . indent . unlines)
+    [ "/* if */ " ++ show e1 ++ ","
+    , "/* then */ () => " ++ show e2 ++ ","
+    , "/* else */ () => " ++ show e3
+    ] -- lambdas let us short-circuit unused conditions
+  show (TernOp top e1 e2 e3) = prefixOp (show top) (show <$> [e1, e2, e3])
 
 instance Show UnOp where
   show Fst = "(([a,]) => a)"
@@ -90,18 +96,14 @@ instance Show Bop where
 
 instance Show Top where
   show If = "((pred, ifB, elseB) => pred ? ifB() : elseB())"
-  show Slice = "Array.prototype.slice.call"
   show At = "Array.prototype.at.call"
+  show Slice = "Array.prototype.slice.call"
 
 prefixOp :: String -> [String] -> String
 prefixOp op = (op ++) . paren . (intercalate ", ")
 
 prefixBop :: Bop -> Expr -> Expr -> String
 prefixBop bop e1 e2 = prefixOp (show bop) (show <$> [e1, e2])
-
-prefixTop :: Top -> Expr -> Expr -> Expr -> String
-prefixTop If  e1 e2 e3 = prefixOp (show If) [show e1, "() => " ++ show e2, "() => " ++ show e3] -- using lambdas for conditions allows us to short-circuit unused branch
-prefixTop top e1 e2 e3 = prefixOp (show top) (show <$> [e1, e2, e3])
 
 infixBop :: Bop -> Expr -> Expr -> String
 infixBop bop e1 e2 = paren . (intercalate $ show bop) $ show <$> [e1, e2]

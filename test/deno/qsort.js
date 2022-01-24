@@ -4,7 +4,15 @@ const True = 1
 
 // function "filter" has type (([a] -> Atom) -> ([a] -> [a]))
 export function filter(f) {
-	return (xs) => ((pred, ifB, elseB) => pred ? ifB() : elseB())(equal(0.0, ((arr) => arr.length)(xs)), () => xs, () => ((pred, ifB, elseB) => pred ? ifB() : elseB())(f(xs), () => Array.prototype.concat.call(Array.prototype.slice.call(xs, 0.0, 1.0), filter(f)(tail(xs))), () => filter(f)(tail(xs))));
+	return (xs) => ((pred, ifB, elseB) => pred ? ifB() : elseB())(
+		/* if */ equal(0.0, ((arr) => arr.length)(xs)),
+		/* then */ () => xs,
+		/* else */ () => ((pred, ifB, elseB) => pred ? ifB() : elseB())(
+			/* if */ f(xs),
+			/* then */ () => Array.prototype.concat.call(Array.prototype.slice.call(xs, 0.0, 1.0), filter(f)(tail(xs))),
+			/* else */ () => filter(f)(tail(xs))
+		)
+	);
 }
 // function "tail" has type ([a] -> [a])
 export function tail(xs) {
@@ -24,7 +32,11 @@ export function gt(p) {
 }
 // function "qsort" has type ([Num] -> [Num])
 export function qsort(xs) {
-	return ((pred, ifB, elseB) => pred ? ifB() : elseB())((1.0>=((arr) => arr.length)(xs)), () => xs, () => qsortP((Array.prototype.at.call(xs, 0.0) ?? 0.0))(xs));
+	return ((pred, ifB, elseB) => pred ? ifB() : elseB())(
+		/* if */ (1.0>=((arr) => arr.length)(xs)),
+		/* then */ () => xs,
+		/* else */ () => qsortP((Array.prototype.at.call(xs, 0.0) ?? 0.0))(xs)
+	);
 }
 // function "qsortP" has type (Num -> ([Num] -> [Num]))
 export function qsortP(pivot) {
@@ -32,7 +44,11 @@ export function qsortP(pivot) {
 }
 // function "hofBad" has type ((a -> Atom) -> ([a] -> [a]))
 export function hofBad(f) {
-	return (xs) => ((pred, ifB, elseB) => pred ? ifB() : elseB())(f(xs), () => xs, () => xs);
+	return (xs) => ((pred, ifB, elseB) => pred ? ifB() : elseB())(
+		/* if */ f(xs),
+		/* then */ () => xs,
+		/* else */ () => xs
+	);
 }
 // function "equal" has type (a -> (a -> Atom))
 function equal(a, b) {

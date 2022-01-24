@@ -170,7 +170,7 @@ spec = do
           sum = Function { name = "sum"
                           , signature = Arrow (ListType NumType) NumType
                           , args = ["xs"]
-                          , body = Guard [(BinOp Equal (Val $ Number 0) (UnOp Length (Ident "xs")), Val $ Number 1)] (BinOp Plus (TernOp At (Ident "xs") (Val $ Number 0) (Val $ Number 0)) (Call "sum" [Call "tail" [Ident "xs"]]))
+                          , body = TernOp If (BinOp Equal (Val $ Number 0) (UnOp Length (Ident "xs"))) (Val $ Number 1) (BinOp Plus (TernOp At (Ident "xs") (Val $ Number 0) (Val $ Number 0)) (Call "sum" [Call "tail" [Ident "xs"]]))
                           }
           mean = Function { name = "mean"
                           , signature = Arrow (ListType NumType) NumType
