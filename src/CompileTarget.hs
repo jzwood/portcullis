@@ -54,7 +54,7 @@ instance Show Value where
   show (List t a) = unwords ["/*", show $ ListType t, "*/", show a]
   show (Tuple e1 e2)
     =  show <$> [e1, e2]
-    &  bracket . (intercalate ",")
+    &  bracket . (intercalate ", ")
 
 instance Show Expr where
   show (Val p) = show p
@@ -63,7 +63,7 @@ instance Show Expr where
     case exprs of
       [] -> ""  -- functions without arguments are interpreted as values
       _ -> concatMap (paren . show) exprs
-  show (UnOp unop e) = show unop ++ (paren $ show e)
+  show (UnOp unop e) = show e ++ show unop
   show (BinOp Equal e1 e2) = prefixBop Equal e1 e2
   show (BinOp Concat a1 a2) = prefixBop Concat a1 a2
   show (BinOp bop e1 e2) = infixBop bop e1 e2
@@ -77,9 +77,9 @@ instance Show Expr where
   show (TernOp At a n e) = paren $ show a ++ ".at" ++ (paren . show $ n) ++ " ?? " ++  show e
 
 instance Show UnOp where
-  show Fst = "(([a,]) => a)"
-  show Snd = "(([,b]) => b)"
-  show Length = "((arr) => arr.length)"
+  show Fst = "[0]"
+  show Snd = "[1]"
+  show Length = ".length"
 
 instance Show Bop where
   show Plus = "+"

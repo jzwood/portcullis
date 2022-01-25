@@ -10,7 +10,7 @@ export function neg(x) {
 }
 // function "tail" has type ([a] -> [a])
 export function tail(xs) {
-  return (xs.slice(1.0, ((arr) => arr.length)(xs)));
+  return (xs.slice(1.0, xs.length));
 }
 // function "empty" has type [Num]
 function $empty() {
@@ -18,7 +18,7 @@ function $empty() {
 }
 // function "msort" has type ([Num] -> [Num])
 export function msort(ns) {
-  return msort2(((arr) => arr.length)(ns))(ns);
+  return msort2(ns.length)(ns);
 }
 // function "msort2" has type (Num -> ([Num] -> [Num]))
 export function msort2(len) {
@@ -32,17 +32,17 @@ export function msort2(len) {
 export function cmpHead(xs) {
   return (ys) => (
     /* if */ ((xs.at(0.0) ?? 0.0) < (ys.at(0.0) ?? 0.0)) ?
-    /* then */ [xs,ys] :
-    /* else */ [ys,xs]
+    /* then */ [xs, ys] :
+    /* else */ [ys, xs]
   );
 }
 // function "merge" has type ([Num] -> ([Num] -> [Num]))
 export function merge(xs) {
   return (ys) => (
-    /* if */ equal(0.0, ((arr) => arr.length)(xs)) ?
+    /* if */ equal(0.0, xs.length) ?
     /* then */ ys :
     /* else */ (
-      /* if */ equal(0.0, ((arr) => arr.length)(ys)) ?
+      /* if */ equal(0.0, ys.length) ?
       /* then */ xs :
       /* else */ merge2(cmpHead(xs)(ys))
     )
@@ -50,7 +50,7 @@ export function merge(xs) {
 }
 // function "merge2" has type ([[Num] [Num]] -> [Num])
 export function merge2(xys) {
-  return Array.prototype.concat.call(((([a,]) => a)(xys).slice(0.0, 1.0)), merge(tail((([a,]) => a)(xys)))((([,b]) => b)(xys)));
+  return Array.prototype.concat.call((xys[0].slice(0.0, 1.0)), merge(tail(xys[0]))(xys[1]));
 }
 // function "avg" has type (Num -> (Num -> Num))
 export function avg(a) {
@@ -58,12 +58,12 @@ export function avg(a) {
 }
 // function "mean" has type ([Num] -> Num)
 export function mean(xs) {
-  return (sum(xs) / ((arr) => arr.length)(xs));
+  return (sum(xs) / xs.length);
 }
 // function "sum" has type ([Num] -> Num)
 export function sum(xs) {
   return (
-    /* if */ equal(0.0, ((arr) => arr.length)(xs)) ?
+    /* if */ equal(0.0, xs.length) ?
     /* then */ 0.0 :
     /* else */ ((xs.at(0.0) ?? 0.0) + sum(tail(xs)))
   );
@@ -76,8 +76,8 @@ export function compose(f) {
 export function rankPet(p1) {
   return (p2) => (
     /* if */ equal(Chipmunk, p1) ?
-    /* then */ [p1,p2] :
-    /* else */ [p2,p1]
+    /* then */ [p1, p2] :
+    /* else */ [p2, p1]
   );
 }
 // function "equal" has type (a -> (a -> Atom))

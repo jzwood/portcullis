@@ -5,7 +5,7 @@ const True = 1
 // function "filter" has type (([a] -> Atom) -> ([a] -> [a]))
 export function filter(f) {
   return (xs) => (
-    /* if */ equal(0.0, ((arr) => arr.length)(xs)) ?
+    /* if */ equal(0.0, xs.length) ?
     /* then */ xs :
     /* else */ (
       /* if */ f(xs) ?
@@ -16,7 +16,7 @@ export function filter(f) {
 }
 // function "tail" has type ([a] -> [a])
 export function tail(xs) {
-  return (xs.slice(1.0, ((arr) => arr.length)(xs)));
+  return (xs.slice(1.0, xs.length));
 }
 // function "lt" has type (Num -> ([Num] -> Atom))
 export function lt(p) {
@@ -33,7 +33,7 @@ export function gt(p) {
 // function "qsort" has type ([Num] -> [Num])
 export function qsort(xs) {
   return (
-    /* if */ (1.0 >= ((arr) => arr.length)(xs)) ?
+    /* if */ (1.0 >= xs.length) ?
     /* then */ xs :
     /* else */ qsortP((xs.at(0.0) ?? 0.0))(xs)
   );
