@@ -27,7 +27,7 @@ unlines' :: [String] -> String
 unlines' = init . unlines
 
 indent :: String -> String
-indent = unlines' . fmap ('\t' :) . lines
+indent = unlines' . fmap ("  "++) . lines
 
 comment :: String -> String
 comment = ("// " ++)

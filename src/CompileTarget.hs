@@ -67,14 +67,14 @@ instance Show Expr where
   show (BinOp Equal e1 e2) = prefixBop Equal e1 e2
   show (BinOp Concat a1 a2) = prefixBop Concat a1 a2
   show (BinOp bop e1 e2) = infixBop bop e1 e2
-  show (TernOp At a n e) = paren $ prefixOp (show At) (show <$> [a, n]) ++ " ?? " ++ show n
-  show (TernOp If e1 e2 e3)
-    = ((show If ++) . paren . ('\n':) . (++"\n") . indent . unlines)
-    [ "/* if */ " ++ show e1 ++ ","
-    , "/* then */ () => " ++ show e2 ++ ","
-    , "/* else */ () => " ++ show e3
-    ] -- lambdas let us short-circuit unused conditions
-  show (TernOp top e1 e2 e3) = prefixOp (show top) (show <$> [e1, e2, e3])
+  show (TernOp If p e1 e2)
+    = (paren . ('\n':) . (++"\n") . indent . unlines)
+    [ "/* if */ " ++ show p ++ " ?"
+    , "/* then */ " ++ show e1 ++ " :"
+    , "/* else */ " ++ show e2
+    ]
+  show (TernOp Slice a n1 n2) = paren $ show a ++ ".slice" ++ (paren . (intercalate ", ") . (fmap show)) [n1, n2]
+  show (TernOp At a n e) = paren $ show a ++ ".at" ++ (paren . show $ n) ++ " ?? " ++  show e
 
 instance Show UnOp where
   show Fst = "(([a,]) => a)"
@@ -94,11 +94,6 @@ instance Show Bop where
   show Equal = "equal"
   show Concat = "Array.prototype.concat.call"
 
-instance Show Top where
-  show If = "((pred, ifB, elseB) => pred ? ifB() : elseB())"
-  show At = "Array.prototype.at.call"
-  show Slice = "Array.prototype.slice.call"
-
 prefixOp :: String -> [String] -> String
 prefixOp op = (op ++) . paren . (intercalate ", ")
 
@@ -106,7 +101,7 @@ prefixBop :: Bop -> Expr -> Expr -> String
 prefixBop bop e1 e2 = prefixOp (show bop) (show <$> [e1, e2])
 
 infixBop :: Bop -> Expr -> Expr -> String
-infixBop bop e1 e2 = paren . (intercalate $ show bop) $ show <$> [e1, e2]
+infixBop bop e1 e2 = paren . (intercalate $ pad . show $ bop) $ show <$> [e1, e2]
 
 findAtoms :: Expr -> [String]
 findAtoms expr =

@@ -83,4 +83,4 @@ data Top
   = Slice
   | At
   | If
-  deriving (Eq)
+  deriving (Show, Eq)

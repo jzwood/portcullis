@@ -6,31 +6,31 @@ export const one2 = $one2()
 
 // function "id" has type (x -> x)
 export function id(x) {
-	return x;
+  return x;
 }
 // function "compose" has type ((b -> c) -> ((a -> b) -> (a -> c)))
 export function compose(f) {
-	return (g) => (x) => f(g(x));
+  return (g) => (x) => f(g(x));
 }
 // function "double" has type (Num -> Num)
 export function double(x) {
-	return (2.0*x);
+  return (2.0 * x);
 }
 // function "quadruple" has type (Num -> Num)
 export function quadruple(n) {
-	return compose(double)(double)(n);
+  return compose(double)(double)(n);
 }
 // function "id2" has type (x -> x)
 export function id2(x) {
-	return compose(id)(id)(x);
+  return compose(id)(id)(x);
 }
 // function "one1" has type Num
 function $one1() {
-	return 1.0;
+  return 1.0;
 }
 // function "one2" has type Num
 function $one2() {
-	return compose(id)(id)(one1);
+  return compose(id)(id)(one1);
 }
 // function "equal" has type (a -> (a -> Atom))
 function equal(a, b) {
