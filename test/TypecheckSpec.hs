@@ -257,10 +257,7 @@ spec = do
       let trivial = Function { name = "trivial"
                              , signature = Arrow AtomType CharType
                              , args = ["atom"]
-                             , body = Guard [ ( BinOp Equal (Val $ Atom "Cat") (Ident "atom")
-                                              , Val $ Character 'y'
-                                              )
-                                            ] (Val $ Character 'n')
+                             , body = TernOp If ( BinOp Equal (Val $ Atom "Cat") (Ident "atom")) (Val $ Character 'y') (Val $ Character 'n')
                              }
           m = Map.fromList [("trivial", trivial)]
       typeofExpr m trivial (body trivial) `shouldBe` (Right CharType)
@@ -270,8 +267,7 @@ spec = do
       let hof1 = Function { name = "hof1"
                           , signature = Arrow (Arrow (Unspecfied "a") AtomType) (Arrow (ListType NumType) (ListType NumType))
                           , args = ["f", "xs"]
-                          , body = Guard [ ( Call "f" [Ident "xs"] , Ident "xs")
-                                         ] (Ident "xs")
+                          , body = TernOp If (Call "f" [Ident "xs"]) (Ident "xs") (Ident "xs")
                           }
           hof2 = Function { name = "hof2"
                           , signature = Arrow (Arrow (Unspecfied "a") AtomType) (Arrow (ListType NumType) (ListType NumType))
@@ -280,5 +276,4 @@ spec = do
                           }
           m = Map.fromList [("hof1", hof1), ("hof2", hof2)]
       isLeft (typecheckStmt m hof2) `shouldBe` True
-      typecheckStmt m hof1 `shouldBe` (Right NumType)
-      --isLeft (typecheckStmt m hof1) `shouldBe` True
+      typecheckStmt m hof1 `shouldBe` (Right $ ListType NumType)
