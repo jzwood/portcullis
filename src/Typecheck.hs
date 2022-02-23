@@ -11,7 +11,7 @@ import Data.Either (lefts)
 import Control.Applicative
 import Data.Traversable
 import Syntax
-import CompileTarget
+import CodeGen
 import Util
 import qualified Data.Map as Map
 

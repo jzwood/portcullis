@@ -24,8 +24,8 @@ source-repository head
 
 library
   exposed-modules:
+      CodeGen
       Compile
-      CompileTarget
       MiniParser
       Parser
       Syntax

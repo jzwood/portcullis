@@ -10,7 +10,12 @@
 
 fib.po
 
-<img src="./assets/fib.po.png" alt="portcullis source code for Fibonacci function" title="portcullis implementation of n fibonacci number">
+<img
+  src="./assets/fib.po.png"
+  alt="portcullis source code for Fibonacci function"
+  title="portcullis implementation of n fibonacci number"
+  style="width: 100%; max-width: 500px;"
+/>
 
 compiles to fib.js
 

@@ -2,7 +2,7 @@ module Parser where
 
 import MiniParser
 import Syntax
-import CompileTarget
+import CodeGen
 import Data.Functor
 import Control.Applicative
 import Data.Char

@@ -5,7 +5,7 @@ import Data.Function
 import Data.Functor
 import Data.Either (isLeft)
 import Syntax
-import CompileTarget
+import CodeGen
 import Parser
 import Typecheck
 import Compile

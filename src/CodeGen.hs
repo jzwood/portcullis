@@ -1,4 +1,4 @@
-module CompileTarget where
+module CodeGen where
 
 import Syntax
 import Data.Functor
