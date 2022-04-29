@@ -13,7 +13,7 @@ data Cursor = Cursor { line :: Integer, col :: Integer}
 newtype ParseError = ParseError Cursor
 
 instance Show ParseError where
-  show (ParseError (Cursor { line, col})) = concat ["Parse Error at line: ", show line, ", column: ", show col]
+  show (ParseError Cursor { line, col}) = concat ["Parse Error at line: ", show line, ", column: ", show col]
 
 instance Semigroup Cursor where
   (<>) (Cursor l1 c1) (Cursor l2 c2) = Cursor (l1 + l2) (c1 + c2)
@@ -83,13 +83,13 @@ occurN n p
    | otherwise = liftA2 (:) p (occurN (n - 1) p)
 
 decimal :: Parser Double
-decimal = ((\s1 s2 -> read $ s1 ++ '.' : s2) <$> int <*> (dot *> int))
+decimal = (\s1 s2 -> read $ s1 ++ '.' : s2) <$> int <*> (dot *> int)
   where
     int = oneOrMore $ satisfy isDigit
     dot = char '.'
 
 integer :: Parser Integer
-integer = read <$> (oneOrMore $ satisfy isDigit)
+integer = read <$> oneOrMore (satisfy isDigit)
 
 number :: Parser Double
 number = decimal <|> (fromIntegral <$> integer)

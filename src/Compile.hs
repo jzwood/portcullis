@@ -14,7 +14,7 @@ newtype CompileError = CompileError String
 
 -- testing util
 runp :: Parser a -> String -> Either ParseError (a, Cursor, String)
-runp p s = runParser p mempty s
+runp p = runParser p mempty
 
 parse :: String -> Either CompileError Module
 parse program =

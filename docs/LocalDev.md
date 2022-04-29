@@ -21,6 +21,9 @@
 
 ### Testing
 
+**run all tests**
+- `bash test.sh`
+
 **hspec tests**
 - `stack test`
 

@@ -25,7 +25,7 @@ data TypecheckError = TypecheckError Stmt TypeError
   deriving (Eq)
 
 instance Show TypecheckError where
-  show (TypecheckError (Function { name, signature, args }) typeError)
+  show (TypecheckError Function { name, signature, args } typeError)
     = "Typecheck Error in function " ++ name ++ ": " ++ show typeError
 
 typecheckModule :: Module -> Either [TypecheckError] Module
@@ -34,11 +34,11 @@ typecheckModule mod@(Module stmts)
     where
       !typeErrors
         =  stmts
-       <&> (typecheckStmt $ modToStmtMap mod)
+       <&> typecheckStmt (modToStmtMap mod)
         &  lefts
 
 typecheckStmt :: Map Name Stmt -> Stmt -> Either TypecheckError TypeExpr
-typecheckStmt stmtMap stmt@(Function { body, args, signature }) = do
+typecheckStmt stmtMap stmt@Function { body, args, signature } = do
   typeofBody <- typeofExpr stmtMap stmt body
   expectedTypeOfBody <- typeExprToList signature
                       & drop (length args)
@@ -52,7 +52,7 @@ typecheckStmt stmtMap stmt@(Function { body, args, signature }) = do
 modToStmtMap :: Module -> Map Name Stmt
 modToStmtMap (Module stms)
   =  stms
- <&> (\func@(Function { name }) -> (name, func))
+ <&> (\func@Function { name } -> (name, func))
   &  Map.fromList
 
 typecheckExpr :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
@@ -71,7 +71,7 @@ typecheck (TupType te0 te1) (TupType te2 te3) m = typecheck te0 te2 m >>= typech
 typecheck (ListType te0) (ListType te1) m = typecheck te0 te1 m
 typecheck t1 t2 m =
   if t1 == t2 then Right m
-              else Left $ TypeMismatch [t1, t2] ("typecheck b")
+              else Left $ TypeMismatch [t1, t2] "typecheck b"
 
 applyTypeMap :: TypeExpr -> Map Name TypeExpr -> TypeExpr
 applyTypeMap t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
@@ -81,7 +81,7 @@ applyTypeMap (Arrow tl tr) m = Arrow (applyTypeMap tl m) (applyTypeMap tr m)
 applyTypeMap t _ = t
 
 typeExprToList :: TypeExpr -> [TypeExpr]
-typeExprToList (Arrow t0 t1) = t0 : (typeExprToList t1)
+typeExprToList (Arrow t0 t1) = t0 : typeExprToList t1
 typeExprToList t = [t]
 
 typeExprFromList :: [TypeExpr] -> Either TypeError TypeExpr
@@ -94,7 +94,7 @@ argToMaybeSig arg args sig
   =   elemIndex arg args
   >>= (!?) (typeExprToList sig)
 
-typeofExpr :: (Map Name Stmt) -> Stmt -> Expr -> Either TypeError TypeExpr
+typeofExpr :: Map Name Stmt -> Stmt -> Expr -> Either TypeError TypeExpr
 typeofExpr m s (Val p) =
   case p of
     Number n -> Right NumType
@@ -103,12 +103,12 @@ typeofExpr m s (Val p) =
     Tuple expr1 expr2 -> sequence [typeofExpr m s expr1, typeofExpr m s expr2]
       <&> \[e1, e2] -> TupType e1 e2
     List typeExpr exprs -> Right $ ListType typeExpr
-typeofExpr m (Function { signature = sig, args }) (Ident name)
+typeofExpr m Function { signature = sig, args } (Ident name)
    =  argToMaybeSig name args sig
   <|> (Map.lookup name m <&> signature)  -- ????
   <&> Right
    &  fromMaybe (Left $ AritySignatureMismatch $ show ("(typeofExpr Ident)", name, args))
-typeofExpr m f@(Function { signature = sig, args }) (Call name exprs)
+typeofExpr m f@Function { signature = sig, args } (Call name exprs)
   =  argToMaybeSig name args sig
  <|> (Map.lookup name m <&> signature)
  <&> (\s ->  traverse (typeofExpr m f) exprs

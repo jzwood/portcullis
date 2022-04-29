@@ -10,8 +10,8 @@ import Util
 
 instance Show Module where
   show (Module stmts) = unlines
-                      $ (readAtoms stmts)
-                      : (readZeroArityFunctions stmts)
+                      $ readAtoms stmts
+                      : readZeroArityFunctions stmts
                       : (show <$> stmts)
 
 instance Show Stmt where
@@ -45,16 +45,16 @@ instance Show TypeExpr where
     =  [t1, t2]
    <&> show
     &  bracket . unwords
-  show (Arrow tExpr1 tExpr2) = paren (show tExpr1 ++ (pad "->") ++ show tExpr2)
+  show (Arrow tExpr1 tExpr2) = paren (show tExpr1 ++ pad "->" ++ show tExpr2)
 
 instance Show Value where
   show (Number n) = show n
-  show (Character c) = '\'' : c : '\'' : []
+  show (Character c) = ['\'', c, '\'']
   show (Atom n) = n
   show (List t a) = unwords ["/*", show $ ListType t, "*/", show a]
   show (Tuple e1 e2)
     =  show <$> [e1, e2]
-    &  bracket . (intercalate ", ")
+    &  bracket . intercalate ", "
 
 instance Show Expr where
   show (Val p) = show p
@@ -73,7 +73,7 @@ instance Show Expr where
     , "/* then */ " ++ show e1 ++ " :"
     , "/* else */ " ++ show e2
     ]
-  show (TernOp Slice a n1 n2) = paren $ show a ++ ".slice" ++ (paren . (intercalate ", ") . (fmap show)) [n1, n2]
+  show (TernOp Slice a n1 n2) = paren $ show a ++ ".slice" ++ (paren . intercalate ", " . fmap show) [n1, n2]
   show (TernOp At a n e) = paren $ show a ++ ".at" ++ (paren . show $ n) ++ " ?? " ++  show e
 
 instance Show UnOp where
@@ -95,13 +95,13 @@ instance Show Bop where
   show Concat = "Array.prototype.concat.call"
 
 prefixOp :: String -> [String] -> String
-prefixOp op = (op ++) . paren . (intercalate ", ")
+prefixOp op = (op ++) . paren . intercalate ", "
 
 prefixBop :: Bop -> Expr -> Expr -> String
 prefixBop bop e1 e2 = prefixOp (show bop) (show <$> [e1, e2])
 
 infixBop :: Bop -> Expr -> Expr -> String
-infixBop bop e1 e2 = paren . (intercalate $ pad . show $ bop) $ show <$> [e1, e2]
+infixBop bop e1 e2 = paren . intercalate (pad . show $ bop) $ show <$> [e1, e2]
 
 findAtoms :: Expr -> [String]
 findAtoms expr =
@@ -130,7 +130,7 @@ readAtoms stmts
 readZeroArityFunctions :: [Stmt] -> String
 readZeroArityFunctions stmts
   =  stmts
-  &  filter ((==0) . length . args)
+  &  filter (null . args)
  <&> name
  <&> (\name -> unwords ["export", "const", name, "=", '$' : name ++ "()" ])
   &  unlines

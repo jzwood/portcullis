@@ -15,9 +15,9 @@ parseModule = oneOrMore (comments *> parseStmt <* comments) <* spaces
     comments = zeroOrMore $ trimLeft parseComment
 
 parseComment :: Parser String
-parseComment =  (char '#')
-             *> (oneOrMore (satisfy (/= '#')))
-             <* (char '#')
+parseComment =  char '#'
+             *> oneOrMore (satisfy (/= '#'))
+             <* char '#'
 
 parseStmt :: Parser Stmt
 parseStmt =  trimLeft
@@ -39,11 +39,11 @@ parseTupType = liftA2 TupType (char '{' *> parseTypeExpr) (parseTypeExpr <* spac
 parseTypeExpr :: Parser TypeExpr
 parseTypeExpr
    =  trimLeft
-   $  NumType <$ (word $ show NumType)
-  <|> CharType <$ (word $ show CharType)
-  <|> AtomType <$ (word $ show AtomType)
+   $  NumType <$ word (show NumType)
+  <|> CharType <$ word (show CharType)
+  <|> AtomType <$ word (show AtomType)
   <|> Unspecfied <$> camel
-  <|> ListType <$> (brack $ trim parseTypeExpr)
+  <|> ListType <$> brack (trim parseTypeExpr)
   <|> parseTupType
   <|> parseArrow
 

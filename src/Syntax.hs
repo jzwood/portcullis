@@ -20,9 +20,9 @@ type Name = String
   -- | FunType Name [Type]
   -- | Pipe Name [Name] [Name] -- pipe name, input function names, output function names
 
-data Module = Module [Stmt]
+newtype Module = Module [Stmt]
 
-data Pipeline
+newtype Pipeline
   = InOut Name
 
 data Stmt = Function
