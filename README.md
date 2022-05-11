@@ -39,7 +39,7 @@ Some of these goals include
 - [purity](https://en.wikipedia.org/wiki/Purely_functional_programming)
 - [parametric polymorphism](https://en.wikipedia.org/wiki/Parametric_polymorphism)
 
-## # More
+## More
 - [Language Guide](./docs/Docs.md)
 - [Developer Guide](./docs/LocalDev.md)
 - [Vim Syntax Highlighting](https://github.com/jzwood/portcullis-vim)
