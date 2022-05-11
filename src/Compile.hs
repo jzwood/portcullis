@@ -33,20 +33,20 @@ compile program
   >>= typecheck
   <&> show
 
-handle :: String -> Either CompileError String -> IO ()
-handle dest (Right js)
+save :: String -> Either CompileError String -> IO ()
+save dest (Right js)
   =  writeFile dest js
   >> putStrLn ">\tSuccessfully Compiled!"
   >> putStrLn ("+\t" ++ dest)
-handle _ (Left err) = putStrLn ("!\t" ++ show err)
+save _ (Left err) = putStrLn ("!\t" ++ show err)
 
-sortpo = "src/examples/rsort.po"
-sortjs = "dest/rsport.js"
+--sortpo = "src/examples/rsort.po"
+--sortjs = "dest/rsport.js"
 
 runCompilation :: String -> String -> IO ()
 runCompilation src dest = do
   code <- readFile src <&> compile
   core <- readFile core
-  handle dest $ (++core) <$> code
+  save dest $ (++core) <$> code
     where
     core = "src/core.js"

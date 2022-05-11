@@ -8,5 +8,5 @@ main = do
   progName <- getProgName
   case argv of
     [src, dest] -> runCompilation src dest
-    _ -> (print $ unwords ["Usage:", progName, "<src.po>", "<dest.js>"])
+    _ -> print $ unwords ["Usage:", progName, "<src.po>", "<dest.js>"]
   return ()
