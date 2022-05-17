@@ -55,6 +55,8 @@ parseUnOp =  word "@1" $> Fst
 parseBop :: Parser Bop
 parseBop = word "==" $> Equal
        <|> word "++" $> Concat
+       <|> word "+>" $> Prepend
+       <|> word "<+" $> Postpend
        <|> word ">=" $> GreaterThanOrEqual
        <|> word "<=" $> LessThanOrEqual
        <|> char '>' $> GreaterThan

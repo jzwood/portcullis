@@ -66,6 +66,8 @@ instance Show Expr where
   show (UnOp unop e) = show e ++ show unop
   show (BinOp Equal e1 e2) = prefixBop Equal e1 e2
   show (BinOp Concat a1 a2) = prefixBop Concat a1 a2
+  show (BinOp Prepend e a) = bracket $ show e ++ ", ..." ++ show a
+  show (BinOp Postpend e a) = bracket $ "..." ++ show a ++ ", " ++ show e
   show (BinOp bop e1 e2) = infixBop bop e1 e2
   show (TernOp If p e1 e2)
     = (paren . ('\n':) . (++"\n") . indent . unlines)

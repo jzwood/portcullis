@@ -1,0 +1,36 @@
+range -> Num [Num]
+range n =
+  ? == n 0 Num []
+  ++ Num [n] (range - n 1)
+
+and -> Atom -> Atom Atom
+and a b =
+  ? == True a
+    ? == True b
+      True
+    False
+  False
+
+fizzbuzz -> Num Num
+fizzbuzz n =
+  ? (and == 0 % n 3 == 0 % n 5) - 0 3
+  ? == 0 % n 5
+    - 0 2
+  ? == 0 % n 3
+    - 0 1
+  n
+
+#
+map -> -> [a] [b] -> [a] [b]
+map f xs =
+  ? == 0 _ xs
+    xs
+  ?
+#
+
+test -> a -> [a] [a]
+test x xs =
+  +> x xs
+
+badConcat -> [Num] [Num]
+badConcat ns = ++ Atom [] ns

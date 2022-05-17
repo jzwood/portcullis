@@ -77,6 +77,8 @@ data Bop
   | Equal
   | Rem
   | Concat
+  | Prepend
+  | Postpend
   deriving (Eq)
 
 data Top

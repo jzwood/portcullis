@@ -17,8 +17,9 @@ import qualified Data.Map as Map
 
 data TypeError
   = NotFunction
-  | AritySignatureMismatch String
-  | TypeMismatch [TypeExpr] String
+  | AritySignatureMismatch TypeExpr TypeExpr
+  | TypeMismatch TypeExpr TypeExpr
+  | Unexpected
   deriving (Show, Eq)
 
 data TypecheckError = TypecheckError Stmt TypeError
@@ -47,7 +48,7 @@ typecheckStmt stmtMap stmt@Function { body, args, signature } = do
   &   mapLeft (TypecheckError stmt)
     where
       cmp :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
-      cmp te1 te2 = if te1 == te2 then Right te1 else Left $ AritySignatureMismatch $ show ("(typecheckStmt)", te1, te2)
+      cmp te1 te2 = if te1 == te2 then Right te1 else Left $ AritySignatureMismatch te1 te2
 
 modToStmtMap :: Module -> Map Name Stmt
 modToStmtMap (Module stms)
@@ -59,19 +60,19 @@ typecheckExpr :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typecheckExpr t (Arrow tl tr)
   = typecheck t tl Map.empty  -- compare type with sig
   <&> applyTypeMap tr
-typecheckExpr t1 t2 = Left $ AritySignatureMismatch $ show (t1, t2)
+typecheckExpr t1 t2 = Left $ AritySignatureMismatch t1 t2
 
 typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map Name TypeExpr)
 typecheck t (Unspecfied n) m =
   case Map.lookup n m of
     Nothing -> Right $ Map.insert n t m
-    Just t' -> if t == t' then Right m else Left $ TypeMismatch [t, t'] "typecheck a"
+    Just t' -> if t == t' then Right m else Left $ TypeMismatch t t'
 typecheck (Arrow t0 t1) (Arrow t2 t3) m = typecheck t0 t2 m >>= typecheck t1 t3
 typecheck (TupType te0 te1) (TupType te2 te3) m = typecheck te0 te2 m >>= typecheck te1 te3
 typecheck (ListType te0) (ListType te1) m = typecheck te0 te1 m
 typecheck t1 t2 m =
   if t1 == t2 then Right m
-              else Left $ TypeMismatch [t1, t2] "typecheck b"
+              else Left $ TypeMismatch t1 t2
 
 applyTypeMap :: TypeExpr -> Map Name TypeExpr -> TypeExpr
 applyTypeMap t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
@@ -87,7 +88,7 @@ typeExprToList t = [t]
 typeExprFromList :: [TypeExpr] -> Either TypeError TypeExpr
 typeExprFromList [te] = Right te
 typeExprFromList (te:tes) = Arrow te <$> typeExprFromList tes
-typeExprFromList [] = Left $ AritySignatureMismatch "typeExprFromList"
+typeExprFromList [] = Left Unexpected
 
 argToMaybeSig :: Name -> [Name] -> TypeExpr -> Maybe TypeExpr
 argToMaybeSig arg args sig
@@ -105,9 +106,9 @@ typeofExpr m s (Val p) =
     List typeExpr exprs -> Right $ ListType typeExpr
 typeofExpr m Function { signature = sig, args } (Ident name)
    =  argToMaybeSig name args sig
-  <|> (Map.lookup name m <&> signature)  -- ????
+  <|> (Map.lookup name m <&> signature)
   <&> Right
-   &  fromMaybe (Left $ AritySignatureMismatch $ show ("(typeofExpr Ident)", name, args))
+   &  fromMaybe (Left NotFunction)
 typeofExpr m f@Function { signature = sig, args } (Call name exprs)
   =  argToMaybeSig name args sig
  <|> (Map.lookup name m <&> signature)
@@ -149,6 +150,8 @@ typeofBop bop =
     LessThan -> nnb
     LessThanOrEqual -> nnb
     Concat -> Arrow (ListType (Unspecfied "a")) (Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a")))
+    Prepend -> Arrow (Unspecfied "a") (Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a")))
+    Postpend -> Arrow (Unspecfied "a") (Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a")))
   where
     uub = Arrow (Unspecfied "a") (Arrow (Unspecfied "a") (Unspecfied "a"))
     nnn = Arrow NumType (Arrow NumType NumType)
