@@ -276,7 +276,7 @@ spec = do
                           }
           m = Map.fromList [("hof1", hof1), ("hof2", hof2)]
       isLeft (typecheckStmt m hof2) `shouldBe` True
-      typecheckStmt m hof1 `shouldBe` (Right $ ListType NumType)
+      typecheckStmt m hof1 `shouldBe` Right (ListType NumType)
 
     it "bad concat caught" $ do
       let goodConcat = Function { name = "goodConcat"
@@ -290,12 +290,14 @@ spec = do
                                 , body = BinOp Concat (Ident "ns") (Val $ List AtomType [])
                                 }
           badConcat2 = Function { name = "badConcat2"
-                                , signature = Arrow (ListType NumType) (ListType NumType)
-                                , args = ["ns"]
-                                , body = BinOp Concat (Ident "ns") (Val $ List AtomType [])
+                                , signature = Arrow (ListType (Unspecfied "x")) (ListType (Unspecfied "x"))
+                                , args = ["xs"]
+                                , body = BinOp Concat (Ident "ns") (Val $ List CharType [])
                                 }
-          m = Map.fromList [("goodConcat", goodConcat), ("badConcat1", badConcat1)]
+          m = Map.fromList [("goodConcat", goodConcat), ("badConcat1", badConcat1), ("badConcat2", badConcat2)]
       isLeft (typecheckStmt m goodConcat) `shouldBe` False
-      typecheckStmt m goodConcat `shouldBe` (Right $ ListType NumType)
+      typecheckStmt m goodConcat `shouldBe` Right (ListType NumType)
       isLeft (typecheckStmt m badConcat1) `shouldBe` True
-      typecheckStmt m badConcat1 `shouldBe` (Left $ TypecheckError badConcat1 (TypeMismatch AtomType NumType))
+      typecheckStmt m badConcat1 `shouldBe` Left (TypecheckError badConcat1 (TypeMismatch AtomType NumType))
+      isLeft (typecheckStmt m badConcat2) `shouldBe` True
+      typecheckStmt m badConcat2 `shouldBe` Left (TypecheckError badConcat2 NotFunction)

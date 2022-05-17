@@ -1,0 +1,20 @@
+range -> Num [Num]
+range n =
+  ? == n 0 Num []
+  ++ Num [n] (range - n 1)
+
+test -> a -> [a] [a]
+test x xs =
+  +> x xs
+
+badConcat -> [a] [a]
+badConcat a = ++ a a []
+
+
+#
+map -> -> [a] [b] -> [a] [b]
+map f xs =
+  ? == _ xs 0
+    b []
+  ? +> (! xs 0) (tail xs)
+#

@@ -1,8 +1,3 @@
-range -> Num [Num]
-range n =
-  ? == n 0 Num []
-  ++ Num [n] (range - n 1)
-
 and -> Atom -> Atom Atom
 and a b =
   ? == True a
@@ -20,17 +15,7 @@ fizzbuzz n =
     - 0 1
   n
 
-#
-map -> -> [a] [b] -> [a] [b]
-map f xs =
-  ? == 0 _ xs
-    xs
-  ?
-#
-
-test -> a -> [a] [a]
-test x xs =
-  +> x xs
-
-badConcat -> [Num] [Num]
-badConcat ns = ++ Atom [] ns
+fizzbuzzN -> Num [Num]
+fizzbuzzN n =
+  ? == n 0 Num []
+  <+ (fizzbuzz n) (fizzbuzzN - n 1)

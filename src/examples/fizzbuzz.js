@@ -2,14 +2,6 @@ const False = 0
 const True = 1
 
 
-// function "range" has type (Num -> [Num])
-export function range(n) {
-  return (
-    /* if */ equal(n, 0.0) ?
-    /* then */ /* [Num] */ [] :
-    /* else */ Array.prototype.concat.call(/* [Num] */ [n], range((n - 1.0)))
-  );
-}
 // function "and" has type (Atom -> (Atom -> Atom))
 export function and(a) {
   return (b) => (
@@ -38,13 +30,13 @@ export function fizzbuzz(n) {
     )
   );
 }
-// function "test" has type (a -> ([a] -> [a]))
-export function test(x) {
-  return (xs) => [x, ...xs];
-}
-// function "badConcat" has type ([Num] -> [Num])
-export function badConcat(ns) {
-  return Array.prototype.concat.call(/* [Num] */ [], ns);
+// function "fizzbuzzN" has type (Num -> [Num])
+export function fizzbuzzN(n) {
+  return (
+    /* if */ equal(n, 0.0) ?
+    /* then */ /* [Num] */ [0.0] :
+    /* else */ [...fizzbuzzN((n - 1.0)), fizzbuzz(n)]
+  );
 }
 // function "equal" has type (a -> (a -> Atom))
 export function equal(a, b) {
