@@ -62,7 +62,8 @@ data Expr
 data UnOp
   = Fst
   | Snd
-  | Length
+  | Head -- INTERNAL ONLY
+  | Tail  -- INTERNAL ONLY
   deriving (Eq)
 
 data Bop
@@ -76,13 +77,10 @@ data Bop
   | LessThanOrEqual
   | Equal
   | Rem
-  | Concat
-  | Prepend
-  | Postpend
+  | Cons
   deriving (Eq)
 
 data Top
-  = Slice
-  | At
+  = Uncons
   | If
   deriving (Show, Eq)

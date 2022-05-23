@@ -134,7 +134,6 @@ typeofExpr m s (TernOp top expr1 expr2 expr3)
 typeofUnOp :: UnOp -> TypeExpr
 typeofUnOp Fst = Arrow (TupType (Unspecfied "a") (Unspecfied "b")) (Unspecfied "a")
 typeofUnOp Snd = Arrow (TupType (Unspecfied "a") (Unspecfied "b")) (Unspecfied "b")
-typeofUnOp Length = Arrow (ListType (Unspecfied "a")) NumType
 
 typeofBop :: Bop -> TypeExpr
 typeofBop bop =
@@ -149,15 +148,12 @@ typeofBop bop =
     Rem -> nnb
     LessThan -> nnb
     LessThanOrEqual -> nnb
-    Concat -> Arrow (ListType (Unspecfied "a")) (Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a")))
-    Prepend -> Arrow (Unspecfied "a") (Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a")))
-    Postpend -> Arrow (Unspecfied "a") (Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a")))
+    Cons -> Arrow (Unspecfied "a") (Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a")))
   where
     uub = Arrow (Unspecfied "a") (Arrow (Unspecfied "a") (Unspecfied "a"))
     nnn = Arrow NumType (Arrow NumType NumType)
     nnb = Arrow NumType (Arrow NumType AtomType)
 
 typeofTop :: Top -> TypeExpr
-typeofTop Slice = Arrow (ListType (Unspecfied "a")) (Arrow NumType (Arrow NumType (ListType (Unspecfied "a"))))
-typeofTop At = Arrow (ListType (Unspecfied "a")) (Arrow NumType (Arrow (Unspecfied "a") (Unspecfied "a")))
+typeofTop Uncons = Arrow (ListType (Unspecfied "a")) (Arrow (Unspecfied "b") (Arrow (Arrow (Unspecfied "a") (Arrow (ListType (Unspecfied "a")) (Unspecfied "b"))) (Unspecfied "b")))
 typeofTop If = Arrow AtomType (Arrow (Unspecfied "a") (Arrow (Unspecfied "a") (Unspecfied "a")))

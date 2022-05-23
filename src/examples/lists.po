@@ -11,10 +11,8 @@ badConcat -> [a] [a]
 badConcat a = ++ a a []
 
 
-#
 map -> -> [a] [b] -> [a] [b]
 map f xs =
   ? == _ xs 0
     b []
   ? +> (! xs 0) (tail xs)
-#

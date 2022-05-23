@@ -1,0 +1,34 @@
+#
+range -> Num [Num]
+range n =
+  ? == n 0 Num []
+  ++ Num [n] (range - n 1)
+#
+
+cons -> a -> [a] [a]
+const x xs =
+  +> x
+  +> x
+  +> x xs
+
+count -> a -> [a] Num
+count x xs = + 1 (length xs)
+
+#
+length -> [a] Num
+length xs = 1
+#
+
+
+length -> [a] Num
+length xs =
+  @> xs 0 count
+
+
+#
+map -> -> [a] [b] -> [a] [b]
+map f xs =
+  ? == _ xs 0
+    b []
+  ? +> (! xs 0) (tail xs)
+#

@@ -19,3 +19,7 @@ fizzbuzzN -> Num [Num]
 fizzbuzzN n =
   ? == n 0 Num []
   <+ (fizzbuzz n) (fizzbuzzN - n 1)
+
+concatTest -> [b] [b]
+concatTest b = ++ b b []
+

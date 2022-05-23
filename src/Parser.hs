@@ -50,13 +50,10 @@ parseTypeExpr
 parseUnOp :: Parser UnOp
 parseUnOp =  word "@1" $> Fst
          <|> word "@2" $> Snd
-         <|> char '_' $> Length
 
 parseBop :: Parser Bop
 parseBop = word "==" $> Equal
-       <|> word "++" $> Concat
-       <|> word "+>" $> Prepend
-       <|> word "<+" $> Postpend
+       <|> word "+>" $> Cons
        <|> word ">=" $> GreaterThanOrEqual
        <|> word "<=" $> LessThanOrEqual
        <|> char '>' $> GreaterThan
@@ -68,8 +65,7 @@ parseBop = word "==" $> Equal
        <|> char '%' $> Rem
 
 parseTop :: Parser Top
-parseTop =  word "!!" $> Slice
-        <|> char '!' $> At
+parseTop =  word "@>" $> Uncons
         <|> char '?' $> If
 
 parseCall :: Parser Expr

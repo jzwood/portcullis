@@ -51,7 +51,7 @@ instance Show Value where
   show (Number n) = show n
   show (Character c) = ['\'', c, '\'']
   show (Atom n) = n
-  show (List t a) = unwords ["/*", show $ ListType t, "*/", show a]
+  show (List t xs) = unwords ["/*", show $ ListType t, "*/", show xs]
   show (Tuple e1 e2)
     =  show <$> [e1, e2]
     &  bracket . intercalate ", "
@@ -65,9 +65,7 @@ instance Show Expr where
       _ -> concatMap (paren . show) exprs
   show (UnOp unop e) = show e ++ show unop
   show (BinOp Equal e1 e2) = prefixBop Equal e1 e2
-  show (BinOp Concat a1 a2) = prefixBop Concat a1 a2
-  show (BinOp Prepend e a) = bracket $ show e ++ ", ..." ++ show a
-  show (BinOp Postpend e a) = bracket $ "..." ++ show a ++ ", " ++ show e
+  show (BinOp Cons e xs) = bracket $ show e ++ ", ..." ++ show xs
   show (BinOp bop e1 e2) = infixBop bop e1 e2
   show (TernOp If p e1 e2)
     = (paren . ('\n':) . (++"\n") . indent . unlines)
@@ -75,13 +73,14 @@ instance Show Expr where
     , "/* then */ " ++ show e1 ++ " :"
     , "/* else */ " ++ show e2
     ]
-  show (TernOp Slice a n1 n2) = paren $ show a ++ ".slice" ++ (paren . intercalate ", " . fmap show) [n1, n2]
-  show (TernOp At a n e) = paren $ show a ++ ".at" ++ (paren . show $ n) ++ " ?? " ++  show e
+  show (TernOp Uncons xs b (Ident fb)) =
+    show $ TernOp If (BinOp Equal xs (Val $ List (Unspecfied "") [])) b (Call fb [UnOp Head xs, UnOp Tail xs])
 
 instance Show UnOp where
   show Fst = "[0]"
   show Snd = "[1]"
-  show Length = ".length"
+  show Head = ".at(0)"
+  show Tail = ".slice(1)"
 
 instance Show Bop where
   show Plus = "+"
@@ -94,7 +93,7 @@ instance Show Bop where
   show LessThanOrEqual = "<="
   show Rem = "%"
   show Equal = "equal"
-  show Concat = "Array.prototype.concat.call"
+  --show Cons
 
 prefixOp :: String -> [String] -> String
 prefixOp op = (op ++) . paren . intercalate ", "

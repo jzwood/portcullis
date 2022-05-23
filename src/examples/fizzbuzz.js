@@ -34,9 +34,13 @@ export function fizzbuzz(n) {
 export function fizzbuzzN(n) {
   return (
     /* if */ equal(n, 0.0) ?
-    /* then */ /* [Num] */ [0.0] :
+    /* then */ /* [Num] */ [] :
     /* else */ [...fizzbuzzN((n - 1.0)), fizzbuzz(n)]
   );
+}
+// function "concatTest" has type ([b] -> [b])
+export function concatTest(b) {
+  return Array.prototype.concat.call(b, /* [b] */ []);
 }
 // function "equal" has type (a -> (a -> Atom))
 export function equal(a, b) {
