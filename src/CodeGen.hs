@@ -51,6 +51,7 @@ instance Show Value where
   show (Number n) = show n
   show (Character c) = ['\'', c, '\'']
   show (Atom n) = n
+  show (List (Unspecfied "") xs) = show xs -- so uncons displays nicely
   show (List t xs) = unwords ["/*", show $ ListType t, "*/", show xs]
   show (Tuple e1 e2)
     =  show <$> [e1, e2]

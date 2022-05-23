@@ -22,7 +22,7 @@ length xs = 1
 
 length -> [a] Num
 length xs =
-  @> xs 0 count
+  +> xs 0 count
 
 
 #

@@ -65,7 +65,7 @@ parseBop = word "==" $> Equal
        <|> char '%' $> Rem
 
 parseTop :: Parser Top
-parseTop =  word "@>" $> Uncons
+parseTop =  word "<+" $> Uncons
         <|> char '?' $> If
 
 parseCall :: Parser Expr

@@ -12,3 +12,9 @@ hofBad f xs =
 ```
 
 so `(f xs)` sets `a` to `[Num]` if arg 2 is a num list. But the signature at the end doesn't realize it should now be `[[Num]]`.
+
+
+## TODO
+- assess above todos
+- update unit tests
+- update vim theme for latest syntax
