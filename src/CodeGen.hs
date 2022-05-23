@@ -74,8 +74,8 @@ instance Show Expr where
     , "/* then */ " ++ show e1 ++ " :"
     , "/* else */ " ++ show e2
     ]
-  show (TernOp Uncons xs b (Ident fb)) =
-    show $ TernOp If (BinOp Equal xs (Val $ List (Unspecfied "") [])) b (Call fb [UnOp Head xs, UnOp Tail xs])
+  show (TernOp Uncons xs b fb) =
+    show $ TernOp If (BinOp Equal xs (Val $ List (Unspecfied "") [])) b (Call (show fb) [UnOp Head xs, UnOp Tail xs])
 
 instance Show UnOp where
   show Fst = "[0]"

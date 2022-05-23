@@ -14,9 +14,17 @@ export function length(xs) {
     /* else */ tailPlusOne(xs.at(0))(xs.slice(1))
   );
 }
+// function "push" has type ([a] -> (a -> ([a] -> [a])))
+export function push(ys) {
+  return (x) => (xs) => [x, ...concat(xs)(ys)];
+}
 // function "concat" has type ([a] -> ([a] -> [a]))
 export function concat(xs) {
-  return (ys) => /* [a] */ [];
+  return (ys) => (
+    /* if */ equal(xs, []) ?
+    /* then */ ys :
+    /* else */ push(ys)(xs.at(0))(xs.slice(1))
+  );
 }
 // function "equal" has type (a -> (a -> Atom))
 export function equal(a, b) {

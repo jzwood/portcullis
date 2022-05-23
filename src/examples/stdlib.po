@@ -7,5 +7,9 @@ length -> [a] Num
 length xs =
   <+ xs 0 tailPlusOne
 
+push -> [a] -> a -> [a] [a]
+push ys x xs = +> x (concat xs ys)
+
 concat -> [a] -> [a] [a]
-concat xs ys = a []
+concat xs ys =
+  <+ xs ys (push ys)
