@@ -1,16 +1,64 @@
-neg -> Num Num
-neg x = - 0 x
+# UNSTANDARD LIB #
+
+tailPlusOne -> a -> [a] Num
+tailPlusOne x xs = + 1 (length xs)
+
+length -> [a] Num
+length xs =
+  <+ xs 0 tailPlusOne
+
+push -> [h] -> h -> [h] [h]
+push ys x xs = +> x (concat xs ys)
+
+concat -> [a] -> [a] [a]
+concat xs ys =
+  <+ xs ys (push ys)
+
+#
+slice -> [a] -> Num -> Num [a]
+slice ys i j =
+  ? > i 0 (slice ys - i 1, y)
+  <+ ys
+#
+
+identity2 -> x -> [x] [x]
+identity2 x xs = xs
 
 tail -> [a] [a]
-tail xs = !! xs 1 _ xs
+tail xs =
+  <+ xs xs (identity2)
+
+#
+drop -> [a] -> Num [a]
+drop xs n =
+  ? == n 0 xs
+  (drop (tail ys) - n 1)
+#
+
+#
+take -> [a] -> Num [a]
+take xs n =
+  ? == n 0 a []
+  <+ xs a []
+  (drop (tail ys) - n 1)
+#
+
+# TEST BELOW #
+
+neg -> Num Num
+neg x = - 0 x
 
 empty [Num]
 empty = Num []
 
+#
 msort -> [Num] [Num]
-msort ns = (msort2 _ ns ns)
+msort ns = (msort2 (length ns) ns)
+#
 
 # msort2 is a helper for msort #
+
+#
 msort2 -> Num -> [Num] [Num]
 msort2 len ns =
   ? <= len 1 ns
@@ -23,23 +71,26 @@ cmpHead xs ys =
 
 merge -> [Num] -> [Num] [Num]
 merge xs ys =
-  ? == 0 _ xs ys
-  ? == 0 _ ys xs
+  ? == 0 (length xs) ys
+  ? == 0 (length ys) xs
     (merge2 (cmpHead xs ys))
 
 merge2 -> {[Num] [Num]} [Num]
-merge2 xys = ++ !! @1 xys 0 1 (merge (tail @1 xys) @2 xys)
+merge2 xys = (concat !! @1 xys 0 1 (merge (tail @1 xys) @2 xys))
+#
 
 avg -> Num -> Num Num
 avg a b = * 0.5 + a b
 
 mean -> [Num] Num
-mean xs = / (sum xs) _ xs
+mean xs = / (sum xs) (length xs)
+
+sum2 -> Num -> [Num] Num
+sum2 x xs = + x (sum xs)
 
 sum -> [Num] Num
 sum xs =
-  ? == 0 _ xs 0
-    + ! xs 0 0 (sum (tail xs))
+  <+ xs 0 sum2
 
 compose -> -> b c -> -> a b -> a c
 compose f g x = (f (g x))

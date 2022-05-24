@@ -1,6 +1,5 @@
 const False = 0
 const True = 1
-
 export const one1 = $one1()
 export const one2 = $one2()
 
@@ -31,6 +30,18 @@ function $one1() {
 // function "one2" has type Num
 function $one2() {
   return compose(id)(id)(one1);
+}
+// function "a" has type ((h -> h) -> (h -> h))
+export function a(fx) {
+  return (x) => fx(x);
+}
+// function "b" has type (q -> q)
+export function b(w) {
+  return w;
+}
+// function "c" has type (p -> p)
+export function c(y) {
+  return a(b)(y);
 }
 // function "equal" has type (a -> (a -> Atom))
 export function equal(a, b) {

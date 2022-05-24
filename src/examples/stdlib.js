@@ -1,7 +1,6 @@
 const False = 0
 const True = 1
 
-
 // function "tailPlusOne" has type (a -> ([a] -> Num))
 export function tailPlusOne(x) {
   return (xs) => (1.0 + length(xs));

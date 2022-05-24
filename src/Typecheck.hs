@@ -17,7 +17,7 @@ import qualified Data.Map as Map
 
 data TypeError
   = NotFunction
-  | AritySignatureMismatch TypeExpr TypeExpr
+  | AritySignatureMismatch TypeExpr TypeExpr Integer
   | TypeMismatch TypeExpr TypeExpr
   | Unexpected
   deriving (Show, Eq)
@@ -48,7 +48,7 @@ typecheckStmt stmtMap stmt@Function { body, args, signature } = do
   &   mapLeft (TypecheckError stmt)
     where
       cmp :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
-      cmp te1 te2 = if te1 == te2 then Right te1 else Left $ AritySignatureMismatch te1 te2
+      cmp te1 te2 = if te1 == te2 then Right te1 else Left $ AritySignatureMismatch te1 te2 0
 
 modToStmtMap :: Module -> Map Name Stmt
 modToStmtMap (Module stms)
@@ -59,10 +59,11 @@ modToStmtMap (Module stms)
 typecheckExpr :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typecheckExpr t (Arrow tl tr)
   = typecheck t tl Map.empty  -- compare type with sig
-  <&> applyTypeMap tr
-typecheckExpr t1 t2 = Left $ AritySignatureMismatch t1 t2
+  <&> resolveType tr
+typecheckExpr t1 t2 = Left $ AritySignatureMismatch t1 t2 1
 
 typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map Name TypeExpr)
+--typecheck (Unspecfied n) t@(Unspecfied _) m = Right $ Map.insert n t m
 typecheck t (Unspecfied n) m =
   case Map.lookup n m of
     Nothing -> Right $ Map.insert n t m
@@ -74,12 +75,12 @@ typecheck t1 t2 m =
   if t1 == t2 then Right m
               else Left $ TypeMismatch t1 t2
 
-applyTypeMap :: TypeExpr -> Map Name TypeExpr -> TypeExpr
-applyTypeMap t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
-applyTypeMap t@(TupType t1 t2) m = TupType (applyTypeMap t1 m) (applyTypeMap t2 m)
-applyTypeMap (ListType t) m = ListType (applyTypeMap t m)
-applyTypeMap (Arrow tl tr) m = Arrow (applyTypeMap tl m) (applyTypeMap tr m)
-applyTypeMap t _ = t
+resolveType :: TypeExpr -> Map Name TypeExpr -> TypeExpr
+resolveType t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
+resolveType t@(TupType t1 t2) m = TupType (resolveType t1 m) (resolveType t2 m)
+resolveType (ListType t) m = ListType (resolveType t m)
+resolveType (Arrow tl tr) m = Arrow (resolveType tl m) (resolveType tr m)
+resolveType t _ = t
 
 typeExprToList :: TypeExpr -> [TypeExpr]
 typeExprToList (Arrow t0 t1) = t0 : typeExprToList t1

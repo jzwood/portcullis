@@ -1,0 +1,6 @@
+id2 -> w -> [w] [w]
+id2 x xs = xs
+
+tail -> [f] [f]
+tail xs =
+  <+ xs xs id2

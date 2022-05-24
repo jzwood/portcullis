@@ -127,7 +127,7 @@ readAtoms stmts
   =  concatMap (findAtoms . body) stmts
   &  zip [0..] . nub . ("False" :) . ("True" :)
  <&> (\(i, atom) -> unwords ["const", atom, "=", show i])
-  &  unlines
+  &  unlines'
 
 readZeroArityFunctions :: [Stmt] -> String
 readZeroArityFunctions stmts

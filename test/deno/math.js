@@ -1,56 +1,51 @@
 const False = 0
 const True = 1
 const Chipmunk = 2
-
 export const empty = $empty()
 
+// function "tailPlusOne" has type (a -> ([a] -> Num))
+export function tailPlusOne(x) {
+  return (xs) => (1.0 + length(xs));
+}
+// function "length" has type ([a] -> Num)
+export function length(xs) {
+  return (
+    /* if */ equal(xs, []) ?
+    /* then */ 0.0 :
+    /* else */ tailPlusOne(xs.at(0))(xs.slice(1))
+  );
+}
+// function "push" has type ([h] -> (h -> ([h] -> [h])))
+export function push(ys) {
+  return (x) => (xs) => [x, ...concat(xs)(ys)];
+}
+// function "concat" has type ([a] -> ([a] -> [a]))
+export function concat(xs) {
+  return (ys) => (
+    /* if */ equal(xs, []) ?
+    /* then */ ys :
+    /* else */ push(ys)(xs.at(0))(xs.slice(1))
+  );
+}
+// function "identity2" has type (a -> ([a] -> [a]))
+export function identity2(x) {
+  return (xs) => xs;
+}
+// function "tail" has type ([a] -> [a])
+export function tail(xs) {
+  return (
+    /* if */ equal(xs, []) ?
+    /* then */ xs :
+    /* else */ identity2(xs.at(0))(xs.slice(1))
+  );
+}
 // function "neg" has type (Num -> Num)
 export function neg(x) {
   return (0.0 - x);
 }
-// function "tail" has type ([a] -> [a])
-export function tail(xs) {
-  return (xs.slice(1.0, xs.length));
-}
 // function "empty" has type [Num]
 function $empty() {
   return /* [Num] */ [];
-}
-// function "msort" has type ([Num] -> [Num])
-export function msort(ns) {
-  return msort2(ns.length)(ns);
-}
-// function "msort2" has type (Num -> ([Num] -> [Num]))
-export function msort2(len) {
-  return (ns) => (
-    /* if */ (len <= 1.0) ?
-    /* then */ ns :
-    /* else */ merge(msort((ns.slice(0.0, (len / 2.0)))))(msort((ns.slice((len / 2.0), len))))
-  );
-}
-// function "cmpHead" has type ([Num] -> ([Num] -> [[Num] [Num]]))
-export function cmpHead(xs) {
-  return (ys) => (
-    /* if */ ((xs.at(0.0) ?? 0.0) < (ys.at(0.0) ?? 0.0)) ?
-    /* then */ [xs, ys] :
-    /* else */ [ys, xs]
-  );
-}
-// function "merge" has type ([Num] -> ([Num] -> [Num]))
-export function merge(xs) {
-  return (ys) => (
-    /* if */ equal(0.0, xs.length) ?
-    /* then */ ys :
-    /* else */ (
-      /* if */ equal(0.0, ys.length) ?
-      /* then */ xs :
-      /* else */ merge2(cmpHead(xs)(ys))
-    )
-  );
-}
-// function "merge2" has type ([[Num] [Num]] -> [Num])
-export function merge2(xys) {
-  return Array.prototype.concat.call((xys[0].slice(0.0, 1.0)), merge(tail(xys[0]))(xys[1]));
 }
 // function "avg" has type (Num -> (Num -> Num))
 export function avg(a) {
@@ -58,14 +53,18 @@ export function avg(a) {
 }
 // function "mean" has type ([Num] -> Num)
 export function mean(xs) {
-  return (sum(xs) / xs.length);
+  return (sum(xs) / length(xs));
+}
+// function "sum2" has type (Num -> ([Num] -> Num))
+export function sum2(x) {
+  return (xs) => (x + sum(xs));
 }
 // function "sum" has type ([Num] -> Num)
 export function sum(xs) {
   return (
-    /* if */ equal(0.0, xs.length) ?
+    /* if */ equal(xs, []) ?
     /* then */ 0.0 :
-    /* else */ ((xs.at(0.0) ?? 0.0) + sum(tail(xs)))
+    /* else */ sum2(xs.at(0))(xs.slice(1))
   );
 }
 // function "compose" has type ((b -> c) -> ((a -> b) -> (a -> c)))
