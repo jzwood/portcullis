@@ -15,6 +15,8 @@ spec = do
     it "camel" $ do
       let result = runParser camel mempty "catWorld"
       success result `shouldBe` Just ("catWorld", "")
+      let result = runParser camel mempty "_catWorld"
+      success result `shouldBe` Just ("_catWorld", "")
       let result = runParser camel mempty "Cat"
       success result `shouldBe` Nothing
 

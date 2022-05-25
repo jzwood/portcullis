@@ -26,14 +26,14 @@ drop xs n =
   ? <= n 0 xs
   (drop (tail xs) - n 1)
 
-take2 -> Num -> f -> [f] [f]
-take2 n x xs =
+_take -> Num -> f -> [f] [f]
+_take n x xs =
   ? <= n 0 f []
   +> x (take xs - n 1)
 
 take -> [k] -> Num [k]
 take xs n =
-  <+ xs k [] (take2 n)
+  <+ xs k [] (_take n)
 
 slice -> [q] -> Num -> Num [q]
 slice xs i j = (take (drop xs i) - j i)
@@ -107,6 +107,7 @@ rankPet p1 p2 =
   ? == Chipmunk p1 {p1 p2} {p2 p1}
 
 
+#
 lt -> Num -> [Num] Atom
 lt p xs = < ! xs 0 0 p
 
@@ -123,8 +124,8 @@ qsortp x xs =
 qsort -> [Num] [Num]
 qsort xs =
   <+ xs xs qsortp
+#
 
-#QUICK SORT #
 #
 qsort -> [Num] [Num]
 qsort xs =

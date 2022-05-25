@@ -4,6 +4,7 @@ module MiniParser where
 
 import Control.Applicative
 import Data.Char
+import Util
 
 -- APPLICATIVE PARSER
 
@@ -116,7 +117,7 @@ identStartsWith :: (Char -> Bool) -> Parser String
 identStartsWith char0 = liftA2 (:) (satisfy char0) (zeroOrMore alphaNumChar)
 
 camel :: Parser String
-camel = identStartsWith isLower
+camel = identStartsWith (isLower .|| (== '_'))
 
 pascal :: Parser String
 pascal = identStartsWith isUpper

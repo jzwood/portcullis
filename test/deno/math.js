@@ -48,8 +48,8 @@ export function drop(xs) {
     /* else */ drop(tail(xs))((n - 1.0))
   );
 }
-// function "take2" has type (Num -> (f -> ([f] -> [f])))
-export function take2(n) {
+// function "_take" has type (Num -> (f -> ([f] -> [f])))
+export function _take(n) {
   return (x) => (xs) => (
     /* if */ (n <= 0.0) ?
     /* then */ /* [f] */ [] :
@@ -61,7 +61,7 @@ export function take(xs) {
   return (n) => (
     /* if */ equal(xs, []) ?
     /* then */ /* [k] */ [] :
-    /* else */ take2(n)(xs.at(0))(xs.slice(1))
+    /* else */ _take(n)(xs.at(0))(xs.slice(1))
   );
 }
 // function "slice" has type ([q] -> (Num -> (Num -> [q])))
@@ -71,7 +71,7 @@ export function slice(xs) {
 // function "filter2" has type ((x -> Atom) -> (x -> ([x] -> [x])))
 export function filter2(g) {
   return (w) => (ws) => concat((
-    /* if   */ g(w) ?
+    /* if */ g(w) ?
     /* then */ /* [x] */ [w] :
     /* else */ /* [x] */ []
   ))(filter(g)(ws));
@@ -79,7 +79,7 @@ export function filter2(g) {
 // function "filter" has type ((j -> Atom) -> ([j] -> [j]))
 export function filter(f) {
   return (xs) => (
-    /* if   */ equal(xs, []) ?
+    /* if */ equal(xs, []) ?
     /* then */ xs :
     /* else */ filter2(f)(xs.at(0))(xs.slice(1))
   );
