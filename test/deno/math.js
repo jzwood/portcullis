@@ -1,6 +1,7 @@
 const False = 0
 const True = 1
 const Chipmunk = 2
+
 export const empty = $empty()
 
 // function "tailPlusOne" has type (a -> ([a] -> Num))
@@ -27,16 +28,60 @@ export function concat(xs) {
     /* else */ push(ys)(xs.at(0))(xs.slice(1))
   );
 }
-// function "identity2" has type (a -> ([a] -> [a]))
+// function "identity2" has type (x -> ([x] -> [x]))
 export function identity2(x) {
   return (xs) => xs;
 }
-// function "tail" has type ([a] -> [a])
+// function "tail" has type ([p] -> [p])
 export function tail(xs) {
   return (
     /* if */ equal(xs, []) ?
     /* then */ xs :
     /* else */ identity2(xs.at(0))(xs.slice(1))
+  );
+}
+// function "drop" has type ([g] -> (Num -> [g]))
+export function drop(xs) {
+  return (n) => (
+    /* if */ (n <= 0.0) ?
+    /* then */ xs :
+    /* else */ drop(tail(xs))((n - 1.0))
+  );
+}
+// function "take2" has type (Num -> (f -> ([f] -> [f])))
+export function take2(n) {
+  return (x) => (xs) => (
+    /* if */ (n <= 0.0) ?
+    /* then */ /* [f] */ [] :
+    /* else */ [x, ...take(xs)((n - 1.0))]
+  );
+}
+// function "take" has type ([k] -> (Num -> [k]))
+export function take(xs) {
+  return (n) => (
+    /* if */ equal(xs, []) ?
+    /* then */ /* [k] */ [] :
+    /* else */ take2(n)(xs.at(0))(xs.slice(1))
+  );
+}
+// function "slice" has type ([q] -> (Num -> (Num -> [q])))
+export function slice(xs) {
+  return (i) => (j) => take(drop(xs)(i))((j - i));
+}
+// function "filter2" has type ((x -> Atom) -> (x -> ([x] -> [x])))
+export function filter2(g) {
+  return (w) => (ws) => concat((
+    /* if   */ g(w) ?
+    /* then */ /* [x] */ [w] :
+    /* else */ /* [x] */ []
+  ))(filter(g)(ws));
+}
+// function "filter" has type ((j -> Atom) -> ([j] -> [j]))
+export function filter(f) {
+  return (xs) => (
+    /* if   */ equal(xs, []) ?
+    /* then */ xs :
+    /* else */ filter2(f)(xs.at(0))(xs.slice(1))
   );
 }
 // function "neg" has type (Num -> Num)
@@ -77,6 +122,14 @@ export function rankPet(p1) {
     /* if */ equal(Chipmunk, p1) ?
     /* then */ [p1, p2] :
     /* else */ [p2, p1]
+  );
+}
+// function "hofBad" has type ((a -> Atom) -> ([a] -> [a]))
+export function hofBad(f) {
+  return (xs) => (
+    /* if */ f(xs) ?
+    /* then */ xs :
+    /* else */ xs
   );
 }
 // function "equal" has type (a -> (a -> Atom))

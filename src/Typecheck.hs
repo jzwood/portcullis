@@ -44,11 +44,15 @@ typecheckStmt stmtMap stmt@Function { body, args, signature } = do
   expectedTypeOfBody <- typeExprToList signature
                       & drop (length args)
                       & typeExprFromList
-  cmp expectedTypeOfBody typeofBody
+  typeEqual expectedTypeOfBody typeofBody
   &   mapLeft (TypecheckError stmt)
-    where
-      cmp :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
-      cmp te1 te2 = if te1 == te2 then Right te1 else Left $ AritySignatureMismatch te1 te2 0
+
+typeEqual :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
+typeEqual te1@(Unspecfied _) te2@(Unspecfied _) = Right te1
+typeEqual (ListType te1) (ListType te2) = ListType <$> typeEqual te1 te2
+--typeEqual (TupType te1a te1b) (TupType te2a te2b) =
+--typeEqual (Arrow TypeExpr TypeExpr)
+typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ AritySignatureMismatch te1 te2 0
 
 modToStmtMap :: Module -> Map Name Stmt
 modToStmtMap (Module stms)
@@ -63,7 +67,6 @@ typecheckExpr t (Arrow tl tr)
 typecheckExpr t1 t2 = Left $ AritySignatureMismatch t1 t2 1
 
 typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map Name TypeExpr)
---typecheck (Unspecfied n) t@(Unspecfied _) m = Right $ Map.insert n t m
 typecheck t (Unspecfied n) m =
   case Map.lookup n m of
     Nothing -> Right $ Map.insert n t m
@@ -126,7 +129,7 @@ typeofExpr m s (BinOp bop expr1 expr2)
     typecheckExpr t1 (typeofBop bop)
     >>= typecheckExpr t2
 typeofExpr m s (TernOp top expr1 expr2 expr3)
-  = sequence [typeofExpr m s expr1, typeofExpr m s expr2, typeofExpr m s expr3]
+  = sequence (typeofExpr m s <$> [expr1, expr2, expr3])
   >>= \[t1, t2, t3] ->
     typecheckExpr t1 (typeofTop top)
     >>= typecheckExpr t2
@@ -151,7 +154,6 @@ typeofBop bop =
     LessThanOrEqual -> nnb
     Cons -> Arrow (Unspecfied "a") (Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a")))
   where
-    uub = Arrow (Unspecfied "a") (Arrow (Unspecfied "a") (Unspecfied "a"))
     nnn = Arrow NumType (Arrow NumType NumType)
     nnb = Arrow NumType (Arrow NumType AtomType)
 

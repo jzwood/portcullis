@@ -23,12 +23,12 @@ one1 = 1
 one2 Num
 one2 = (compose id id (one1))
 
-id2 -> z -> [z] [z]
-id2 x xs = xs
+id3 -> z -> [z] [z]
+id3 x xs = xs
 
 tail -> [t] [t]
 tail xs =
-  <+ xs xs (id2)
+  <+ xs xs (id3)
 
 a -> -> h h -> h  h
 a fx x = (fx x)
@@ -38,3 +38,28 @@ b w = w
 
 c -> p p
 c y = (a b y)
+
+push -> [h] -> h -> [h] [h]
+push ys x xs = +> x (concat xs ys)
+
+concat -> [a] -> [a] [a]
+concat xs ys =
+  <+ xs ys (push ys)
+
+filter2 -> -> x Atom -> x -> [x] [x]
+filter2 g w ws =
+  (concat
+    ? (g w)
+      x [w]
+      x []
+    (filter g ws))
+
+filter -> -> j Atom -> [j] [j]
+filter f xs =
+  <+ xs xs (filter2 f)
+
+eq -> a -> a Atom
+eq x y = == x y
+
+seven -> [Num] [Num]
+seven xs = (filter (eq 7) xs)
