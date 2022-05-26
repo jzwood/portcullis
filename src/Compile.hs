@@ -36,7 +36,7 @@ compile program
 save :: String -> Either CompileError String -> IO ()
 save dest (Right js)
   =  writeFile dest js
-  >> putStrLn ("✓\t" ++ dest ++ " " ++ "Successfully Compiled")
+  >> putStrLn ("✓\t" ++ dest ++ " Successfully Compiled")
 save dest (Left err) = putStrLn ("!\t" ++ dest ++ " " ++ show err)
 
 --sortpo = "src/examples/rsort.po"

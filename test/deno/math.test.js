@@ -1,14 +1,12 @@
 import _ from 'https://deno.land/x/lodash@4.17.15-es/lodash.js'
 import { assert, assertEquals } from "https://deno.land/std@0.119.0/testing/asserts.ts"
-import { avg, neg, tail, msort, sum, mean, compose } from './math.js'
-import { qsort } from './qsort.js'
+import { avg, neg, tail, msort, qsort, sum, mean, compose } from './math.js'
 
 const generateNumArray = () => Array(Math.floor(100 * Math.random()))
     .fill(0)
     .map(() => Math.random() * 10 * (Math.random() < 0.5 ? 1 : -1))
 const nativeSort = (arr) => arr.sort((a, b) => a - b)
-const epsilon = 0.00001
-const fuzzyEqual = (a, b) => Math.abs(b - a) < epsilon
+const round = n => parseFloat(n.toFixed(5))
 
 Deno.test("avg", () => {
   const pairs = [
@@ -23,11 +21,12 @@ Deno.test("avg", () => {
 
 Deno.test("neg", () => {
   const nums = [
-    0, 45, -23.1, 9
+    45, -23.1, 9
   ]
   nums.forEach((x) => {
-    assert(neg(x) === -x)
+    assertEquals(neg(x), -x)
   })
+  assert(neg(0) === 0)
 })
 
 Deno.test("tail", () => {
@@ -51,19 +50,19 @@ Deno.test("sort", () => {
 Deno.test("sum", () => {
   for (let i=0; i<20; i++) {
     const arr = generateNumArray()
-    assert(fuzzyEqual(sum(arr), _.sum(arr)))
+    assert(round(sum(arr)), round(_.sum(arr)))
   }
   assertEquals(sum([]), _.sum([]))
 })
 
-Deno.test("mean", () => {
+Deno.test("mean (flakey)", () => {
   for (let i=0; i<20; i++) {
     const arr = generateNumArray()
-    assert(fuzzyEqual(mean(arr), _.mean(arr)))
+    assertEquals(round(mean(arr)), round(_.mean(arr)))
   }
 })
 
-Deno.test("mean", () => {
+Deno.test("compose", () => {
   const add1 = x => x + 1
   const mult2 = x => 2 * x
   const arr = generateNumArray()
