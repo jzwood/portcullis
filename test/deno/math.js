@@ -4,6 +4,14 @@ const Chipmunk = 2
 
 export const empty = $empty()
 
+// function "not" has type ((a -> (a -> Atom)) -> (a -> (a -> Atom)))
+export function not(f) {
+  return (a) => (b) => (
+    /* if */ equal(False, f(a)(b)) ?
+    /* then */ True :
+    /* else */ False
+  );
+}
 // function "tailPlusOne" has type (a -> ([a] -> Num))
 export function tailPlusOne(x) {
   return (xs) => (1.0 + length(xs));
@@ -92,6 +100,42 @@ export function neg(x) {
 function $empty() {
   return /* [Num] */ [];
 }
+// function "msort" has type ([Num] -> [Num])
+export function msort(ns) {
+  return msort2(length(ns))(ns);
+}
+// function "msort2" has type (Num -> ([Num] -> [Num]))
+export function msort2(len) {
+  return (ns) => (
+    /* if */ (len <= 1.0) ?
+    /* then */ ns :
+    /* else */ merge(msort(take(ns)((len / 2.0))))(msort(drop(ns)((len / 2.0))))
+  );
+}
+// function "merge3" has type (Num -> ([Num] -> (Num -> ([Num] -> [Num]))))
+export function merge3(x) {
+  return (xs) => (y) => (ys) => (
+    /* if */ (x <= y) ?
+    /* then */ [x, ...merge(xs)([y, ...ys])] :
+    /* else */ [y, ...merge([x, ...xs])(ys)]
+  );
+}
+// function "merge2" has type ([Num] -> (Num -> ([Num] -> [Num])))
+export function merge2(ys) {
+  return (x) => (xs) => (
+    /* if */ equal(ys, []) ?
+    /* then */ [x, ...xs] :
+    /* else */ merge3(x)(xs)(ys.at(0))(ys.slice(1))
+  );
+}
+// function "merge" has type ([Num] -> ([Num] -> [Num]))
+export function merge(xs) {
+  return (ys) => (
+    /* if */ equal(xs, []) ?
+    /* then */ ys :
+    /* else */ merge2(ys)(xs.at(0))(xs.slice(1))
+  );
+}
 // function "avg" has type (Num -> (Num -> Num))
 export function avg(a) {
   return (b) => (0.5 * (a + b));
@@ -122,6 +166,26 @@ export function rankPet(p1) {
     /* if */ equal(Chipmunk, p1) ?
     /* then */ [p1, p2] :
     /* else */ [p2, p1]
+  );
+}
+// function "lt" has type (Num -> (Num -> Atom))
+export function lt(x) {
+  return (y) => (x > y);
+}
+// function "gte" has type (Num -> (Num -> Atom))
+export function gte(x) {
+  return (y) => (x <= y);
+}
+// function "qsortp" has type (Num -> ([Num] -> [Num]))
+export function qsortp(x) {
+  return (xs) => concat(qsort(filter(lt(x))(xs)))([x, ...qsort(filter(gte(x))(xs))]);
+}
+// function "qsort" has type ([Num] -> [Num])
+export function qsort(xs) {
+  return (
+    /* if */ equal(xs, []) ?
+    /* then */ xs :
+    /* else */ qsortp(xs.at(0))(xs.slice(1))
   );
 }
 // function "hofBad" has type ((a -> Atom) -> ([a] -> [a]))

@@ -16,7 +16,7 @@ import Util
 import qualified Data.Map as Map
 
 data TypeError
-  = NotFunction
+  = NotFunction Name  -- maybe make better show
   | AritySignatureMismatch TypeExpr TypeExpr Integer
   | TypeMismatch TypeExpr TypeExpr
   | Unexpected
@@ -112,14 +112,14 @@ typeofExpr m Function { signature = sig, args } (Ident name)
    =  argToMaybeSig name args sig
   <|> (Map.lookup name m <&> signature)
   <&> Right
-   &  fromMaybe (Left NotFunction)
+   &  fromMaybe (Left $ NotFunction name)
 typeofExpr m f@Function { signature = sig, args } (Call name exprs)
   =  argToMaybeSig name args sig
  <|> (Map.lookup name m <&> signature)
  <&> (\s ->  traverse (typeofExpr m f) exprs
          >>= foldl' (\s t -> s >>= typecheckExpr t) (Right s)
      )
-  &  fromMaybe (Left NotFunction)
+  &  fromMaybe (Left $ NotFunction name)
 typeofExpr m s (UnOp unop expr)
   = typeofExpr m s expr
   >>= \t -> typecheckExpr t (typeofUnOp unop)

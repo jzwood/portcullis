@@ -1,5 +1,9 @@
 # UNSTANDARD LIB #
 
+not -> -> a -> a Atom -> a -> a Atom
+not f a b =
+  ? == False (f a b) True False
+
 tailPlusOne -> a -> [a] Num
 tailPlusOne x xs = + 1 (length xs)
 
@@ -38,12 +42,6 @@ take xs n =
 slice -> [q] -> Num -> Num [q]
 slice xs i j = (take (drop xs i) - j i)
 
-#
-  ? == 0 _ xs xs
-  ? (f xs) ++ !! xs 0 1 (filter f (tail xs))
-    (filter f (tail xs))
-#
-
 filter2 -> -> x Atom -> x -> [x] [x]
 filter2 g w ws =
   (concat
@@ -64,7 +62,6 @@ neg x = - 0 x
 empty [Num]
 empty = Num []
 
-#
 msort -> [Num] [Num]
 msort ns = (msort2 (length ns) ns)
 
@@ -73,17 +70,18 @@ msort2 len ns =
   ? <= len 1 ns
     (merge (msort (take ns / len 2)) (msort (drop ns / len 2)))
 
-merge3 -> Num -> [Num] [Num]
-merge3 yh yst =
+merge3 -> Num -> [Num] -> Num -> [Num] [Num]
+merge3 x xs y ys =
+  ? <= x y +> x (merge xs +> y ys)
+           +> y (merge +> x xs ys)
 
 merge2 -> [Num] -> Num -> [Num] [Num]
-merge2 ys xh xst =
-  <+ ys +> xh xst (merge3 xh)
+merge2 ys x xs =
+  <+ ys +> x xs (merge3 x xs)
 
 merge -> [Num] -> [Num] [Num]
 merge xs ys =
   <+ xs ys (merge2 ys)
-#
 
 avg -> Num -> Num Num
 avg a b = * 0.5 + a b
@@ -106,38 +104,19 @@ rankPet -> Atom -> Atom {Atom Atom}
 rankPet p1 p2 =
   ? == Chipmunk p1 {p1 p2} {p2 p1}
 
+lt -> Num -> Num Atom
+lt x y = > x y
 
-#
-lt -> Num -> [Num] Atom
-lt p xs = < ! xs 0 0 p
-
-eq -> Num -> [Num] Atom
-eq p xs = == ! xs 0 0 p
-
-gt -> Num -> [Num] Atom
-gt p xs = > ! xs 0 0 p
+gte -> Num -> Num Atom
+gte x y = <= x y
 
 qsortp -> Num -> [Num] [Num]
 qsortp x xs =
-  (concat (filter + 1))
+  (concat (qsort (filter (lt x) xs)) +> x (qsort (filter (gte x) xs)))
 
 qsort -> [Num] [Num]
 qsort xs =
   <+ xs xs qsortp
-#
-
-#
-qsort -> [Num] [Num]
-qsort xs =
-  ? >= 1 _ xs xs
-    (qsortP ! xs 0 0 xs)
-
-qsortP -> Num -> [Num] [Num]
-qsortP pivot xs =
-  ++ (qsort (filter (lt pivot) xs))
-  ++ (filter (eq pivot) xs) (qsort (filter (gt pivot) xs))
-
-#
 
 # BAD #
 hofBad -> -> a Atom -> [a] [a]

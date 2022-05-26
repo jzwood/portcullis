@@ -39,3 +39,8 @@
         - `test/deno/<name>.js` should now exist
     - write js test file, `test/deno/<name>.test.js`, that imports functions from `test/deno/<name>.js`
     - you can now call `deno test`
+
+### REPL
+[Deno](https://deno.land/manual@v1.22.0) `v1.22.0` or higher is the recommended backend runtime for compiled portcullis programs.
+
+    deno repl --eval-file=<path/to/file.po>
