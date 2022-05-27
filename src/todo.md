@@ -25,3 +25,12 @@ so `(f xs)` sets `a` to `[Num]` if arg 2 is a num list. But the signature at the
     - length, concat, tail, not, and, drop, take, slice, map,
 - write negative tests
     - i.e. write a bunch of functions that parse but do not (and should not) succeed typecheck. have tests confirm this
+
+
+### BUGFIX SOLUTION IDEA
+So typecheckStmt calls `typeofBody <- typeofExpr stmtMap stmt body` to get the resultant type of an expression. It then compares with the signature and flags an error if they don't match. I think that if typeofExpr returned the unspecified type map we'd have enough information to know if two unspecified types with different names are, in fact, equivalent.
+
+e.g.
+
+Unspecified a /= Unspecified b
+but if "a" -> Unspecified b then they are equal

@@ -127,31 +127,6 @@ spec = do
       typeofExpr m stmt (body stmt) `shouldBe` (Right NumType)
       typecheckStmt m stmt `shouldBe` (Right NumType)
 
-    -- TODO: fix
-    --it "typecheck sum and mean" $ do
-      --let tail = Function { name = "tail"
-                          --, signature = Arrow (ListType (Unspecfied "lst")) (ListType (Unspecfied "lst"))
-                          --, args = ["xs"]
-                          --, body = TernOp Slice (Ident "xs") (Val $ Number 1) (UnOp Length (Ident "xs"))
-                          --}
-          --sum = Function { name = "sum"
-                          --, signature = Arrow (ListType NumType) NumType
-                          --, args = ["xs"]
-                          --, body = TernOp If (BinOp Equal (Val $ Number 0) (UnOp Length (Ident "xs"))) (Val $ Number 1) (BinOp Plus (TernOp At (Ident "xs") (Val $ Number 0) (Val $ Number 0)) (Call "sum" [Call "tail" [Ident "xs"]]))
-                          --}
-          --mean = Function { name = "mean"
-                          --, signature = Arrow (ListType NumType) NumType
-                          --, args = ["nums"]
-                          --, body = BinOp Divide (Call "sum" [Ident "nums"]) (UnOp Length (Ident "nums"))
-                          --}
-          --m = Map.fromList [("tail", tail), ("mean", mean), ("sum", sum)]
-      --typeofExpr m tail (body tail) `shouldBe` (Right $ ListType (Unspecfied "lst"))
-      --typecheckStmt m tail `shouldBe` (Right $ ListType (Unspecfied "lst"))
-      --typeofExpr m sum (body sum) `shouldBe` (Right NumType)
-      --typecheckStmt m sum `shouldBe` (Right NumType)
-      --typeofExpr m mean (body mean) `shouldBe` (Right NumType)
-      --typecheckStmt m mean `shouldBe` (Right NumType)
-
 
     it "typecheck call vs ident function" $ do
       let one1 = Function { name = "one1"
@@ -174,7 +149,6 @@ spec = do
       typecheckStmt m one2 `shouldBe` (Right NumType)
 
       typecheckStmt m one3 `shouldBe` (Right NumType)  -- HERE
-      --isLeft (typecheckStmt m one3) `shouldBe` True  -- HERE
 
     -- TODO: redo to not include fallback param
     it "typecheck map" $ do
@@ -245,28 +219,3 @@ spec = do
           m = Map.fromList [("hof1", hof1), ("hof2", hof2)]
       isLeft (typecheckStmt m hof2) `shouldBe` True
       typecheckStmt m hof1 `shouldBe` Right (ListType NumType)
-
-    -- TODO: fix
-    --it "bad concat caught" $ do
-      --let goodConcat = Function { name = "goodConcat"
-                               --, signature = Arrow (ListType NumType) (ListType NumType)
-                               --, args = ["ns"]
-                               --, body = BinOp Concat (Ident "ns") (Val $ List NumType [])
-                               --}
-          --badConcat1 = Function { name = "badConcat1"
-                                --, signature = Arrow (ListType NumType) (ListType NumType)
-                                --, args = ["ns"]
-                                --, body = BinOp Concat (Ident "ns") (Val $ List AtomType [])
-                                --}
-          --badConcat2 = Function { name = "badConcat2"
-                                --, signature = Arrow (ListType (Unspecfied "x")) (ListType (Unspecfied "x"))
-                                --, args = ["xs"]
-                                --, body = BinOp Concat (Ident "ns") (Val $ List CharType [])
-                                --}
-          --m = Map.fromList [("goodConcat", goodConcat), ("badConcat1", badConcat1), ("badConcat2", badConcat2)]
-      --isLeft (typecheckStmt m goodConcat) `shouldBe` False
-      --typecheckStmt m goodConcat `shouldBe` Right (ListType NumType)
-      --isLeft (typecheckStmt m badConcat1) `shouldBe` True
-      --typecheckStmt m badConcat1 `shouldBe` Left (TypecheckError badConcat1 (TypeMismatch AtomType NumType))
-      --isLeft (typecheckStmt m badConcat2) `shouldBe` True
-      --typecheckStmt m badConcat2 `shouldBe` Left (TypecheckError badConcat2 NotFunction)

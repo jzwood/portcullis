@@ -39,32 +39,23 @@ expectedTypeOfBody = typeExprToList (signature tail2)
                 & typeExprFromList
 
 shouldBeT = typeofExpr m tail2 (body tail2)
-t1 = typeofExpr m tail2 (Ident "ts")
-t2 = typeofExpr m tail2 (Ident "ts")
+--t1 = typeofExpr m tail2 (Ident "ts")
+--t2 = typeofExpr m tail2 (Ident "ts")
 --t3 = typeofExpr m tail2 (Ident "id2")
 
 t3 = Arrow (Unspecfied "w") (Arrow (ListType (Unspecfied "w")) (ListType (Unspecfied "w")))
 
-
-
 tc = typecheckExpr (ListType (Unspecfied "t")) (typeofTop Uncons)
-    >>= typecheckExpr (ListType (Unspecfied "t"))
+  >>= typecheckExpr (ListType (Unspecfied "t"))
 
-tc2 = tc >>= typecheckExpr t3
-
-
+--tc2 = t3 >>= typecheckExpr tc
 
 main :: IO ()
 main = do
   print tc
   print t3
-  print tc2
+  --print tc2
   --print $ typeofExpr m id2 (body id2)
-  print "should be T"
+  putStrLn "\n-----"
+  putStrLn "should be [t]"
   print shouldBeT
-  --print "-----"
-  --print e1
-  --print e2
-  --print $ typecheckStmt m id2
-  --print $ typecheckStmt m tail2
-  --print expectedTypeOfBody

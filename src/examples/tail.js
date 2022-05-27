@@ -1,6 +1,7 @@
 const False = 0
 const True = 1
 
+
 // function "id2" has type (w -> ([w] -> [w]))
 export function id2(x) {
   return (xs) => xs;

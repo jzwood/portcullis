@@ -50,12 +50,12 @@ Deno.test("sort", () => {
 Deno.test("sum", () => {
   for (let i=0; i<20; i++) {
     const arr = generateNumArray()
-    assert(round(sum(arr)), round(_.sum(arr)))
+    assertEquals(round(sum(arr)), round(_.sum(arr)))
   }
   assertEquals(sum([]), _.sum([]))
 })
 
-Deno.test("mean (flakey)", () => {
+Deno.test("mean", () => {
   for (let i=0; i<20; i++) {
     const arr = generateNumArray()
     assertEquals(round(mean(arr)), round(_.mean(arr)))

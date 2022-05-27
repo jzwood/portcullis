@@ -1,0 +1,9 @@
+
+bad1 -> Num a
+bad1 x = x
+
+bad2 -> -> a b -> a b
+bad2 f x = (f x)
+
+bad3 -> -> Num Atom -> Num Num
+bad3 f x = (bad2 f x)

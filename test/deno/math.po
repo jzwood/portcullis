@@ -23,7 +23,7 @@ identity2 x xs = xs
 
 tail -> [p] [p]
 tail xs =
-  <+ xs xs (identity2)
+  <+ xs xs identity2
 
 drop -> [g] -> Num [g]
 drop xs n =

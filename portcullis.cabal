@@ -63,6 +63,7 @@ test-suite portcullis-test
   other-modules:
       ParserSpec
       QuickCheckSpec
+      TypecheckInvalidSpec
       TypecheckSpec
       Paths_portcullis
   hs-source-dirs:
