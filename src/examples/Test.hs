@@ -50,10 +50,47 @@ tc = typecheckExpr (ListType (Unspecfied "t")) (typeofTop Uncons)
 
 --tc2 = t3 >>= typecheckExpr tc
 
+
+---------------------------------------
+
+-- map -> -> t g -> t g
+-- map f a = (f a)
+ma = Function { name = "ma"
+              , signature = Arrow (Arrow (Unspecfied "t") (Unspecfied "g")) (Arrow (Unspecfied "t") (Unspecfied "g"))
+              , args = ["f", "h"]
+              , body = Call "f" [Ident "h"]
+              }
+
+
+-- mplus -> -> x y -> x y
+-- mplus f p = (map f p)
+ma2 = Function { name = "ma2"
+               , signature = Arrow (Arrow (Unspecfied "x") (Unspecfied "y")) (Arrow (Unspecfied "x") (Unspecfied "y"))
+               , args = ["b", "n"]
+               , body = Call "ma" [Ident "b", Ident "n"]
+               }
+
+mamap = Map.fromList [("ma", ma), ("ma2", ma2)]
+
+
+{-
+typeofExpr m f@Function { signature = sig, args } (Call name exprs)
+  =  argToMaybeSig name args sig
+ <|> (signature <$> Map.lookup name m)
+ <&> (\s ->  traverse (typeofExpr m f) exprs
+         >>= foldl' (\s t -> s >>= typecheckExpr t) (Right s)
+     )
+  &  fromMaybe (Left $ NotFunction name)
+-}
+
 main :: IO ()
 main = do
-  print tc
-  print t3
+  --print $ typeofExpr mamap ma (body ma)
+  --
+  --
+  --
+  --print tc
+  --print t3
   --print tc2
   --print $ typeofExpr m id2 (body id2)
   putStrLn "\n-----"

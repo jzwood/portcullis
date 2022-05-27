@@ -1,0 +1,7 @@
+
+map -> -> t g -> t g
+map f a = (f a)
+
+mplus -> -> x y -> x y
+mplus f p = (map f p)
+

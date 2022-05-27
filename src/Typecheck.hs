@@ -47,11 +47,11 @@ typecheckStmt stmtMap stmt@Function { body, args, signature } = do
   &   mapLeft (TypecheckError stmt)
 
 typeEqual :: Map Name TypeExpr -> TypeExpr -> TypeExpr -> Either TypeError TypeExpr
-typeEqual m te1@(Unspecfied a) te2@(Unspecfied b) =
-  case Map.lookup a m of
-    Nothing -> if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 0
-    Just te1 -> if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 1
-typeEqual m (ListType te1) (ListType te2) = ListType <$> typeEqual m te1 te2
+--typeEqual m te1@(Unspecfied a) te2@(Unspecfied b) =
+  --case Map.lookup a m of
+    --Nothing -> if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 0
+    --Just te1 -> if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 1
+--typeEqual m (ListType te1) (ListType te2) = ListType <$> typeEqual m te1 te2
 --typeEqual (TupType te1a te1b) (TupType te2a te2b) =
 --typeEqual (Arrow TypeExpr TypeExpr)
 typeEqual m te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 2
@@ -111,36 +111,25 @@ typeofExpr m s (Val p) =
       <&> \[e1, e2] -> TupType e1 e2
     List typeExpr exprs -> Right $ ListType typeExpr
 
-typeofExpr m Function { signature = sig, args } (Ident name)
-   =  argToMaybeSig name args sig
-  <|> (Map.lookup name m <&> signature)
-  <&> Right
-   &  fromMaybe (Left $ NotFunction name)
-
-typeofExpr m f@Function { signature = sig, args } (Call name exprs)
-  =  argToMaybeSig name args sig
- <|> (Map.lookup name m <&> signature)
- <&> (\s ->  traverse (typeofExpr m f) exprs
-         >>= foldl' (\s t -> s >>= typecheckExpr t) (Right s)
-     )
-  &  fromMaybe (Left $ NotFunction name)
-
-typeofExpr m s (UnOp unop expr)
-  = typeofExpr m s expr
-  >>= \t -> typecheckExpr t (typeofUnOp unop)
-
-typeofExpr m s (BinOp bop expr1 expr2)
-  = sequence [typeofExpr m s expr1, typeofExpr m s expr2]
-  >>= \[t1, t2] ->
-    typecheckExpr t1 (typeofBop bop)
-    >>= typecheckExpr t2
-
-typeofExpr m s (TernOp top expr1 expr2 expr3)
-  = sequence (typeofExpr m s <$> [expr1, expr2, expr3])
-  >>= \[t1, t2, t3] ->
-    typecheckExpr t1 (typeofTop top)
-    >>= typecheckExpr t2
-    >>= typecheckExpr t3
+typeofExpr m f@Function { signature = sig, args } e =
+  case e of
+    Ident name ->
+      maybeSignature name
+      <&> Right
+       &  fromMaybe (Left $ NotFunction name)
+    Call name exprs ->
+      maybeSignature name
+      <&> check exprs
+       &  fromMaybe (Left $ NotFunction name)
+    UnOp unop expr1 -> check [expr1] (typeofUnOp unop)
+    BinOp bop expr1 expr2 -> check [expr1, expr2] (typeofBop bop)
+    TernOp top expr1 expr2 expr3 -> check [expr1, expr2, expr3] (typeofTop top)
+  where
+    maybeSignature :: String -> Maybe TypeExpr
+    maybeSignature name = argToMaybeSig name args sig <|> (signature <$> Map.lookup name m)
+    check :: [Expr] -> TypeExpr -> Either TypeError TypeExpr
+    check es sig = traverse (typeofExpr m f) es
+      >>= foldl' (\s t -> s >>= typecheckExpr t) (Right sig)
 
 typeofUnOp :: UnOp -> TypeExpr
 typeofUnOp Fst = Arrow (TupType (Unspecfied "a") (Unspecfied "b")) (Unspecfied "a")
