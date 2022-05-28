@@ -26,3 +26,22 @@ so `(f xs)` sets `a` to `[Num]` if arg 2 is a num list. But the signature at the
 - update documentation for cons-uncons
 - add more code examples in readme
   - update Examples.md
+
+## BUG ISSUE (?)
+okay, so I think I know the issue. when HOF expressions are are typechecked after value expressions the final signature can have the wrong variable.
+
+```
+id -> z z
+id x = x
+
+hm1 -> w -> -> w w w
+hm1 z f = (f z)
+
+test -> q q
+test x = (hm1 x id)
+```
+
+in a world where value expressions are evaluated last it seems to do the correct binding (ie changing order or params in hm1).
+
+## BUG SOLUTION (?)
+so the compiler can potentially typecheck expressions in ideal order regardless of the actual order of params in function statement (?)

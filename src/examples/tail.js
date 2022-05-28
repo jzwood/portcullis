@@ -2,17 +2,13 @@ const False = 0
 const True = 1
 
 
-// function "id2" has type (w -> ([w] -> [w]))
-export function id2(x) {
-  return (xs) => xs;
+// function "hm2" has type ((w -> w) -> (w -> w))
+export function hm2(f) {
+  return (z) => f(z);
 }
-// function "tail" has type ([f] -> [f])
-export function tail(xs) {
-  return (
-    /* if */ equal(xs, []) ?
-    /* then */ xs :
-    /* else */ id2(xs.at(0))(xs.slice(1))
-  );
+// function "test2" has type ((z -> z) -> Atom)
+export function test2(f) {
+  return hm2(f)(Jake);
 }
 // function "equal" has type (a -> (a -> Atom))
 export function equal(a, b) {
