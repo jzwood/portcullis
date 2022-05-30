@@ -17,8 +17,8 @@ import qualified Data.Map as Map
 
 data TypeError
   = NotFunction Name  -- maybe make better show
-  | TypeMismatch TypeExpr TypeExpr Integer
-  | Unexpected
+  | TypeMismatch TypeExpr TypeExpr String
+  | ArityMismatch
   deriving (Show, Eq)
 
 data TypecheckError = TypecheckError Stmt TypeError
@@ -43,18 +43,14 @@ typecheckStmt stmtMap stmt@Function { body, args, signature } = do
   expectedTypeOfBody <- typeExprToList signature
                       & drop (length args)
                       & typeExprFromList
-  typeEqual Map.empty expectedTypeOfBody typeofBody
+  typeEqual expectedTypeOfBody typeofBody
   &   mapLeft (TypecheckError stmt)
 
-typeEqual :: Map Name TypeExpr -> TypeExpr -> TypeExpr -> Either TypeError TypeExpr
---typeEqual m te1@(Unspecfied a) te2@(Unspecfied b) =
-  --case Map.lookup a m of
-    --Nothing -> if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 0
-    --Just te1 -> if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 1
---typeEqual m (ListType te1) (ListType te2) = ListType <$> typeEqual m te1 te2
---typeEqual (TupType te1a te1b) (TupType te2a te2b) =
---typeEqual (Arrow TypeExpr TypeExpr)
-typeEqual m te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 2
+typeEqual :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
+typeEqual te1@(Unspecfied a) (Unspecfied b) = Right te1
+typeEqual (ListType te1) (ListType te2) = ListType <$> typeEqual te1 te2
+typeEqual (TupType te1 te2) (TupType te3 te4) = liftA2 TupType (typeEqual te1 te3) (typeEqual te2 te4)
+typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 "typeEqual"
 
 modToStmtMap :: Module -> Map Name Stmt
 modToStmtMap (Module stms)
@@ -66,19 +62,19 @@ typecheckExpr :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typecheckExpr t (Arrow tl tr)
   = typecheck t tl Map.empty  -- compare type with sig
   <&> resolveType tr
-typecheckExpr t1 t2 = Left $ TypeMismatch t1 t2 3
+typecheckExpr t1 t2 = Left $ TypeMismatch t1 t2 "typecheckExpr"
 
 typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map Name TypeExpr)
 typecheck t (Unspecfied n) m =
   case Map.lookup n m of
     Nothing -> Right $ Map.insert n t m
-    Just t' -> if t == t' then Right m else Left $ TypeMismatch t t' 4
+    Just t' -> if t == t' then Right m else Left $ TypeMismatch t t' "typecheck"
 typecheck (Arrow t0 t1) (Arrow t2 t3) m = typecheck t0 t2 m >>= typecheck t1 t3
 typecheck (TupType te0 te1) (TupType te2 te3) m = typecheck te0 te2 m >>= typecheck te1 te3
 typecheck (ListType te0) (ListType te1) m = typecheck te0 te1 m
 typecheck t1 t2 m =
   if t1 == t2 then Right m
-              else Left $ TypeMismatch t1 t2 5
+              else Left $ TypeMismatch t1 t2 "typecheck"
 
 resolveType :: TypeExpr -> Map Name TypeExpr -> TypeExpr
 resolveType t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
@@ -94,7 +90,7 @@ typeExprToList t = [t]
 typeExprFromList :: [TypeExpr] -> Either TypeError TypeExpr
 typeExprFromList [te] = Right te
 typeExprFromList (te:tes) = Arrow te <$> typeExprFromList tes
-typeExprFromList [] = Left Unexpected
+typeExprFromList [] = Left ArityMismatch
 
 argToMaybeSig :: Name -> [Name] -> TypeExpr -> Maybe TypeExpr
 argToMaybeSig arg args sig
@@ -107,7 +103,7 @@ typeofExpr m s (Val p) =
     Number n -> Right NumType
     Character c -> Right CharType
     Atom a -> Right AtomType
-    Tuple expr1 expr2 -> sequence [typeofExpr m s expr1, typeofExpr m s expr2]
+    Tuple expr1 expr2 -> sequence (typeofExpr m s <$> [expr1, expr2])
       <&> \[e1, e2] -> TupType e1 e2
     List typeExpr exprs -> Right $ ListType typeExpr
 

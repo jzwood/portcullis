@@ -45,3 +45,14 @@ in a world where value expressions are evaluated last it seems to do the correct
 
 ## BUG SOLUTION (?)
 so the compiler can potentially typecheck expressions in ideal order regardless of the actual order of params in function statement (?)
+
+also, we should probably also unique-ify all unspecified signature before typechecking, e.g.
+
+```
+eg -> a -> b -> a
+eg -> a0 -> a1 -> a1
+```
+
+Or maybe I can just apply `resolveType` to signature after applying types before final compare? :/
+
+Hmm. ok. screw it. I think I'm gonna just make typecheck lazier and if the final types are structurall the same it type checks. aka [a] == [e] will be true. I _think_ we just let whatever function eventually binds it to a concrete type fail the typecheck :shrug:

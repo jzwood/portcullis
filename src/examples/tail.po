@@ -1,11 +1,9 @@
-#
 id2 -> w -> [w] [w]
 id2 x xs = xs
 
 tail -> [f] [f]
 tail xs =
   <+ xs xs id2
-#
 
 
 #
@@ -22,18 +20,3 @@ tail3 -> -> w -> [w] [w] -> [f] [f]
 tail3 f ns =
   <+ ns ns f
   #
-
-
-# THIS BREAKS #
-hm1 -> w -> -> w w w
-hm1 z f = (f z)
-
-test1 -> -> z z Atom
-test1 f = (hm1 Jake f)
-
-# THIS WORKS #
-hm2 -> -> w w -> w w
-hm2 f z = (f z)
-
-test2 -> -> z z Atom
-test2 f = (hm2 f Jake)
