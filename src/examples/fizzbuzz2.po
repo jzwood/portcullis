@@ -1,0 +1,19 @@
+
+fizzOrBuzz -> Num Num
+fizzOrBuzz n =
+  ? == 0 % n 15
+    - 0 3
+  ? == 0 % n 5
+    - 0 2
+  ? == 0 % n 3
+    - 0 1
+  n
+
+fizzbuzz -> Num [Num]
+fizzbuzz n =
+  ? == n 0
+    Num []
+  +> (fizzOrBuzz n) (fizzbuzz - n 1)
+
+
+

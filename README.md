@@ -30,6 +30,28 @@ export function fib(n) {
 }
 ```
 
+<hr>
+
+fizzbuzz.po
+
+<img
+  src="./assets/fizzbuzz.po.png"
+  alt="portcullis source code for Fizzbuzz algorithm"
+  title="portcullis source code for Fizzbuzz algorithm"
+  style="width: 100%; max-width: 500px;"
+/>
+
+```
+Deno 1.22.0
+exit using ctrl+d or close()
+> fizzbuzz(20)
+[
+   1,  2, -1,  4, -2, -1,  7,
+   8, -1, -2, 11, -1, 13, 14,
+  -3, 16, 17, -1, 19, -2
+]
+```
+
 ## About
 
 I wrote the compiler for Portcullis purely for my own education and amusement. Painfully specific goals guided the development of this project and account for both the language features I chose to include as well as omit.
@@ -41,5 +63,5 @@ Some of these goals include
 
 ## More
 - [Language Guide](./docs/Docs.md)
-- [Developer Guide](./docs/LocalDev.md)
+- [Developer Guide](./docs/Dev.md)
 - [Vim Syntax Highlighting](https://github.com/jzwood/portcullis-vim)

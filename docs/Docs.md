@@ -68,7 +68,7 @@ add3 a b c = + + a b c
 
 Compiling the above portcullis functions results in exportable/runnable JS functions:
 
-```
+```js
 // function "double" has type (Num -> Num)
 export function double(x) {
   return (2.0 * x);
@@ -100,7 +100,7 @@ length xs =
 ```
 
 JavaScript
-```
+```js
 // function "_length" has type (a -> ([a] -> Num))
 export function _length(x) {
   return (xs) => (1.0 + length(xs));
