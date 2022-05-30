@@ -6,13 +6,10 @@ map -> -> a b -> [a] [b]
 map f xs =
   <+ xs g [] (_map f)
 
-_range -> Num -> Num [Num]
-_range n0 n1 =
+range -> Num -> Num [Num]
+range n0 n1 =
   ? > n0 n1 Num []
-  +> n0 (_range + n0 1 n1)
-
-range -> Num [Num]
-range n = (_range 1 n)
+  +> n0 (range + n0 1 n1)
 
 _fizzbuzz -> Num Num
 _fizzbuzz n =
@@ -25,7 +22,7 @@ _fizzbuzz n =
   n
 
 fizzbuzz -> Num [Num]
-fizzbuzz n = (map _fizzbuzz (range n))
+fizzbuzz n = (map _fizzbuzz (range 1 n))
 
 
 
