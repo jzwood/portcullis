@@ -35,6 +35,29 @@ _All operators are prefix (ie not infix)_
 
 ### Functions
 
+Functions are comprised of a **name**, **type signature**, **arguments**, and body **expression**:
+
+```
+<function name> <type signature>
+<function name> [args...] = <expr>
+```
+
+Function names must be camelCased but may start with an underscore. Portcullis does not have lambda functions.
+
+### Comments
+
+Bracket comments with `#`s. Comments are only allowed between function statements.
+
+```
+# comment here #
+one Num
+one = 1
+```
+
+### Examples
+
+#### Currying
+
 ```
 double -> Num Num
 double x = * 2 x
@@ -64,18 +87,55 @@ add3(3)(5)(1)
 // 9
 ```
 
-Functions are comprised of a **name**, **type signature**, **arguments**, and body **expression**:
+#### Higher-Order Functions (HOF)
+
+Portcullis
 ```
-<name> <type>
-<name> [args...] = <expr>
+_length -> a -> [a] Num
+_length x xs = + 1 (length xs)
+
+length -> [a] Num
+length xs =
+  <+ xs 0 _length
 ```
 
-Bracket comments with `#`s. Comments are only allowed between function statements.
+JavaScript
+```
+// function "_length" has type (a -> ([a] -> Num))
+export function _length(x) {
+  return (xs) => (1.0 + length(xs));
+}
+// function "length" has type ([a] -> Num)
+export function length(xs) {
+  return (
+    /* if */ equal(xs, []) ?
+    /* then */ 0.0 :
+    /* else */ _length(xs.at(0))(xs.slice(1))
+  );
+}
 
 ```
-# comment here #
-one Num
-one = 1
+
+#### Parametric polymorphism
+
+```
+_map -> -> q t -> q -> [q] [t]
+_map f x xs = +> (f x) (map f xs)
+
+map -> -> t g -> [t] [g]
+map f xs =
+  <+ xs g [] (_map f)
+
+add1 -> Num Num
+add1 x = + x 1
+
+list [Num]
+list = (map add1 Num [1 2 3 4])
 ```
 
-_Portcullis does not have lambda functions_
+```
+Deno 1.22.0
+exit using ctrl+d or close()
+> list
+[ 2, 3, 4, 5 ]
+```

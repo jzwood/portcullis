@@ -12,8 +12,8 @@ export function not(f) {
     /* else */ False
   );
 }
-// function "tailPlusOne" has type (a -> ([a] -> Num))
-export function tailPlusOne(x) {
+// function "_length" has type (a -> ([a] -> Num))
+export function _length(x) {
   return (xs) => (1.0 + length(xs));
 }
 // function "length" has type ([a] -> Num)
@@ -21,7 +21,7 @@ export function length(xs) {
   return (
     /* if */ equal(xs, []) ?
     /* then */ 0.0 :
-    /* else */ tailPlusOne(xs.at(0))(xs.slice(1))
+    /* else */ _length(xs.at(0))(xs.slice(1))
   );
 }
 // function "push" has type ([h] -> (h -> ([h] -> [h])))

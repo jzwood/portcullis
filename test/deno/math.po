@@ -4,12 +4,12 @@ not -> -> a -> a Atom -> a -> a Atom
 not f a b =
   ? == False (f a b) True False
 
-tailPlusOne -> a -> [a] Num
-tailPlusOne x xs = + 1 (length xs)
+_length -> a -> [a] Num
+_length x xs = + 1 (length xs)
 
 length -> [a] Num
 length xs =
-  <+ xs 0 tailPlusOne
+  <+ xs 0 _length
 
 push -> [h] -> h -> [h] [h]
 push ys x xs = +> x (concat xs ys)
