@@ -29,11 +29,9 @@ _All operators are prefix (ie not infix)._
 | `%` | rem | 2 | `-> Num -> Num Num` | `% 7 2`  →  `1` |
 | `>` `<` `>=` `<=` | | 2 | `-> Num -> Num Atom` | `> 1 4`  →  `False` |
 | `==` | | 2 | `-> a -> a Atom` | `== 7 7`  →  `True`|
-| `++` | concat | 2 | `-> [a] -> [a] [a]` | `++ [1] [2 3]`  →  `[1 2 3]` |
-| `!` | At | 3 | `-> [a] -> Num -> a a` | `! ['a'] 0 'z'`  →  `'a'`, <br> `! ['b'] 3 'z'`  →  `'z'` |
-| `!!` | Slice | 3 | `-> [a] -> Num -> Num [a]` | `!! ['j' 'a' 'k' 'e'] 1 3`  →  `['a' 'k']` |
+| `+>` | Cons | 2 | `-> a -> [a] [a]` | `+> 1 [2 3]`  →  `[1 2 3]` |
+| `<+` | Uncons | 3 | `-> [a] -> b -> -> a -> [a] b b` | `<+ [1 2 3] 0 sum`  →  `6` |
 | `?` | If | 3 | `-> Atom -> a -> a a` | `? True Cat Dog`  →  `Cat` |
-
 
 ### Functions
 
@@ -50,12 +48,11 @@ Compiling the above portcullis functions results in exportable/runnable JS funct
 ```
 // function "double" has type (Num -> Num)
 export function double(x) {
-	return (x) => (2*x);
+  return (2.0 * x);
 }
-
 // function "add3" has type (Num -> (Num -> (Num -> Num)))
 export function add3(a) {
-	return (b) => (c) => ((a+b)+c);
+  return (b) => (c) => ((a + b) + c);
 }
 ```
 

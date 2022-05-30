@@ -14,8 +14,8 @@
 - see output
     ```
     // function "neg" has type (Num -> Num)
-    function neg(x) {
-        return (0.0-x);
+    export function neg(x) {
+      return (0.0 - x);
     }
     ```
 

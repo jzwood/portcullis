@@ -14,6 +14,18 @@ export function tail(xs) {
     /* else */ id2(xs.at(0))(xs.slice(1))
   );
 }
+// function "neg" has type (Num -> Num)
+export function neg(x) {
+  return (0.0 - x);
+}
+// function "double" has type (Num -> Num)
+export function double(x) {
+  return (2.0 * x);
+}
+// function "add3" has type (Num -> (Num -> (Num -> Num)))
+export function add3(a) {
+  return (b) => (c) => ((a + b) + c);
+}
 // function "equal" has type (a -> (a -> Atom))
 export function equal(a, b) {
   if (a === b) {

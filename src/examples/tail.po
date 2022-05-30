@@ -5,6 +5,14 @@ tail -> [f] [f]
 tail xs =
   <+ xs xs id2
 
+neg -> Num Num
+neg x = - 0 x
+
+double -> Num Num
+double x = * 2 x
+
+add3 -> Num -> Num -> Num Num
+add3 a b c = + + a b c
 
 #
 uncons -> [a] -> b -> -> a -> [a] b b

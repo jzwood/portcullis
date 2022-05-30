@@ -1,7 +1,12 @@
+_map -> -> q t -> q -> [q] [t]
+_map f x xs = +> (f x) (map f xs)
 
-map -> -> t g -> t g
-map f a = (f a)
+map -> -> t g -> [t] [g]
+map f xs =
+  <+ xs g [] (_map f)
 
-mplus -> -> x y -> x y
-mplus f p = (map f p)
+add1 -> Num Num
+add1 x = + x 1
 
+mapped [Num]
+mapped = (map add1 Num [1 2 3 4])
