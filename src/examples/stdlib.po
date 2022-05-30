@@ -1,11 +1,11 @@
 # USEFUL FUNCTIONS #
 
-tailPlusOne -> a -> [a] Num
-tailPlusOne x xs = + 1 (length xs)
+_length -> a -> [a] Num
+_length x xs = + 1 (length xs)
 
 length -> [a] Num
 length xs =
-  <+ xs 0 tailPlusOne
+  <+ xs 0 _length
 
 push -> [a] -> a -> [a] [a]
 push ys x xs = +> x (concat xs ys)
