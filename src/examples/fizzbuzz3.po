@@ -4,7 +4,7 @@ _map f x xs = +> (f x) (map f xs)
 
 map -> -> a b -> [a] [b]
 map f xs =
-  <+ xs g [] (_map f)
+  <+ xs b [] (_map f)
 
 range -> Num -> Num [Num]
 range n0 n1 =
@@ -24,6 +24,5 @@ _fizzbuzz n =
 fizzbuzz -> Num [Num]
 fizzbuzz n = (map _fizzbuzz (range 1 n))
 
-
-
-
+fb [Num]
+fb = (fizzbuzz 20)
