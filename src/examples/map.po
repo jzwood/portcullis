@@ -10,3 +10,43 @@ add1 x = + x 1
 
 mapped [Num]
 mapped = (map add1 Num [1 2 3 4])
+
+
+_foldr -> -> j -> k k -> k -> j -> [j] k
+_foldr alg acc x xs = (foldr alg (alg x acc) xs)
+
+foldr -> -> a -> b b -> b -> [a] b
+foldr alg acc xs =
+  <+ xs acc (_foldr alg acc)
+
+_foldl -> -> j -> k k -> k -> j -> [j] k
+_foldl alg acc x xs = (alg x (foldl alg acc xs))
+
+foldl -> -> a -> b b -> b -> [a] b
+foldl alg acc xs =
+  <+ xs acc (_foldl alg acc)
+
+add -> Num -> Num Num
+add a b = + a b
+
+sum -> [Num] Num
+sum ns = (foldr add 0 ns)
+
+total Num
+total = (sum Num [1 2 3])
+
+double -> Num -> [Num] [Num]
+double n ns = +> n +> n ns
+
+mapDouble -> [Num] [Num]
+mapDouble ns =
+  (foldl double Num [] ns)
+
+dub [Num]
+dub = (mapDouble Num [1 3 5 7])
+
+push -> z -> [z] [z]
+push x xs = +> x xs
+
+reverse -> [a] [a]
+reverse xs = (foldr push a [] xs)

@@ -94,7 +94,7 @@ instance Show Bop where
   show LessThanOrEqual = "<="
   show Rem = "%"
   show Equal = "equal"
-  --show Cons
+  -- show Cons = "+>"  -- not used for code gen
 
 prefixOp :: String -> [String] -> String
 prefixOp op = (op ++) . paren . intercalate ", "
@@ -105,22 +105,20 @@ prefixBop bop e1 e2 = prefixOp (show bop) (show <$> [e1, e2])
 infixBop :: Bop -> Expr -> Expr -> String
 infixBop bop e1 e2 = paren . intercalate (pad . show $ bop) $ show <$> [e1, e2]
 
+flatFindAtoms :: [Expr] -> [String]
+flatFindAtoms = concatMap findAtoms
+
 findAtoms :: Expr -> [String]
-findAtoms expr =
-  let
-    flatFindAtoms :: [Expr] -> [String]
-    flatFindAtoms = concatMap findAtoms
-  in case expr of
-    Val v ->
-      case v of
-        Atom n -> [n]
-        Tuple e1 e2 -> flatFindAtoms [e1, e2]
-        List _ es -> flatFindAtoms es
-        _ -> []
-    Call n [es] -> flatFindAtoms [es]
-    BinOp _ e1 e2 -> flatFindAtoms [e1, e2]
-    TernOp _ e1 e2 e3 -> flatFindAtoms [e1, e2, e3]
+findAtoms (Val v) =
+  case v of
+    Atom n -> [n]
+    Tuple e1 e2 -> flatFindAtoms [e1, e2]
+    List _ es -> flatFindAtoms es
     _ -> []
+findAtoms (Call n [es]) = flatFindAtoms [es]
+findAtoms (BinOp _ e1 e2) = flatFindAtoms [e1, e2]
+findAtoms (TernOp _ e1 e2 e3) = flatFindAtoms [e1, e2, e3]
+findAtoms _ = []
 
 readAtoms :: [Stmt] -> String
 readAtoms stmts
