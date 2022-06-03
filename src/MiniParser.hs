@@ -4,7 +4,7 @@ module MiniParser where
 
 import Control.Applicative
 import Data.Char
-import Util
+import Util hiding (paren)
 
 -- APPLICATIVE PARSER
 
@@ -136,3 +136,6 @@ trim p = spaces *> p <* spaces
 
 trimLeft :: Parser a -> Parser a
 trimLeft p = spaces *> p
+
+optionalParens :: Parser a -> Parser a
+optionalParens = optionalModifier paren . trim

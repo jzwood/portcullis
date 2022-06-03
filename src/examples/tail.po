@@ -1,3 +1,4 @@
+#
 id2 -> w -> [w] [w]
 id2 x xs = xs
 
@@ -21,7 +22,6 @@ uncons as b f = b
 tail2 -> -> w -> [w] [w] -> [f] [f]
 tail2 f ns =
   (uncons ns ns f)
-#
 
 #
 tail3 -> -> w -> [w] [w] -> [f] [f]

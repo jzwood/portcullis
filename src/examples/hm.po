@@ -1,0 +1,8 @@
+hm1 -> w -> (-> w w) w
+hm1 z f = (f z)
+
+id -> z z
+id x = x
+
+test -> q q
+test x = (hm1 x id)

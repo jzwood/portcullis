@@ -31,8 +31,7 @@ parseStmt =  trimLeft
          where name = trimLeft camel
 
 parseArrow :: Parser TypeExpr
-parseArrow = (optionalModifier paren . trim)
-  $ liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
+parseArrow = optionalParens $ liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
 
 parseTupType :: Parser TypeExpr
 parseTupType = liftA2 TupType (char '{' *> parseTypeExpr) (parseTypeExpr <* spaces <* char '}')
@@ -74,16 +73,13 @@ parseCall = paren . trim
           $ liftA2 Call camel (zeroOrMore parseExpr)
 
 parseUnaryOp :: Parser Expr
-parseUnaryOp = (optionalModifier paren . trim)
-           $ liftA2 UnOp parseUnOp parseExpr
+parseUnaryOp = optionalParens $ liftA2 UnOp parseUnOp parseExpr
 
 parseBinOp :: Parser Expr
-parseBinOp = (optionalModifier paren . trim)
-           $ liftA3 BinOp parseBop parseExpr parseExpr
+parseBinOp = optionalParens $ liftA3 BinOp parseBop parseExpr parseExpr
 
 parseTernOp :: Parser Expr
-parseTernOp = (optionalModifier paren . trim)
-            $ TernOp <$> parseTop <*> parseExpr <*> parseExpr <*> parseExpr
+parseTernOp = optionalParens $ TernOp <$> parseTop <*> parseExpr <*> parseExpr <*> parseExpr
 
 parseChar :: Parser Char
 parseChar = wrap '\'' '\'' anyChar
