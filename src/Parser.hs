@@ -31,7 +31,8 @@ parseStmt =  trimLeft
          where name = trimLeft camel
 
 parseArrow :: Parser TypeExpr
-parseArrow = liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
+parseArrow = (optionalModifier paren . trim)
+  $ liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
 
 parseTupType :: Parser TypeExpr
 parseTupType = liftA2 TupType (char '{' *> parseTypeExpr) (parseTypeExpr <* spaces <* char '}')
