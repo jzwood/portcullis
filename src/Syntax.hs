@@ -7,18 +7,8 @@ import Data.Char
 import Data.List (intercalate, nub)
 import Util
 
--- Notes:
--- no Var (variables): instead you have functions with zero parameters
--- no Extern (external): we're just not gonna let you call external functions :/
--- TODO steal from this: https://blog.sumtypeofway.com/posts/introduction-to-recursion-schemes.html
-
 type Name = String
-
---data Stmt
-  -- = Data Type
-  -- | Function Name [Var] Expr
-  -- | FunType Name [Type]
-  -- | Pipe Name [Name] [Name] -- pipe name, input function names, output function names
+type Buffer = Integer
 
 newtype Module = Module [Stmt]
 
@@ -31,6 +21,12 @@ data Stmt = Function
   , args :: [Name]
   , body :: Expr
   } deriving (Eq)
+
+--data In = In Name TypeExpr
+--data Out = Out Name TypeExpr
+--data Event = Event Name TypeExpr
+data Queue = Queue Name Buffer TypeExpr
+data Pipe = Pipe Stmt [Queue] Queue
 
 data TypeExpr
   = NumType
