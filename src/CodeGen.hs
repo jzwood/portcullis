@@ -9,12 +9,12 @@ import Data.List (intercalate, intersperse, nub)
 import Util
 
 instance Show Module where
-  show (Module stmts) = unlines
-                      $ readAtoms stmts
-                      : readZeroArityFunctions stmts
-                      : (show <$> stmts)
+  show (Module funcs) = unlines
+                      $ readAtoms funcs
+                      : readZeroArityFunctions funcs
+                      : (show <$> funcs)
 
-instance Show Stmt where
+instance Show Func where
   show (Function name tExpr vars expr)
     = comment $ unwords ["function", show name, "has type", show tExpr]
     ++ '\n'
@@ -120,16 +120,16 @@ findAtoms (BinOp _ e1 e2) = flatFindAtoms [e1, e2]
 findAtoms (TernOp _ e1 e2 e3) = flatFindAtoms [e1, e2, e3]
 findAtoms _ = []
 
-readAtoms :: [Stmt] -> String
-readAtoms stmts
-  =  concatMap (findAtoms . body) stmts
+readAtoms :: [Func] -> String
+readAtoms funcs
+  =  concatMap (findAtoms . body) funcs
   &  zip [0..] . nub . ("False" :) . ("True" :)
  <&> (\(i, atom) -> unwords ["const", atom, "=", show i])
   &  unlines
 
-readZeroArityFunctions :: [Stmt] -> String
-readZeroArityFunctions stmts
-  =  stmts
+readZeroArityFunctions :: [Func] -> String
+readZeroArityFunctions funcs
+  =  funcs
   &  filter (null . args)
  <&> name
  <&> (\name -> unwords ["export", "const", name, "=", '$' : name ++ "()" ])

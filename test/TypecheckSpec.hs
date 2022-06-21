@@ -54,34 +54,34 @@ spec = do
       typeExprToList (Arrow (Arrow NumType AtomType) (Arrow AtomType CharType)) `shouldBe` [Arrow NumType AtomType, AtomType, CharType]
 
     it "typecheck neg" $ do
-      let stmt = Function { name = "neg"
+      let func = Function { name = "neg"
                           , signature = Arrow NumType NumType
                           , args = ["x"]
                           , body = BinOp Minus (Val $ Number 0) (Ident "x")
                           }
-          m = Map.singleton "neg" stmt
-      typeofExpr m stmt (body stmt) `shouldBe` Right NumType
-      typecheckStmt m stmt `shouldBe` Right NumType
+          m = Map.singleton "neg" func
+      typeofExpr m func (body func) `shouldBe` Right NumType
+      typecheckFunc m func `shouldBe` Right NumType
 
     it "typecheck identity" $ do
-      let stmt = Function { name = "id"
+      let func = Function { name = "id"
                           , signature = Arrow (Unspecfied "x") (Unspecfied "x")
                           , args = ["x"]
                           , body = Ident "x"
                           }
-          m = Map.singleton "id" stmt
-      typeofExpr m stmt (body stmt) `shouldBe` Right (Unspecfied "x")
-      typecheckStmt m stmt `shouldBe` Right (Unspecfied "x")
+          m = Map.singleton "id" func
+      typeofExpr m func (body func) `shouldBe` Right (Unspecfied "x")
+      typecheckFunc m func `shouldBe` Right (Unspecfied "x")
 
     it "typecheck empty" $ do
-      let stmt = Function { name = "empty"
+      let func = Function { name = "empty"
                           , signature = ListType NumType
                           , args = []
                           , body = Val $ List NumType []
                           }
-          m = Map.singleton "empty" stmt
-      typeofExpr m stmt (body stmt) `shouldBe` Right (ListType NumType)
-      typecheckStmt m stmt `shouldBe` Right (ListType NumType)
+          m = Map.singleton "empty" func
+      typeofExpr m func (body func) `shouldBe` Right (ListType NumType)
+      typecheckFunc m func `shouldBe` Right (ListType NumType)
 
     it "typecheck no arg function" $ do
       let one = Function { name = "one"
@@ -96,9 +96,9 @@ spec = do
                           }
           m = Map.fromList [("two", two), ("one", one)]
       typeofExpr m one (body one) `shouldBe` Right NumType
-      typecheckStmt m one `shouldBe` Right NumType
+      typecheckFunc m one `shouldBe` Right NumType
       typeofExpr m two (body two) `shouldBe` Right NumType
-      typecheckStmt m two `shouldBe` Right NumType
+      typecheckFunc m two `shouldBe` Right NumType
 
     it "typecheck id" $ do
       let id1 = Function { name = "id1"
@@ -113,19 +113,19 @@ spec = do
                          }
           m = Map.fromList [("id1", id1), ("id2", id2)]
       typeofExpr m id1 (body id1) `shouldBe` Right (Unspecfied "z")
-      typecheckStmt m id1 `shouldBe` Right (Unspecfied "z")
+      typecheckFunc m id1 `shouldBe` Right (Unspecfied "z")
       typeofExpr m id2 (body id2) `shouldBe` Right (Unspecfied "p")
-      typecheckStmt m id2 `shouldBe` Right (Unspecfied "p")
+      typecheckFunc m id2 `shouldBe` Right (Unspecfied "p")
 
     it "typecheck avg" $ do
-      let stmt = Function { name = "avg"
+      let func = Function { name = "avg"
                           , signature = Arrow NumType (Arrow NumType NumType)
                           , args = ["num1", "num2"]
                           , body = BinOp Times (BinOp Plus (Ident "num1") (Ident "num2")) (Val $ Number 0.5)
                           }
-          m = Map.singleton "avg" stmt
-      typeofExpr m stmt (body stmt) `shouldBe` (Right NumType)
-      typecheckStmt m stmt `shouldBe` (Right NumType)
+          m = Map.singleton "avg" func
+      typeofExpr m func (body func) `shouldBe` (Right NumType)
+      typecheckFunc m func `shouldBe` (Right NumType)
 
 
     it "typecheck call vs ident function" $ do
@@ -145,10 +145,10 @@ spec = do
                           , body = Ident "one1"
                           }
           m = Map.fromList [("one1", one1), ("one2", one2), ("one3", one3)]
-      typecheckStmt m one1 `shouldBe` (Right NumType)
-      typecheckStmt m one2 `shouldBe` (Right NumType)
+      typecheckFunc m one1 `shouldBe` (Right NumType)
+      typecheckFunc m one2 `shouldBe` (Right NumType)
 
-      typecheckStmt m one3 `shouldBe` (Right NumType)  -- HERE
+      typecheckFunc m one3 `shouldBe` (Right NumType)  -- HERE
 
     -- TODO: redo to not include fallback param
     it "typecheck map" $ do
@@ -159,7 +159,7 @@ spec = do
                           }
           m = Map.fromList [("map", map')]
       typeofExpr m map' (body map') `shouldBe` (Right $ Unspecfied "y")
-      typecheckStmt m map' `shouldBe` (Right $ Unspecfied "y")
+      typecheckFunc m map' `shouldBe` (Right $ Unspecfied "y")
 
     it "typecheck compose" $ do
       let id1 = Function { name = "id1"
@@ -189,11 +189,11 @@ spec = do
                           }
           m = Map.fromList [("id1", id1), ("id1", id1), ("compose", compose), ("add1", add1)]
       typeofExpr m compose (body compose) `shouldBe` (Right $ Unspecfied "c")
-      typecheckStmt m compose `shouldBe` (Right $ Unspecfied "c")
+      typecheckFunc m compose `shouldBe` (Right $ Unspecfied "c")
       typeofExpr m id2 (body id2) `shouldBe` (Right $ Unspecfied "y")
-      typecheckStmt m compose `shouldBe` (Right $ Unspecfied "c")
+      typecheckFunc m compose `shouldBe` (Right $ Unspecfied "c")
       typeofExpr m add2 (body add2) `shouldBe` (Right NumType)
-      typecheckStmt m add2 `shouldBe` (Right NumType)
+      typecheckFunc m add2 `shouldBe` (Right NumType)
 
     it "typecheck guards" $ do
       let trivial = Function { name = "trivial"
@@ -203,7 +203,7 @@ spec = do
                              }
           m = Map.fromList [("trivial", trivial)]
       typeofExpr m trivial (body trivial) `shouldBe` (Right CharType)
-      typecheckStmt m trivial `shouldBe` (Right CharType)
+      typecheckFunc m trivial `shouldBe` (Right CharType)
 
     it "typecheck guards 2" $ do
       let hof1 = Function { name = "hof1"
@@ -217,5 +217,5 @@ spec = do
                           , body = Call "f" [Ident "xs"]
                           }
           m = Map.fromList [("hof1", hof1), ("hof2", hof2)]
-      isLeft (typecheckStmt m hof2) `shouldBe` True
-      typecheckStmt m hof1 `shouldBe` Right (ListType NumType)
+      isLeft (typecheckFunc m hof2) `shouldBe` True
+      typecheckFunc m hof1 `shouldBe` Right (ListType NumType)

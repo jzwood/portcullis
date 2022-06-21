@@ -10,12 +10,12 @@ import Util
 type Name = String
 type Buffer = Integer
 
-newtype Module = Module [Stmt]
+newtype Module = Module [Func]
 
 newtype Pipeline
   = InOut Name
 
-data Stmt = Function
+data Func = Function
   { name :: Name
   , signature :: TypeExpr
   , args :: [Name]
@@ -26,7 +26,7 @@ data Stmt = Function
 --data Out = Out Name TypeExpr
 --data Event = Event Name TypeExpr
 data Queue = Queue Name Buffer TypeExpr
-data Pipe = Pipe Stmt [Queue] Queue
+data Pipe = Pipe Func [Queue] Queue
 
 data TypeExpr
   = NumType

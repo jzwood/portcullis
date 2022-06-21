@@ -44,7 +44,7 @@ spec = do
       let result = runParser number mempty "123.456abc"
       success result `shouldBe` Just (123.456, "abc")
 
-    it "parse Stmt" $ do
-      let result = runParser parseStmt mempty "divide ->   -> Num Num   Num   \n divide   num den   = /   num den  "
+    it "parse Func" $ do
+      let result = runParser parseFunc mempty "divide ->   -> Num Num   Num   \n divide   num den   = /   num den  "
           expected = Function "divide" (Arrow (Arrow NumType NumType) NumType) ["num","den"] (BinOp Divide (Ident "num") (Ident "den"))
       success result `shouldBe` Just (expected, "")

@@ -21,7 +21,7 @@ data TypeError
   | ArityMismatch
   deriving (Show, Eq)
 
-data TypecheckError = TypecheckError Stmt TypeError
+data TypecheckError = TypecheckError Func TypeError
   deriving (Eq)
 
 instance Show TypecheckError where
@@ -29,22 +29,22 @@ instance Show TypecheckError where
     = "Typecheck Error in function " ++ name ++ ": " ++ show typeError
 
 typecheckModule :: Module -> Either [TypecheckError] Module
-typecheckModule mod@(Module stmts)
+typecheckModule mod@(Module funcs)
   = if null typeErrors then Right mod else Left typeErrors
     where
       !typeErrors
-        =  stmts
-       <&> typecheckStmt (modToStmtMap mod)
+        =  funcs
+       <&> typecheckFunc (modToFuncMap mod)
         &  lefts
 
-typecheckStmt :: Map Name Stmt -> Stmt -> Either TypecheckError TypeExpr
-typecheckStmt stmtMap stmt@Function { body, args, signature } = do
-  typeofBody <- typeofExpr stmtMap stmt body
+typecheckFunc :: Map Name Func -> Func -> Either TypecheckError TypeExpr
+typecheckFunc funcMap func@Function { body, args, signature } = do
+  typeofBody <- typeofExpr funcMap func body
   expectedTypeOfBody <- typeExprToList signature
                       & drop (length args)
                       & typeExprFromList
   typeEqual expectedTypeOfBody typeofBody
-  &   mapLeft (TypecheckError stmt)
+  &   mapLeft (TypecheckError func)
 
 typeEqual :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typeEqual te1@(Unspecfied a) (Unspecfied b) = Right te1
@@ -52,8 +52,8 @@ typeEqual (ListType te1) (ListType te2) = ListType <$> typeEqual te1 te2
 typeEqual (TupType te1 te2) (TupType te3 te4) = liftA2 TupType (typeEqual te1 te3) (typeEqual te2 te4)
 typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 "typeEqual"
 
-modToStmtMap :: Module -> Map Name Stmt
-modToStmtMap (Module stms)
+modToFuncMap :: Module -> Map Name Func
+modToFuncMap (Module stms)
   =  stms
  <&> (\func@Function { name } -> (name, func))
   &  Map.fromList
@@ -97,7 +97,7 @@ argToMaybeSig arg args sig
   =   elemIndex arg args
   >>= (!?) (typeExprToList sig)
 
-typeofExpr :: Map Name Stmt -> Stmt -> Expr -> Either TypeError TypeExpr
+typeofExpr :: Map Name Func -> Func -> Expr -> Either TypeError TypeExpr
 typeofExpr m s (Val p) =
   case p of
     Number n -> Right NumType

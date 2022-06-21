@@ -28,7 +28,7 @@ so `(f xs)` sets `a` to `[Num]` if arg 2 is a num list. But the signature at the
 
 
 ### BUGFIX SOLUTION IDEA
-So typecheckStmt calls `typeofBody <- typeofExpr stmtMap stmt body` to get the resultant type of an expression. It then compares with the signature and flags an error if they don't match. I think that if typeofExpr returned the unspecified type map we'd have enough information to know if two unspecified types with different names are, in fact, equivalent.
+So typecheckFunc calls `typeofBody <- typeofExpr funcMap func body` to get the resultant type of an expression. It then compares with the signature and flags an error if they don't match. I think that if typeofExpr returned the unspecified type map we'd have enough information to know if two unspecified types with different names are, in fact, equivalent.
 
 e.g.
 

@@ -9,8 +9,8 @@ import Data.Char
 import Data.List
 import Util hiding (paren)
 
-parseModule :: Parser [Stmt]
-parseModule = oneOrMore (comments *> parseStmt <* comments) <* spaces
+parseModule :: Parser [Func]
+parseModule = oneOrMore (comments *> parseFunc <* comments) <* spaces
   where
     comments = zeroOrMore $ trimLeft parseComment
 
@@ -19,8 +19,8 @@ parseComment =  char '#'
              *> oneOrMore (satisfy (/= '#'))
              <* char '#'
 
-parseStmt :: Parser Stmt
-parseStmt =  trimLeft
+parseFunc :: Parser Func
+parseFunc =  trimLeft
           $  Function
          <$> name
          <*> parseTypeExpr
