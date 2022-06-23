@@ -10,10 +10,14 @@ import Util
 type Name = String
 type Buffer = Integer
 
-newtype Module = Module [Func]
+newtype Module = Module [Stmt]
 
-newtype Pipeline
-  = InOut Name
+data Queue = Queue Name Buffer TypeExpr
+  deriving (Eq)
+data Pipe = Pipe Func [Queue] Queue
+  deriving (Eq)
+newtype Comment = Comment String
+  deriving (Eq)
 
 data Func = Function
   { name :: Name
@@ -22,11 +26,7 @@ data Func = Function
   , body :: Expr
   } deriving (Eq)
 
---data In = In Name TypeExpr
---data Out = Out Name TypeExpr
---data Event = Event Name TypeExpr
-data Queue = Queue Name Buffer TypeExpr
-data Pipe = Pipe Func [Queue] Queue
+data Stmt = F Func | Q Queue | P Pipe | C Comment deriving (Eq)
 
 data TypeExpr
   = NumType

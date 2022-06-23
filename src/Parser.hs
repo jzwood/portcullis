@@ -9,13 +9,24 @@ import Data.Char
 import Data.List
 import Util hiding (paren)
 
-parseModule :: Parser [Func]
+parseModule :: Parser [Stack]
 parseModule = oneOrMore (comments *> parseFunc <* comments) <* spaces
   where
     comments = zeroOrMore $ trimLeft parseComment
 
-parseComment :: Parser String
-parseComment =  char '#'
+--data Queue = Queue Name Buffer TypeExpr
+--data Pipe = Pipe Func [Queue] Queue
+
+parseQueue = Parser Queue
+parseQueue = Queue <$> identStartsWith (=='&') <*> integer <*> parseTypeExpr
+--TernOp <$> parseTop <*> parseExpr <*> parseExpr <*> parseExpr
+
+parsePipe = Parser Pipe
+parsePipe = undefined
+
+parseComment :: Parser Comment
+parseComment = Comment
+             $ char '#'
              *> oneOrMore (satisfy (/= '#'))
              <* char '#'
 
