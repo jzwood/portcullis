@@ -122,6 +122,9 @@ camel = identStartsWith (isLower .|| (== '_'))
 pascal :: Parser String
 pascal = identStartsWith isUpper
 
+address :: Parser String
+address = identStartsWith (=='&')
+
 wrap :: Char -> Char -> Parser a -> Parser a
 wrap l r p = char l *> p <* char r
 

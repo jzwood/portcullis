@@ -9,20 +9,14 @@ import Data.Char
 import Data.List
 import Util hiding (paren)
 
-parseModule :: Parser [Stack]
-parseModule = oneOrMore (comments *> parseFunc <* comments) <* spaces
-  where
-    comments = zeroOrMore $ trimLeft parseComment
-
---data Queue = Queue Name Buffer TypeExpr
---data Pipe = Pipe Func [Queue] Queue
+parseModule :: Parser Module
+parseModule =  Module <$> oneOrMore parseStmt
 
 parseQueue = Parser Queue
-parseQueue = Queue <$> identStartsWith (=='&') <*> integer <*> parseTypeExpr
---TernOp <$> parseTop <*> parseExpr <*> parseExpr <*> parseExpr
+parseQueue = Queue <$> address <*> integer <*> parseTypeExpr
 
 parsePipe = Parser Pipe
-parsePipe = undefined
+parsePipe = Pipe <$> char '|' *> trim camel <*> brack . trim $ zeroOrMore address <*> address
 
 parseComment :: Parser Comment
 parseComment = Comment
@@ -40,6 +34,14 @@ parseFunc =  trimLeft
          <*  trimLeft (char '=')
          <*> parseExpr
          where name = trimLeft camel
+
+parseStmt = Parser Stmt
+parseStmt = trimLeft
+          $ Stmt
+         <$> F parseFunc
+         <|> Q parseQueue
+         <|> P parsePipe
+         <|> C parseComment
 
 parseArrow :: Parser TypeExpr
 parseArrow = optionalParens $ liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr

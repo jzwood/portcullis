@@ -8,11 +8,10 @@ import Data.List (intercalate, nub)
 import Util
 
 type Name = String
-type Buffer = Integer
 
 newtype Module = Module [Stmt]
 
-data Queue = Queue Name Buffer TypeExpr
+data Queue = Queue { queueName :: Name, buffer :: Integer, queueSig :: TypeExpr }
   deriving (Eq)
 data Pipe = Pipe Func [Queue] Queue
   deriving (Eq)

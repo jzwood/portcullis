@@ -13,7 +13,7 @@ function equal(a, b) {
   return +false;
 }
 
-function initPipe(fxn, inQueueNames, outQueueName) {
+function addPipe(fxn, inQueueNames, outQueueName) {
   const queueMap = inQueueNames.reduce((acc, queueName) => ({
     ...acc,
     [queueName]: { queue: new BroadcastChannel(queueName), buffer: [] },

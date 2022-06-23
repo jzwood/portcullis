@@ -1,3 +1,5 @@
+{-# LANGUAGE NamedFieldPuns #-}
+
 module CodeGen where
 
 import Syntax
@@ -9,20 +11,29 @@ import Data.List (intercalate, intersperse, nub)
 import Util
 
 instance Show Module where
-  show (Module funcs) = unlines
-                      $ readAtoms funcs
-                      : readZeroArityFunctions funcs
-                      : (show <$> funcs)
+  show (Module stmts)
+    = unlines $ atoms : zeroArityFuncs : (show <$> stmts)
+      where
+        funcs = foldr filterFuncAlg [] stmts
+        atoms = readAtoms funcs
+        zeroArityFuncs = readZeroArityFunctions funcs
+
+filterFuncAlg :: Stmt -> [Func] -> [Func]
+filterFuncAlg (F func) funcs = func : funcs
+filterFuncAlg _ funcs = funcs
+
+instance Show Stmt where
+  show (F func) = show func
+  show (C comment) = show comment
+  show (Q queue) = "" -- queues have no explicit code output
+  show (P pipe) = show pipe
 
 instance Show Func where
   show (Function name tExpr vars expr)
-    = comment $ unwords ["function", show name, "has type", show tExpr]
+    = comment $ unwords [show name, "::", show tExpr]
     ++ '\n'
     : concat
-    [ def
-    , name
-    , (paren . head' "") vars
-    ]
+    [ def , name , (paren . head' "") vars ]
     ++ unlines'
     [ " {"
     , (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , show expr , ";" ]
@@ -32,6 +43,12 @@ instance Show Func where
         def = case vars of
           []  -> "function $"
           _ -> "export function "
+
+instance Show Comment where
+  show (Comment comment) = unwords ["/*", comment, "*/"]
+
+instance Show Pipe where
+  show (Pipe Function { name } ins out) = prefixOp "addPipe" [show $ queueName <$> ins, queueName out]
 
 instance Show TypeExpr where
   show NumType = "Num"
@@ -94,7 +111,7 @@ instance Show Bop where
   show LessThanOrEqual = "<="
   show Rem = "%"
   show Equal = "equal"
-  -- show Cons = "+>"  -- not used for code gen
+  --show Cons = "+>"  -- not used for code gen
 
 prefixOp :: String -> [String] -> String
 prefixOp op = (op ++) . paren . intercalate ", "
