@@ -5,7 +5,7 @@ const Chipmunk = 2
 export const empty = $empty()
 
 /*  UNSTANDARD LIB  */
-// not :: ((a -> (a -> Atom)) -> (a -> (a -> Atom)))
+// ((a -> (a -> Atom)) -> (a -> (a -> Atom)))
 export function not(f) {
   return (a) => (b) => (
     /* if */ equal(False, f(a)(b)) ?
@@ -14,12 +14,12 @@ export function not(f) {
   );
 }
 
-// _length :: (a -> ([a] -> Num))
+// (a -> ([a] -> Num))
 export function _length(x) {
   return (xs) => (1.0 + length(xs));
 }
 
-// length :: ([a] -> Num)
+// ([a] -> Num)
 export function length(xs) {
   return (
     /* if */ equal(xs, []) ?
@@ -28,12 +28,12 @@ export function length(xs) {
   );
 }
 
-// push :: ([h] -> (h -> ([h] -> [h])))
+// ([h] -> (h -> ([h] -> [h])))
 export function push(ys) {
   return (x) => (xs) => [x, ...concat(xs)(ys)];
 }
 
-// concat :: ([a] -> ([a] -> [a]))
+// ([a] -> ([a] -> [a]))
 export function concat(xs) {
   return (ys) => (
     /* if */ equal(xs, []) ?
@@ -42,12 +42,12 @@ export function concat(xs) {
   );
 }
 
-// identity2 :: (x -> ([x] -> [x]))
+// (x -> ([x] -> [x]))
 export function identity2(x) {
   return (xs) => xs;
 }
 
-// tail :: ([p] -> [p])
+// ([p] -> [p])
 export function tail(xs) {
   return (
     /* if */ equal(xs, []) ?
@@ -56,7 +56,7 @@ export function tail(xs) {
   );
 }
 
-// drop :: ([g] -> (Num -> [g]))
+// ([g] -> (Num -> [g]))
 export function drop(xs) {
   return (n) => (
     /* if */ (n <= 0.0) ?
@@ -65,7 +65,7 @@ export function drop(xs) {
   );
 }
 
-// _take :: (Num -> (f -> ([f] -> [f])))
+// (Num -> (f -> ([f] -> [f])))
 export function _take(n) {
   return (x) => (xs) => (
     /* if */ (n <= 0.0) ?
@@ -74,7 +74,7 @@ export function _take(n) {
   );
 }
 
-// take :: ([k] -> (Num -> [k]))
+// ([k] -> (Num -> [k]))
 export function take(xs) {
   return (n) => (
     /* if */ equal(xs, []) ?
@@ -83,12 +83,12 @@ export function take(xs) {
   );
 }
 
-// slice :: ([q] -> (Num -> (Num -> [q])))
+// ([q] -> (Num -> (Num -> [q])))
 export function slice(xs) {
   return (i) => (j) => take(drop(xs)(i))((j - i));
 }
 
-// filter2 :: ((x -> Atom) -> (x -> ([x] -> [x])))
+// ((x -> Atom) -> (x -> ([x] -> [x])))
 export function filter2(g) {
   return (w) => (ws) => concat((
     /* if */ g(w) ?
@@ -97,7 +97,7 @@ export function filter2(g) {
   ))(filter(g)(ws));
 }
 
-// filter :: ((j -> Atom) -> ([j] -> [j]))
+// ((j -> Atom) -> ([j] -> [j]))
 export function filter(f) {
   return (xs) => (
     /* if */ equal(xs, []) ?
@@ -107,22 +107,22 @@ export function filter(f) {
 }
 
 /*  TEST BELOW  */
-// neg :: (Num -> Num)
+// (Num -> Num)
 export function neg(x) {
   return (0.0 - x);
 }
 
-// empty :: [Num]
+// [Num]
 function $empty() {
   return /* [Num] */ [];
 }
 
-// msort :: ([Num] -> [Num])
+// ([Num] -> [Num])
 export function msort(ns) {
   return msort2(length(ns))(ns);
 }
 
-// msort2 :: (Num -> ([Num] -> [Num]))
+// (Num -> ([Num] -> [Num]))
 export function msort2(len) {
   return (ns) => (
     /* if */ (len <= 1.0) ?
@@ -131,7 +131,7 @@ export function msort2(len) {
   );
 }
 
-// merge3 :: (Num -> ([Num] -> (Num -> ([Num] -> [Num]))))
+// (Num -> ([Num] -> (Num -> ([Num] -> [Num]))))
 export function merge3(x) {
   return (xs) => (y) => (ys) => (
     /* if */ (x <= y) ?
@@ -140,7 +140,7 @@ export function merge3(x) {
   );
 }
 
-// merge2 :: ([Num] -> (Num -> ([Num] -> [Num])))
+// ([Num] -> (Num -> ([Num] -> [Num])))
 export function merge2(ys) {
   return (x) => (xs) => (
     /* if */ equal(ys, []) ?
@@ -149,7 +149,7 @@ export function merge2(ys) {
   );
 }
 
-// merge :: ([Num] -> ([Num] -> [Num]))
+// ([Num] -> ([Num] -> [Num]))
 export function merge(xs) {
   return (ys) => (
     /* if */ equal(xs, []) ?
@@ -158,22 +158,22 @@ export function merge(xs) {
   );
 }
 
-// avg :: (Num -> (Num -> Num))
+// (Num -> (Num -> Num))
 export function avg(a) {
   return (b) => (0.5 * (a + b));
 }
 
-// mean :: ([Num] -> Num)
+// ([Num] -> Num)
 export function mean(xs) {
   return (sum(xs) / length(xs));
 }
 
-// sum2 :: (Num -> ([Num] -> Num))
+// (Num -> ([Num] -> Num))
 export function sum2(x) {
   return (xs) => (x + sum(xs));
 }
 
-// sum :: ([Num] -> Num)
+// ([Num] -> Num)
 export function sum(xs) {
   return (
     /* if */ equal(xs, []) ?
@@ -182,13 +182,13 @@ export function sum(xs) {
   );
 }
 
-// compose :: ((b -> c) -> ((a -> b) -> (a -> c)))
+// ((b -> c) -> ((a -> b) -> (a -> c)))
 export function compose(f) {
   return (g) => (x) => f(g(x));
 }
 
 /*  this is a comment  */
-// rankPet :: (Atom -> (Atom -> [Atom Atom]))
+// (Atom -> (Atom -> [Atom Atom]))
 export function rankPet(p1) {
   return (p2) => (
     /* if */ equal(Chipmunk, p1) ?
@@ -197,22 +197,22 @@ export function rankPet(p1) {
   );
 }
 
-// lt :: (Num -> (Num -> Atom))
+// (Num -> (Num -> Atom))
 export function lt(x) {
   return (y) => (x > y);
 }
 
-// gte :: (Num -> (Num -> Atom))
+// (Num -> (Num -> Atom))
 export function gte(x) {
   return (y) => (x <= y);
 }
 
-// qsortp :: (Num -> ([Num] -> [Num]))
+// (Num -> ([Num] -> [Num]))
 export function qsortp(x) {
   return (xs) => concat(qsort(filter(lt(x))(xs)))([x, ...qsort(filter(gte(x))(xs))]);
 }
 
-// qsort :: ([Num] -> [Num])
+// ([Num] -> [Num])
 export function qsort(xs) {
   return (
     /* if */ equal(xs, []) ?
@@ -222,7 +222,7 @@ export function qsort(xs) {
 }
 
 /*  BAD  */
-// hofBad :: ((a -> Atom) -> ([a] -> [a]))
+// ((a -> Atom) -> ([a] -> [a]))
 export function hofBad(f) {
   return (xs) => (
     /* if */ f(xs) ?

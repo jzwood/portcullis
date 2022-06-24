@@ -38,7 +38,7 @@ instance Show Func where
     , "}"
     ]
       where
-        docstring = comment $ unwords [name, "::", show tExpr]
+        docstring = comment $ show tExpr
         header = concat [ if null vars then "function $" else "export function " , name , (paren . head' "") vars ]
         body = (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , show expr , ";" ]
 

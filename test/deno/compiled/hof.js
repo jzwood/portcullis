@@ -4,7 +4,7 @@ const True = 1
 export const one1 = $one1()
 export const one2 = $one2()
 
-// id :: (x -> x)
+// (x -> x)
 export function id(x) {
   return x;
 }
@@ -12,42 +12,42 @@ export function id(x) {
 /* 
 filter ...
  */
-// compose :: ((b -> c) -> ((a -> b) -> (a -> c)))
+// ((b -> c) -> ((a -> b) -> (a -> c)))
 export function compose(f) {
   return (g) => (x) => f(g(x));
 }
 
-// double :: (Num -> Num)
+// (Num -> Num)
 export function double(x) {
   return (2.0 * x);
 }
 
-// quadruple :: (Num -> Num)
+// (Num -> Num)
 export function quadruple(n) {
   return compose(double)(double)(n);
 }
 
-// id2 :: (x -> x)
+// (x -> x)
 export function id2(x) {
   return compose(id)(id)(x);
 }
 
-// one1 :: Num
+// Num
 function $one1() {
   return 1.0;
 }
 
-// one2 :: Num
+// Num
 function $one2() {
   return compose(id)(id)(one1);
 }
 
-// id3 :: (z -> ([z] -> [z]))
+// (z -> ([z] -> [z]))
 export function id3(x) {
   return (xs) => xs;
 }
 
-// tail :: ([t] -> [t])
+// ([t] -> [t])
 export function tail(xs) {
   return (
     /* if */ equal(xs, []) ?
@@ -56,27 +56,27 @@ export function tail(xs) {
   );
 }
 
-// a :: ((h -> h) -> (h -> h))
+// ((h -> h) -> (h -> h))
 export function a(fx) {
   return (x) => fx(x);
 }
 
-// b :: (q -> q)
+// (q -> q)
 export function b(w) {
   return w;
 }
 
-// c :: (p -> p)
+// (p -> p)
 export function c(y) {
   return a(b)(y);
 }
 
-// push :: ([h] -> (h -> ([h] -> [h])))
+// ([h] -> (h -> ([h] -> [h])))
 export function push(ys) {
   return (x) => (xs) => [x, ...concat(xs)(ys)];
 }
 
-// concat :: ([a] -> ([a] -> [a]))
+// ([a] -> ([a] -> [a]))
 export function concat(xs) {
   return (ys) => (
     /* if */ equal(xs, []) ?
@@ -85,7 +85,7 @@ export function concat(xs) {
   );
 }
 
-// filter2 :: ((x -> Atom) -> (x -> ([x] -> [x])))
+// ((x -> Atom) -> (x -> ([x] -> [x])))
 export function filter2(g) {
   return (w) => (ws) => concat((
     /* if */ g(w) ?
@@ -94,7 +94,7 @@ export function filter2(g) {
   ))(filter(g)(ws));
 }
 
-// filter :: ((j -> Atom) -> ([j] -> [j]))
+// ((j -> Atom) -> ([j] -> [j]))
 export function filter(f) {
   return (xs) => (
     /* if */ equal(xs, []) ?
@@ -103,12 +103,12 @@ export function filter(f) {
   );
 }
 
-// eq :: (a -> (a -> Atom))
+// (a -> (a -> Atom))
 export function eq(x) {
   return (y) => equal(x, y);
 }
 
-// seven :: ([Num] -> [Num])
+// ([Num] -> [Num])
 export function seven(xs) {
   return filter(eq(7.0))(xs);
 }
