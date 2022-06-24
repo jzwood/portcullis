@@ -20,7 +20,7 @@ runp p = runParser p mempty
 
 parse :: String -> Either CompileError Module
 parse program =
-  case runParser parseModule mempty program of
+  case runParser parseProgram mempty program of
     Left err -> Left $ Compile.ParseError err
     Right (mod, cursor, unparsed) -> if unparsed == "" then Right mod else Left . Compile.ParseError $ ParseLib.ParseError cursor
 
@@ -35,18 +35,15 @@ compile program
   >>= typecheck
   <&> show
 
-save :: String -> Either CompileError String -> IO ()
-save dest (Right js)
+save :: String -> String -> Either CompileError String -> IO ()
+save _ dest (Right js)
   =  writeFile dest js
   >> putStrLn ("✓\t" ++ dest ++ " Successfully Compiled")
-save dest (Left err) = putStrLn ("!\t" ++ dest ++ " " ++ show err)
-
---sortpo = "src/examples/rsort.po"
---sortjs = "dest/rsport.js"
+save src _ (Left err) = putStrLn ("!\t" ++ src ++ " " ++ show err)
 
 runCompilation :: String -> String -> IO ()
 runCompilation src dest = do
   code <- readFile src <&> compile
   core <- readFile core
-  save dest $ (++core) <$> code where
+  save src dest $ (++core) <$> code where
     core = "src/core.js"

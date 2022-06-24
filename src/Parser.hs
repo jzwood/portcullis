@@ -9,6 +9,9 @@ import Data.Char
 import Data.List
 import Util hiding (paren)
 
+parseProgram :: Parser Module
+parseProgram = parseModule <* spaces
+
 parseModule :: Parser Module
 parseModule =  Module <$> oneOrMore parseStmt
 
@@ -34,7 +37,8 @@ parseFunc =  trimLeft
          where name = trimLeft camel
 
 parseStmt :: Parser Stmt
-parseStmt =  F <$> parseFunc
+parseStmt =  trimLeft
+          $  F <$> parseFunc
          <|> Q <$> parseQueue
          <|> P <$> parsePipe
          <|> C <$> parseComment

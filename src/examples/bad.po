@@ -1,0 +1,132 @@
+# UNSTANDARD LIB #
+
+not -> -> a -> a Atom -> a -> a Atom
+not f a b =
+  ? == False (f a b) True False
+
+_length -> a -> [a] Num
+_length x xs = + 1 (length xs)
+
+length -> [a] Num
+length xs =
+  <+ xs 0 _length
+
+push -> [h] -> h -> [h] [h]
+push ys x xs = +> x (concat xs ys)
+
+concat -> [a] -> [a] [a]
+concat xs ys =
+  <+ xs ys (push ys)
+
+identity2 -> x -> [x] [x]
+identity2 x xs = xs
+
+tail -> [p] [p]
+tail xs =
+  <+ xs xs identity2
+
+drop -> [g] -> Num [g]
+drop xs n =
+  ? <= n 0 xs
+  (drop (tail xs) - n 1)
+
+_take -> Num -> f -> [f] [f]
+_take n x xs =
+  ? <= n 0 f []
+  +> x (take xs - n 1)
+
+take -> [k] -> Num [k]
+take xs n =
+  <+ xs k [] (_take n)
+
+slice -> [q] -> Num -> Num [q]
+slice xs i j = (take (drop xs i) - j i)
+
+filter2 -> -> x Atom -> x -> [x] [x]
+filter2 g w ws =
+  (concat
+    ? (g w)
+      x [w]
+      x []
+    (filter g ws))
+
+filter -> -> j Atom -> [j] [j]
+filter f xs =
+  <+ xs xs (filter2 f)
+
+# TEST BELOW #
+
+neg -> Num Num
+neg x = - 0 x
+
+empty [Num]
+empty = Num []
+
+msort -> [Num] [Num]
+msort ns = (msort2 (length ns) ns)
+
+msort2 -> Num -> [Num] [Num]
+msort2 len ns =
+  ? <= len 1 ns
+    (merge (msort (take ns / len 2)) (msort (drop ns / len 2)))
+
+merge3 -> Num -> [Num] -> Num -> [Num] [Num]
+merge3 x xs y ys =
+  ? <= x y +> x (merge xs +> y ys)
+           +> y (merge +> x xs ys)
+
+merge2 -> [Num] -> Num -> [Num] [Num]
+merge2 ys x xs =
+  <+ ys +> x xs (merge3 x xs)
+
+merge -> [Num] -> [Num] [Num]
+merge xs ys =
+  <+ xs ys (merge2 ys)
+
+avg -> Num -> Num Num
+avg a b = * 0.5 + a b
+
+mean -> [Num] Num
+mean xs = / (sum xs) (length xs)
+
+sum2 -> Num -> [Num] Num
+sum2 x xs = + x (sum xs)
+
+sum -> [Num] Num
+sum xs =
+  <+ xs 0 sum2
+
+compose -> -> b c -> -> a b -> a c
+compose f g x =
+            (f (g x))
+
+# this is a comment #
+rankPet -> Atom -> Atom {Atom Atom}
+rankPet p1 p2 =
+  ? == Chipmunk p1 {p1 p2} {p2 p1}
+
+lt -> Num -> Num Atom
+lt x y = > x y
+
+gte -> Num -> Num Atom
+gte x y = <= x y
+
+qsortp -> Num -> [Num] [Num]
+qsortp x xs =
+  (concat (qsort (filter (lt x) xs)) +> x (qsort (filter (gte x) xs)))
+
+qsort -> [Num] [Num]
+qsort xs =
+  <+ xs xs qsortp
+
+# BAD #
+hofBad -> -> a Atom -> [a] [a]
+hofBad f xs =
+  ? (f xs) xs
+    xs
+
+
+# end comment #
+
+
+

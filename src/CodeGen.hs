@@ -1,5 +1,3 @@
-{-# LANGUAGE NamedFieldPuns #-}
-
 module CodeGen where
 
 import Syntax
@@ -7,7 +5,7 @@ import Data.Functor
 import Data.Function
 import Control.Applicative
 import Data.Char
-import Data.List (intercalate, intersperse, nub, foldl')
+import Data.List (intercalate, intersperse, nub)
 import Util
 
 instance Show Module where
@@ -18,12 +16,12 @@ instance Show Module where
         atoms = readAtoms funcs
         zeroArityFuncs = readZeroArityFunctions funcs
 
-filterFuncAlg :: [Func] -> Stmt -> [Func]
-filterFuncAlg funcs (F func) = func : funcs
-filterFuncAlg funcs _ = funcs
+filterFuncAlg :: Stmt -> [Func] -> [Func]
+filterFuncAlg (F func) funcs = func : funcs
+filterFuncAlg _ funcs = funcs
 
 stmtsToFuncs :: [Stmt] -> [Func]
-stmtsToFuncs = foldl' filterFuncAlg []
+stmtsToFuncs = foldr filterFuncAlg []
 
 instance Show Stmt where
   show (F func) = show func
@@ -33,13 +31,14 @@ instance Show Stmt where
 
 instance Show Func where
   show (Function name tExpr vars expr)
-    = unlines'
+    = unlines
     [ docstring
-    , header
-    , curly  ('\n' : body)
+    , unwords [header, "{"]
+    , body
+    , "}"
     ]
       where
-        docstring = comment $ unwords [show name, "::", show tExpr]
+        docstring = comment $ unwords [name, "::", show tExpr]
         header = concat [ if null vars then "function $" else "export function " , name , (paren . head' "") vars ]
         body = (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , show expr , ";" ]
 
