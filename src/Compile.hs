@@ -4,28 +4,30 @@ import Data.Functor
 import Data.Function
 import Control.Applicative
 import Syntax
-import MiniParser
+import qualified MiniParser as ParseLib
+import MiniParser (runParser, Parser, Cursor)
 import Parser
+import qualified Typecheck
 import Typecheck (typecheckModule)
 import Util (mapLeft)
 
-newtype CompileError = CompileError String
-  deriving (Show, Eq)
+data CompileError = ParseError ParseLib.ParseError | TypecheckError [Typecheck.TypecheckError]
+  deriving (Show)
 
 -- testing util
-runp :: Parser a -> String -> Either ParseError (a, Cursor, String)
+runp :: Parser a -> String -> Either ParseLib.ParseError (a, Cursor, String)
 runp p = runParser p mempty
 
 parse :: String -> Either CompileError Module
 parse program =
   case runParser parseModule mempty program of
-    Left err -> Left $ CompileError (show err)
-    Right (stms, cursor, unparsed) -> if unparsed == "" then Right (Module stms) else Left . CompileError $ show (ParseError cursor)
+    Left err -> Left $ Compile.ParseError err
+    Right (mod, cursor, unparsed) -> if unparsed == "" then Right mod else Left . Compile.ParseError $ ParseLib.ParseError cursor
 
 typecheck :: Module -> Either CompileError Module
 typecheck mod
   = typecheckModule mod
-  & mapLeft (CompileError . show)
+  & mapLeft TypecheckError
 
 compile :: String -> Either CompileError String
 compile program
@@ -46,6 +48,5 @@ runCompilation :: String -> String -> IO ()
 runCompilation src dest = do
   code <- readFile src <&> compile
   core <- readFile core
-  save dest $ (++core) <$> code
-    where
+  save dest $ (++core) <$> code where
     core = "src/core.js"

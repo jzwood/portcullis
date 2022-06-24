@@ -7,20 +7,23 @@ import Data.Functor
 import Data.Function
 import Control.Applicative
 import Data.Char
-import Data.List (intercalate, intersperse, nub)
+import Data.List (intercalate, intersperse, nub, foldl')
 import Util
 
 instance Show Module where
   show (Module stmts)
     = unlines $ atoms : zeroArityFuncs : (show <$> stmts)
       where
-        funcs = foldr filterFuncAlg [] stmts
+        funcs = stmtsToFuncs stmts
         atoms = readAtoms funcs
         zeroArityFuncs = readZeroArityFunctions funcs
 
-filterFuncAlg :: Stmt -> [Func] -> [Func]
-filterFuncAlg (F func) funcs = func : funcs
-filterFuncAlg _ funcs = funcs
+filterFuncAlg :: [Func] -> Stmt -> [Func]
+filterFuncAlg funcs (F func) = func : funcs
+filterFuncAlg funcs _ = funcs
+
+stmtsToFuncs :: [Stmt] -> [Func]
+stmtsToFuncs = foldl' filterFuncAlg []
 
 instance Show Stmt where
   show (F func) = show func
@@ -30,25 +33,21 @@ instance Show Stmt where
 
 instance Show Func where
   show (Function name tExpr vars expr)
-    = comment $ unwords [show name, "::", show tExpr]
-    ++ '\n'
-    : concat
-    [ def , name , (paren . head' "") vars ]
-    ++ unlines'
-    [ " {"
-    , (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , show expr , ";" ]
-    , "}"
+    = unlines'
+    [ docstring
+    , header
+    , curly  ('\n' : body)
     ]
       where
-        def = case vars of
-          []  -> "function $"
-          _ -> "export function "
+        docstring = comment $ unwords [show name, "::", show tExpr]
+        header = concat [ if null vars then "function $" else "export function " , name , (paren . head' "") vars ]
+        body = (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , show expr , ";" ]
 
 instance Show Comment where
   show (Comment comment) = unwords ["/*", comment, "*/"]
 
 instance Show Pipe where
-  show (Pipe Function { name } ins out) = prefixOp "addPipe" [show $ queueName <$> ins, queueName out]
+  show (Pipe func ins out) = prefixOp "addPipe" [func, show ins, out]
 
 instance Show TypeExpr where
   show NumType = "Num"

@@ -20,6 +20,9 @@ paren a = "(" ++ a ++ ")"
 bracket :: String -> String
 bracket a = "[" ++ a ++ "]"
 
+curly :: String -> String
+curly a = "{" ++ a ++ "}"
+
 pad :: String -> String
 pad a = " " ++ a ++ " "
 

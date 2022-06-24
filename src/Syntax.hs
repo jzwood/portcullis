@@ -13,7 +13,7 @@ newtype Module = Module [Stmt]
 
 data Queue = Queue { queueName :: Name, buffer :: Integer, queueSig :: TypeExpr }
   deriving (Eq)
-data Pipe = Pipe Func [Queue] Queue
+data Pipe = Pipe { funcName :: Name, inQueueNames :: [Name], outQueueName :: Name }
   deriving (Eq)
 newtype Comment = Comment String
   deriving (Eq)

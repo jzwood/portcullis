@@ -1,4 +1,4 @@
-{-# LANGUAGE BangPatterns, NamedFieldPuns #-}
+{-# LANGUAGE NamedFieldPuns #-}
 
 module Typecheck where
 
@@ -29,10 +29,11 @@ instance Show TypecheckError where
     = "Typecheck Error in function " ++ name ++ ": " ++ show typeError
 
 typecheckModule :: Module -> Either [TypecheckError] Module
-typecheckModule mod@(Module funcs)
+typecheckModule mod@(Module stmts)
   = if null typeErrors then Right mod else Left typeErrors
     where
-      !typeErrors
+      funcs = stmtsToFuncs stmts
+      typeErrors
         =  funcs
        <&> typecheckFunc (modToFuncMap mod)
         &  lefts
@@ -53,8 +54,8 @@ typeEqual (TupType te1 te2) (TupType te3 te4) = liftA2 TupType (typeEqual te1 te
 typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 "typeEqual"
 
 modToFuncMap :: Module -> Map Name Func
-modToFuncMap (Module stms)
-  =  stms
+modToFuncMap (Module stmts)
+  =  stmtsToFuncs stmts
  <&> (\func@Function { name } -> (name, func))
   &  Map.fromList
 

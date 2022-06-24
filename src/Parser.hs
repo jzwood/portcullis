@@ -12,17 +12,15 @@ import Util hiding (paren)
 parseModule :: Parser Module
 parseModule =  Module <$> oneOrMore parseStmt
 
-parseQueue = Parser Queue
+parseQueue :: Parser Queue
 parseQueue = Queue <$> address <*> integer <*> parseTypeExpr
 
-parsePipe = Parser Pipe
-parsePipe = Pipe <$> char '|' *> trim camel <*> brack . trim $ zeroOrMore address <*> address
+parsePipe :: Parser Pipe
+parsePipe = Pipe <$> (char '|' *> trim camel) <*> (brack . trim $ zeroOrMore address) <*> address
 
 parseComment :: Parser Comment
-parseComment = Comment
-             $ char '#'
-             *> oneOrMore (satisfy (/= '#'))
-             <* char '#'
+parseComment =  Comment
+            <$> (char '#' *> oneOrMore (satisfy (/= '#')) <* char '#')
 
 parseFunc :: Parser Func
 parseFunc =  trimLeft
@@ -35,13 +33,11 @@ parseFunc =  trimLeft
          <*> parseExpr
          where name = trimLeft camel
 
-parseStmt = Parser Stmt
-parseStmt = trimLeft
-          $ Stmt
-         <$> F parseFunc
-         <|> Q parseQueue
-         <|> P parsePipe
-         <|> C parseComment
+parseStmt :: Parser Stmt
+parseStmt =  F <$> parseFunc
+         <|> Q <$> parseQueue
+         <|> P <$> parsePipe
+         <|> C <$> parseComment
 
 parseArrow :: Parser TypeExpr
 parseArrow = optionalParens $ liftA2 Arrow (word "->" *> parseTypeExpr) parseTypeExpr
