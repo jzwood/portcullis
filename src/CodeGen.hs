@@ -26,7 +26,7 @@ stmtsToFuncs = foldr filterFuncAlg []
 instance Show Stmt where
   show (F func) = show func
   show (C comment) = show comment
-  show (Q queue) = "" -- queues have no explicit code output
+  show (Q (Queue name buffer sig)) = comment $ unwords ["Queue:", name, show buffer, show sig]
   show (P pipe) = show pipe
 
 instance Show Func where
@@ -38,15 +38,15 @@ instance Show Func where
     , "}"
     ]
       where
-        docstring = comment $ show tExpr
+        docstring = comment $ unwords ["Signature:", show tExpr]
         header = concat [ if null vars then "function $" else "export function " , name , (paren . head' "") vars ]
         body = (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , show expr , ";" ]
 
 instance Show Comment where
-  show (Comment comment) = unwords ["/*", comment, "*/"]
+  show (Comment c) = comment c
 
 instance Show Pipe where
-  show (Pipe func ins out) = prefixOp "addPipe" [func, show ins, out]
+  show (Pipe func ins out) = prefixOp "extendPipeline" [func, show ins, show out]
 
 instance Show TypeExpr where
   show NumType = "Num"

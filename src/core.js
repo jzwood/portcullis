@@ -1,4 +1,3 @@
-// function "equal" has type (a -> (a -> Atom))
 function equal(a, b) {
   if (a === b) {
     return +true;
@@ -13,15 +12,18 @@ function equal(a, b) {
   return +false;
 }
 
-function addPipe(fxn, inQueueNames, outQueueName) {
-  const queueMap = inQueueNames.reduce((acc, queueName) => ({
-    ...acc,
-    [queueName]: { queue: new BroadcastChannel(queueName), buffer: [] },
-  }));
+function extendPipeline(fxn, inQueueNames, outQueueName) {
+  const apply = (fxn, [head, ...tail]) => {
+    if (head == undefined) return fxn;
+    return apply(fxn(head), tail);
+  };
   const outQueue = new BroadcastChannel(outQueueName);
+  const buffers = [];
   inQueueNames.forEach((queueName) => {
-    const { queue, buffer } = queueMap[queueName];
-    queue.onmessage = (data) => {
+    const queue = new BroadcastChannel(queueName);
+    const buffer = [];
+    buffers.push(buffer);
+    queue.onmessage = ({ data }) => {
       buffer.push(data);
       if (buffers.every((buff) => buff.length > 0)) {
         const args = buffers.map((buff) => buff.shift());
@@ -32,4 +34,6 @@ function addPipe(fxn, inQueueNames, outQueueName) {
   });
 }
 
-export const _equal = equal; // for testing
+// for testing
+export const _extendPipeline = extendPipeline;
+export const _equal = equal;

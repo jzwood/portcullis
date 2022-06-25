@@ -33,7 +33,7 @@ indent :: String -> String
 indent = unlines' . fmap ("  "++) . lines
 
 comment :: String -> String
-comment = ("// " ++)
+comment = unlines' . map ("// " ++) . lines
 
 multComment :: String -> String
 multComment str = concat ["/*\n", unlines . map (" *  " ++) . lines $ str, " */"]

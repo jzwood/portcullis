@@ -16,10 +16,10 @@ parseModule :: Parser Module
 parseModule =  Module <$> oneOrMore parseStmt
 
 parseQueue :: Parser Queue
-parseQueue = Queue <$> address <*> integer <*> parseTypeExpr
+parseQueue = Queue <$> address <*> trimLeft integer <*> parseTypeExpr
 
 parsePipe :: Parser Pipe
-parsePipe = Pipe <$> (char '|' *> trim camel) <*> (brack . trim $ zeroOrMore address) <*> address
+parsePipe = Pipe <$> (char '|' *> trimLeft camel) <*> trim (brack . trim $ zeroOrMore (trim address)) <*> address
 
 parseComment :: Parser Comment
 parseComment =  Comment

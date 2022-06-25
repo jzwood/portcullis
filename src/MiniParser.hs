@@ -123,7 +123,7 @@ pascal :: Parser String
 pascal = identStartsWith isUpper
 
 address :: Parser String
-address = identStartsWith (=='&')
+address = char '&' *> camel
 
 wrap :: Char -> Char -> Parser a -> Parser a
 wrap l r p = char l *> p <* char r
