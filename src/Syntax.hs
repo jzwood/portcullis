@@ -9,7 +9,7 @@ import Util
 
 type Name = String
 
-data Module = Module { functions :: [Func], comments :: [Comment], queues :: [Queue], pipes :: [Pipe] }
+data Module = Module { functions :: [Function], comments :: [Comment], queues :: [Queue], pipes :: [Pipe] }
 
 data Queue = Queue { queueName :: Name, buffer :: Integer, queueSig :: TypeExpr }
   deriving (Eq)
@@ -18,14 +18,14 @@ data Pipe = Pipe { funcName :: Name, inQueueNames :: [Name], outQueueName :: Nam
 newtype Comment = Comment String
   deriving (Eq)
 
-data Func = Function
+data Function = Function
   { name :: Name
   , signature :: TypeExpr
   , args :: [Name]
   , body :: Expr
   } deriving (Eq)
 
-data Stmt = F Func | Q Queue | P Pipe | C Comment deriving (Eq)
+data Stmt = F Function | Q Queue | P Pipe | C Comment deriving (Eq)
 
 data TypeExpr
   = NumType

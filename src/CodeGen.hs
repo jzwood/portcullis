@@ -16,8 +16,8 @@ instance Show Module where
   show Module { functions, comments, queues, pipes }
     = unlines $ unlines atoms : unlines zeroArityFuncs : pipes : (show <$> functions)
       where
-        atoms = readAtoms functions
-        zeroArityFuncs = readZeroArityFunctions functions
+        atoms = showAtoms functions
+        zeroArityFuncs = showZeroArityFunctions functions
         pipes = ""
 
 instance Show Stmt where
@@ -26,7 +26,7 @@ instance Show Stmt where
   show (Q (Queue name buffer sig)) = comment $ unwords ["Queue:", name, show buffer, show sig]
   show (P pipe) = show pipe
 
-instance Show Func where
+instance Show Function where
   show (Function name tExpr vars expr)
     = unlines
     [ docstring
@@ -132,14 +132,14 @@ findAtoms (BinOp _ e1 e2) = flatFindAtoms [e1, e2]
 findAtoms (TernOp _ e1 e2 e3) = flatFindAtoms [e1, e2, e3]
 findAtoms _ = []
 
-readAtoms :: [Func] -> [String]
-readAtoms funcs
+showAtoms :: [Function] -> [String]
+showAtoms funcs
   =  concatMap (findAtoms . body) funcs
   &  zip [0..] . nub . ("False" :) . ("True" :)
  <&> (\(i, atom) -> unwords ["const", atom, "=", show i])
 
-readZeroArityFunctions :: [Func] -> [String]
-readZeroArityFunctions funcs
+showZeroArityFunctions :: [Function] -> [String]
+showZeroArityFunctions funcs
   =  funcs
   &  filter (null . args)
  <&> name

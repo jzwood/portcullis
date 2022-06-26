@@ -21,7 +21,7 @@ data TypeError
   | ArityMismatch
   deriving (Show, Eq)
 
-data TypecheckError = TypecheckError Func TypeError
+data TypecheckError = TypecheckError Function TypeError
   deriving (Eq)
 
 instance Show TypecheckError where
@@ -29,16 +29,15 @@ instance Show TypecheckError where
     = "Typecheck Error in function " ++ name ++ ": " ++ show typeError
 
 typecheckModule :: Module -> Either [TypecheckError] Module
-typecheckModule mod@(Module stmts)
+typecheckModule mod@Module { functions }
   = if null typeErrors then Right mod else Left typeErrors
     where
-      functions = funcs $ stmtsToGroupedStmts stmts
       typeErrors
         =  functions
        <&> typecheckFunc (modToFuncMap mod)
         &  lefts
 
-typecheckFunc :: Map Name Func -> Func -> Either TypecheckError TypeExpr
+typecheckFunc :: Map Name Function -> Function -> Either TypecheckError TypeExpr
 typecheckFunc funcMap func@Function { body, args, signature } = do
   typeofBody <- typeofExpr funcMap func body
   expectedTypeOfBody <- typeExprToList signature
@@ -53,9 +52,9 @@ typeEqual (ListType te1) (ListType te2) = ListType <$> typeEqual te1 te2
 typeEqual (TupType te1 te2) (TupType te3 te4) = liftA2 TupType (typeEqual te1 te3) (typeEqual te2 te4)
 typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 "typeEqual"
 
-modToFuncMap :: Module -> Map Name Func
-modToFuncMap (Module stmts)
-  =  funcs (stmtsToGroupedStmts stmts)
+modToFuncMap :: Module -> Map Name Function
+modToFuncMap Module { functions }
+  =  functions
  <&> (\func@Function { name } -> (name, func))
   &  Map.fromList
 
@@ -98,7 +97,7 @@ argToMaybeSig arg args sig
   =   elemIndex arg args
   >>= (!?) (typeExprToList sig)
 
-typeofExpr :: Map Name Func -> Func -> Expr -> Either TypeError TypeExpr
+typeofExpr :: Map Name Function -> Function -> Expr -> Either TypeError TypeExpr
 typeofExpr m s (Val p) =
   case p of
     Number n -> Right NumType

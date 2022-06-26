@@ -36,7 +36,7 @@ parseComment :: Parser Comment
 parseComment =  Comment
             <$> (char '#' *> oneOrMore (satisfy (/= '#')) <* char '#')
 
-parseFunc :: Parser Func
+parseFunc :: Parser Function
 parseFunc =  trimLeft
           $  Function
          <$> name
