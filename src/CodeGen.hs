@@ -13,25 +13,12 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 
 instance Show Module where
-  show (Module stmts)
+  show Module { functions, comments, queues, pipes }
     = unlines $ unlines atoms : unlines zeroArityFuncs : pipes : (show <$> functions)
       where
-        functions = funcs $ stmtsToGroupedStmts stmts
         atoms = readAtoms functions
         zeroArityFuncs = readZeroArityFunctions functions
         pipes = ""
-
-data GroupedStmts = GrpStmts { funcs :: [Func], comments :: [Comment], queues :: [Queue], pipes :: [Pipe] }
-
---data Stmt = F Func | Q Queue | P Pipe | C Comment deriving (Eq)
-extendGroupedStmts :: Stmt -> GroupedStmts -> GroupedStmts
-extendGroupedStmts (F func) grpStmts@GrpStmts { funcs } = grpStmts { funcs = func : funcs}
-extendGroupedStmts (Q queue) grpStmts@GrpStmts { queues } = grpStmts { queues = queue : queues}
-extendGroupedStmts (C comment) grpStmts@GrpStmts { comments } = grpStmts { comments = comment : comments}
-extendGroupedStmts (P pipe) grpStmts@GrpStmts { pipes } = grpStmts { pipes = pipe : pipes}
-
-stmtsToGroupedStmts :: [Stmt] -> GroupedStmts
-stmtsToGroupedStmts = foldr extendGroupedStmts (GrpStmts [] [] [] [])
 
 instance Show Stmt where
   show (F func) = show func

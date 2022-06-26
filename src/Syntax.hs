@@ -9,7 +9,7 @@ import Util
 
 type Name = String
 
-newtype Module = Module [Stmt]
+data Module = Module { functions :: [Func], comments :: [Comment], queues :: [Queue], pipes :: [Pipe] }
 
 data Queue = Queue { queueName :: Name, buffer :: Integer, queueSig :: TypeExpr }
   deriving (Eq)

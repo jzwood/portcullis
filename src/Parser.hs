@@ -1,3 +1,5 @@
+{-# LANGUAGE NamedFieldPuns #-}
+
 module Parser where
 
 import MiniParser
@@ -12,8 +14,17 @@ import Util hiding (paren)
 parseProgram :: Parser Module
 parseProgram = parseModule <* spaces
 
+moduleAlg :: Stmt -> Module -> Module
+moduleAlg (F function) mod@Module { functions } = mod { functions = function : functions}
+moduleAlg (C comment) mod@Module { comments } = mod { comments = comment : comments}
+moduleAlg (Q queue) mod@Module{ queues } = mod { queues = queue : queues}
+moduleAlg (P pipe) mod@Module{ pipes } = mod { pipes = pipe : pipes}
+
+stmtsToModule:: [Stmt] -> Module
+stmtsToModule = foldr moduleAlg (Module [] [] [] [])
+
 parseModule :: Parser Module
-parseModule =  Module <$> oneOrMore parseStmt
+parseModule =  stmtsToModule <$> oneOrMore parseStmt
 
 parseQueue :: Parser Queue
 parseQueue = Queue <$> address <*> trimLeft integer <*> parseTypeExpr
