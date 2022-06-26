@@ -32,9 +32,9 @@ typecheckModule :: Module -> Either [TypecheckError] Module
 typecheckModule mod@(Module stmts)
   = if null typeErrors then Right mod else Left typeErrors
     where
-      funcs = stmtsToFuncs stmts
+      functions = funcs $ stmtsToGroupedStmts stmts
       typeErrors
-        =  funcs
+        =  functions
        <&> typecheckFunc (modToFuncMap mod)
         &  lefts
 
@@ -55,7 +55,7 @@ typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te
 
 modToFuncMap :: Module -> Map Name Func
 modToFuncMap (Module stmts)
-  =  stmtsToFuncs stmts
+  =  funcs (stmtsToGroupedStmts stmts)
  <&> (\func@Function { name } -> (name, func))
   &  Map.fromList
 

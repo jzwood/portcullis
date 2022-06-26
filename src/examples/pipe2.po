@@ -16,3 +16,6 @@ pipe example
 &num1 4 Num  # queue #
 
 | sum [&num1 &num2] &result  # pipe #
+
+
+| sum [{num1 3 Num} {num2 2 Num}] result

@@ -4,50 +4,48 @@ const True = 1
 export const one1 = $one1()
 export const one2 = $one2()
 
-// (x -> x)
+
+// Signature: (x -> x)
 export function id(x) {
   return x;
 }
 
-/* 
-filter ...
- */
-// ((b -> c) -> ((a -> b) -> (a -> c)))
+// Signature: ((b -> c) -> ((a -> b) -> (a -> c)))
 export function compose(f) {
   return (g) => (x) => f(g(x));
 }
 
-// (Num -> Num)
+// Signature: (Num -> Num)
 export function double(x) {
   return (2.0 * x);
 }
 
-// (Num -> Num)
+// Signature: (Num -> Num)
 export function quadruple(n) {
   return compose(double)(double)(n);
 }
 
-// (x -> x)
+// Signature: (x -> x)
 export function id2(x) {
   return compose(id)(id)(x);
 }
 
-// Num
+// Signature: Num
 function $one1() {
   return 1.0;
 }
 
-// Num
+// Signature: Num
 function $one2() {
   return compose(id)(id)(one1);
 }
 
-// (z -> ([z] -> [z]))
+// Signature: (z -> ([z] -> [z]))
 export function id3(x) {
   return (xs) => xs;
 }
 
-// ([t] -> [t])
+// Signature: ([t] -> [t])
 export function tail(xs) {
   return (
     /* if */ equal(xs, []) ?
@@ -56,27 +54,27 @@ export function tail(xs) {
   );
 }
 
-// ((h -> h) -> (h -> h))
+// Signature: ((h -> h) -> (h -> h))
 export function a(fx) {
   return (x) => fx(x);
 }
 
-// (q -> q)
+// Signature: (q -> q)
 export function b(w) {
   return w;
 }
 
-// (p -> p)
+// Signature: (p -> p)
 export function c(y) {
   return a(b)(y);
 }
 
-// ([h] -> (h -> ([h] -> [h])))
+// Signature: ([h] -> (h -> ([h] -> [h])))
 export function push(ys) {
   return (x) => (xs) => [x, ...concat(xs)(ys)];
 }
 
-// ([a] -> ([a] -> [a]))
+// Signature: ([a] -> ([a] -> [a]))
 export function concat(xs) {
   return (ys) => (
     /* if */ equal(xs, []) ?
@@ -85,7 +83,7 @@ export function concat(xs) {
   );
 }
 
-// ((x -> Atom) -> (x -> ([x] -> [x])))
+// Signature: ((x -> Atom) -> (x -> ([x] -> [x])))
 export function filter2(g) {
   return (w) => (ws) => concat((
     /* if */ g(w) ?
@@ -94,7 +92,7 @@ export function filter2(g) {
   ))(filter(g)(ws));
 }
 
-// ((j -> Atom) -> ([j] -> [j]))
+// Signature: ((j -> Atom) -> ([j] -> [j]))
 export function filter(f) {
   return (xs) => (
     /* if */ equal(xs, []) ?
@@ -103,17 +101,16 @@ export function filter(f) {
   );
 }
 
-// (a -> (a -> Atom))
+// Signature: (a -> (a -> Atom))
 export function eq(x) {
   return (y) => equal(x, y);
 }
 
-// ([Num] -> [Num])
+// Signature: ([Num] -> [Num])
 export function seven(xs) {
   return filter(eq(7.0))(xs);
 }
 
-// function "equal" has type (a -> (a -> Atom))
 function equal(a, b) {
   if (a === b) {
     return +true;
@@ -128,15 +125,18 @@ function equal(a, b) {
   return +false;
 }
 
-function addPipe(fxn, inQueueNames, outQueueName) {
-  const queueMap = inQueueNames.reduce((acc, queueName) => ({
-    ...acc,
-    [queueName]: { queue: new BroadcastChannel(queueName), buffer: [] },
-  }));
+function extendPipeline(fxn, inQueueNames, outQueueName) {
+  const apply = (fxn, [head, ...tail]) => {
+    if (head == undefined) return fxn;
+    return apply(fxn(head), tail);
+  };
   const outQueue = new BroadcastChannel(outQueueName);
+  const buffers = [];
   inQueueNames.forEach((queueName) => {
-    const { queue, buffer } = queueMap[queueName];
-    queue.onmessage = (data) => {
+    const queue = new BroadcastChannel(queueName);
+    const buffer = [];
+    buffers.push(buffer);
+    queue.onmessage = ({ data }) => {
       buffer.push(data);
       if (buffers.every((buff) => buff.length > 0)) {
         const args = buffers.map((buff) => buff.shift());
@@ -147,4 +147,6 @@ function addPipe(fxn, inQueueNames, outQueueName) {
   });
 }
 
-export const _equal = equal; // for testing
+// for testing
+export const _extendPipeline = extendPipeline;
+export const _equal = equal;

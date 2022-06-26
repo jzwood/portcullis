@@ -1,3 +1,5 @@
+{-# LANGUAGE NamedFieldPuns #-}
+
 module CodeGen where
 
 import Syntax
@@ -7,21 +9,29 @@ import Control.Applicative
 import Data.Char
 import Data.List (intercalate, intersperse, nub)
 import Util
+import Data.Map (Map)
+import qualified Data.Map as Map
 
 instance Show Module where
   show (Module stmts)
-    = unlines $ atoms : zeroArityFuncs : (show <$> stmts)
+    = unlines $ unlines atoms : unlines zeroArityFuncs : pipes : (show <$> functions)
       where
-        funcs = stmtsToFuncs stmts
-        atoms = readAtoms funcs
-        zeroArityFuncs = readZeroArityFunctions funcs
+        functions = funcs $ stmtsToGroupedStmts stmts
+        atoms = readAtoms functions
+        zeroArityFuncs = readZeroArityFunctions functions
+        pipes = ""
 
-filterFuncAlg :: Stmt -> [Func] -> [Func]
-filterFuncAlg (F func) funcs = func : funcs
-filterFuncAlg _ funcs = funcs
+data GroupedStmts = GrpStmts { funcs :: [Func], comments :: [Comment], queues :: [Queue], pipes :: [Pipe] }
 
-stmtsToFuncs :: [Stmt] -> [Func]
-stmtsToFuncs = foldr filterFuncAlg []
+--data Stmt = F Func | Q Queue | P Pipe | C Comment deriving (Eq)
+extendGroupedStmts :: Stmt -> GroupedStmts -> GroupedStmts
+extendGroupedStmts (F func) grpStmts@GrpStmts { funcs } = grpStmts { funcs = func : funcs}
+extendGroupedStmts (Q queue) grpStmts@GrpStmts { queues } = grpStmts { queues = queue : queues}
+extendGroupedStmts (C comment) grpStmts@GrpStmts { comments } = grpStmts { comments = comment : comments}
+extendGroupedStmts (P pipe) grpStmts@GrpStmts { pipes } = grpStmts { pipes = pipe : pipes}
+
+stmtsToGroupedStmts :: [Stmt] -> GroupedStmts
+stmtsToGroupedStmts = foldr extendGroupedStmts (GrpStmts [] [] [] [])
 
 instance Show Stmt where
   show (F func) = show func
@@ -135,17 +145,15 @@ findAtoms (BinOp _ e1 e2) = flatFindAtoms [e1, e2]
 findAtoms (TernOp _ e1 e2 e3) = flatFindAtoms [e1, e2, e3]
 findAtoms _ = []
 
-readAtoms :: [Func] -> String
+readAtoms :: [Func] -> [String]
 readAtoms funcs
   =  concatMap (findAtoms . body) funcs
   &  zip [0..] . nub . ("False" :) . ("True" :)
  <&> (\(i, atom) -> unwords ["const", atom, "=", show i])
-  &  unlines
 
-readZeroArityFunctions :: [Func] -> String
+readZeroArityFunctions :: [Func] -> [String]
 readZeroArityFunctions funcs
   =  funcs
   &  filter (null . args)
  <&> name
  <&> (\name -> unwords ["export", "const", name, "=", '$' : name ++ "()" ])
-  &  unlines
