@@ -5,11 +5,13 @@ import Data.Function
 import Control.Applicative
 import Data.Char
 import Data.List (intercalate, nub)
+import Data.Map (Map)
+import qualified Data.Map as Map
 import Util
 
 type Name = String
 
-data Module = Module { functions :: [Function], comments :: [Comment], queues :: [Queue], pipes :: [Pipe] }
+data Module = Module { functions :: [Function], comments :: [Comment], queueMap :: Map Name Queue, pipes :: [Pipe] }
 
 data Queue = Queue { queueName :: Name, buffer :: Integer, queueSig :: TypeExpr }
   deriving (Eq)

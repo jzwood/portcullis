@@ -13,18 +13,12 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 
 instance Show Module where
-  show Module { functions, comments, queues, pipes }
-    = unlines $ unlines atoms : unlines zeroArityFuncs : pipes : (show <$> functions)
+  show Module { functions, comments, queueMap, pipes }
+    = unlines $ atoms : zeroArityFuncs : pipeline : (show <$> functions)
       where
-        atoms = showAtoms functions
-        zeroArityFuncs = showZeroArityFunctions functions
-        pipes = ""
-
-instance Show Stmt where
-  show (F func) = show func
-  show (C comment) = show comment
-  show (Q (Queue name buffer sig)) = comment $ unwords ["Queue:", name, show buffer, show sig]
-  show (P pipe) = show pipe
+        atoms = unlines $ showAtoms functions
+        zeroArityFuncs = unlines $ showZeroArityFunctions functions
+        pipeline = showPipes queueMap pipes
 
 instance Show Function where
   show (Function name tExpr vars expr)
@@ -144,3 +138,19 @@ showZeroArityFunctions funcs
   &  filter (null . args)
  <&> name
  <&> (\name -> unwords ["export", "const", name, "=", '$' : name ++ "()" ])
+
+showPipes :: Map Name Queue -> [Pipe] -> String
+showPipes queueMap pipes
+  =  pipes
+ <&> showPipe queueMap
+  & unlines
+
+showPipe :: Map Name Queue -> Pipe -> String
+showPipe queueMap pipe = undefined
+
+--instance Show Stmt where
+  --show (F function) = show function
+  --show (C comment) = show comment
+  --show (Q (Queue name buffer sig)) = comment $ unwords ["Queue:", name, show buffer, show sig]
+  --show (P pipe) = show pipe
+
