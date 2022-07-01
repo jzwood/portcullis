@@ -242,21 +242,23 @@ function equal(a, b) {
   return +false;
 }
 
-function extendPipeline(fxn, inQueueNames, outQueueName) {
+function extendPipeline(domain, fxn, inQueues, outQueueName) {
   const apply = (fxn, [head, ...tail]) => {
-    if (head == undefined) return fxn;
+    if (typeof(head) === 'undefined') return fxn;
     return apply(fxn(head), tail);
   };
-  const outQueue = new BroadcastChannel(outQueueName);
+  const fmtName = (name) => [domain, name].filter(Boolean).join("/");
+  const outQueue = new BroadcastChannel(fmtName(outQueueName));
   const buffers = [];
-  inQueueNames.forEach((queueName) => {
-    const queue = new BroadcastChannel(queueName);
+  inQueues.forEach(([queueName, bufferSize]) => {
+    const queue = new BroadcastChannel(fmtName(queueName));
     const buffer = [];
     buffers.push(buffer);
     queue.onmessage = ({ data }) => {
-      buffer.push(data);
+      buffer.unshift(data);
+      buffer.splice(bufferSize);
       if (buffers.every((buff) => buff.length > 0)) {
-        const args = buffers.map((buff) => buff.shift());
+        const args = buffers.map((args) => args.pop());
         const result = apply(fxn, args);
         outQueue.postMessage(result);
       }

@@ -16,7 +16,7 @@ data Module = Module { functions :: [Function], comments :: [Comment], queueMap 
 data Queue = Queue { queueName :: Name, buffer :: Integer, queueSig :: TypeExpr }
   deriving (Eq)
 data Pipe = Pipe { funcName :: Name, inQueueNames :: [Name], outQueueName :: Name }
-  deriving (Eq)
+  deriving (Eq, Show)
 newtype Comment = Comment String
   deriving (Eq)
 

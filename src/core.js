@@ -14,7 +14,7 @@ function equal(a, b) {
 
 function extendPipeline(domain, fxn, inQueues, outQueueName) {
   const apply = (fxn, [head, ...tail]) => {
-    if (head == undefined) return fxn;
+    if (typeof(head) === 'undefined') return fxn;
     return apply(fxn(head), tail);
   };
   const fmtName = (name) => [domain, name].filter(Boolean).join("/");
@@ -23,12 +23,12 @@ function extendPipeline(domain, fxn, inQueues, outQueueName) {
   inQueues.forEach(([queueName, bufferSize]) => {
     const queue = new BroadcastChannel(fmtName(queueName));
     const buffer = [];
-    buffers.unshift(buffer);
-    buffers.splice(bufferSize);
+    buffers.push(buffer);
     queue.onmessage = ({ data }) => {
-      buffer.push(data);
+      buffer.unshift(data);
+      buffer.splice(bufferSize);
       if (buffers.every((buff) => buff.length > 0)) {
-        const args = buffers.map((buff) => buff.pop());
+        const args = buffers.map((args) => args.pop());
         const result = apply(fxn, args);
         outQueue.postMessage(result);
       }

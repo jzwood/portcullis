@@ -1,5 +1,7 @@
 module Util where
 
+import Data.List (intercalate)
+
 (.&&) :: (a -> Bool) -> (a -> Bool) -> a -> Bool
 (.&&) f1 f2 a = f1 a && f2 a
 
@@ -52,3 +54,6 @@ tail' (x:xs) = xs
 mapLeft :: (a -> b) -> Either a c -> Either b c
 mapLeft f (Left x) = Left $ f x
 mapLeft _ (Right x) = Right x
+
+showList :: [String] -> String
+showList = bracket . intercalate ", "

@@ -2,6 +2,7 @@
 
 module CodeGen where
 
+import Prelude hiding (showList)
 import Syntax
 import Data.Functor
 import Data.Function
@@ -9,7 +10,7 @@ import Control.Applicative
 import Data.Char
 import Data.List (intercalate, intersperse, nub)
 import Util
-import Data.Map (Map)
+import Data.Map (Map, (!))
 import qualified Data.Map as Map
 
 instance Show Module where
@@ -36,8 +37,8 @@ instance Show Function where
 instance Show Comment where
   show (Comment c) = comment c
 
-instance Show Pipe where
-  show (Pipe func ins out) = prefixOp "extendPipeline" [func, show ins, show out]
+--instance Show Pipe where
+  --show (Pipe func ins out) = prefixOp "extendPipeline" [func, show ins, show out]
 
 instance Show TypeExpr where
   show NumType = "Num"
@@ -61,7 +62,7 @@ instance Show Value where
   show (List t xs) = unwords ["/*", show $ ListType t, "*/", show xs]
   show (Tuple e1 e2)
     =  show <$> [e1, e2]
-    &  bracket . intercalate ", "
+    &  showList
 
 instance Show Expr where
   show (Val p) = show p
@@ -146,8 +147,12 @@ showPipes queueMap pipes
   & unlines
 
 showPipe :: Map Name Queue -> Pipe -> String
-showPipe queueMap pipe = undefined
+showPipe queueMap Pipe { funcName, inQueueNames, outQueueName } =
+  showList [funcName, inQueuesNamesBuffers, show outQueueName]
+    where
+      inQueuesNamesBuffers = showList ((\name -> showList [show name, (show . buffer) (queueMap ! name)]) <$> inQueueNames)
 
+--data Pipe = Pipe { funcName :: Name, inQueueNames :: [Name], outQueueName :: Name }
 --instance Show Stmt where
   --show (F function) = show function
   --show (C comment) = show comment
