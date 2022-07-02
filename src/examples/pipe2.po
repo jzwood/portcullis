@@ -13,9 +13,12 @@ pipe example
 #
 
 
-&a 4 Num  # queue #
-&b 4 Num  # queue #
-&c 4 Num  # queue #
+&a1 4 Num  # queue #
+&b1 4 Num  # queue #
+&c1 4 Num  # queue #
 
 
-| sum [&a &b] &c  # pipe #
+| sum1 [&a1 &b1] &c1  # pipe #
+| sum2 [&a1 &b1] &c1  # pipe #
+| sum3 [&a1 &b1] &c1  # pipe #
+| sum4 [&a1 &b1] &c1  # pipe #

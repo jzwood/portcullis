@@ -12,9 +12,9 @@ function equal(a, b) {
   return +false;
 }
 
-function extendPipeline(domain, fxn, inQueues, outQueueName) {
+function makePipe(domain, fxn, inQueues, outQueueName) {
   const apply = (fxn, [head, ...tail]) => {
-    if (typeof(head) === 'undefined') return fxn;
+    if (typeof (head) === "undefined") return fxn;
     return apply(fxn(head), tail);
   };
   const fmtName = (name) => [domain, name].filter(Boolean).join("/");
@@ -37,5 +37,5 @@ function extendPipeline(domain, fxn, inQueues, outQueueName) {
 }
 
 // for testing
-export const _extendPipeline = extendPipeline;
+export const _makePipe = makePipe;
 export const _equal = equal;

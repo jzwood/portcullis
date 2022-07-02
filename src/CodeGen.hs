@@ -38,7 +38,7 @@ instance Show Comment where
   show (Comment c) = comment c
 
 --instance Show Pipe where
-  --show (Pipe func ins out) = prefixOp "extendPipeline" [func, show ins, show out]
+  --show (Pipe func ins out) = prefixOp "makePipe" [func, show ins, show out]
 
 instance Show TypeExpr where
   show NumType = "Num"
@@ -143,19 +143,21 @@ showZeroArityFunctions funcs
 showPipes :: Map Name Queue -> [Pipe] -> String
 showPipes queueMap pipes
   =  pipes
- <&> showPipe queueMap
-  & unlines
+  <&> paren . ("domain, ..." ++) . showPipe queueMap
+  <&> indent . ("makePipe" ++)
+ -- <&> show . pipeToExpr queueMap
+  & ("export function makePipes(domain) " ++) . curly . ('\n':) . unlines
+
+--pipeToExpr :: Map Name Queue -> Pipe -> Expr
+--pipeToExpr queueMap Pipe { funcName, inQueueNames, outQueueName } =
+  --Val $ Tuple (strToExpr funcName) (Val $ Tuple queueExprs (strToExpr outQueueName))
+    --where
+      --strToExpr :: String -> Expr
+      --strToExpr str = Val (List CharType (Val . Character <$> str))
+      --queueExprs = Val $ List CharType (inQueueNames <&> \name -> Val $ Tuple (strToExpr name) (Val $ Number (fromIntegral (buffer (queueMap ! name)))))
 
 showPipe :: Map Name Queue -> Pipe -> String
 showPipe queueMap Pipe { funcName, inQueueNames, outQueueName } =
   showList [funcName, inQueuesNamesBuffers, show outQueueName]
-    where
-      inQueuesNamesBuffers = showList ((\name -> showList [show name, (show . buffer) (queueMap ! name)]) <$> inQueueNames)
-
---data Pipe = Pipe { funcName :: Name, inQueueNames :: [Name], outQueueName :: Name }
---instance Show Stmt where
-  --show (F function) = show function
-  --show (C comment) = show comment
-  --show (Q (Queue name buffer sig)) = comment $ unwords ["Queue:", name, show buffer, show sig]
-  --show (P pipe) = show pipe
-
+  where
+    inQueuesNamesBuffers = showList ((\name -> showList [show name, (show . buffer) (queueMap ! name)]) <$> inQueueNames)
