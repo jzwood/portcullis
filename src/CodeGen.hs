@@ -19,7 +19,7 @@ instance Show Module where
       where
         atoms = unlines $ showAtoms functions
         zeroArityFuncs = unlines $ showZeroArityFunctions functions
-        pipeline = showPipes queueMap pipes
+        pipeline = showPipes queueMap pipes ++ "\n"
 
 instance Show Function where
   show (Function name tExpr vars expr)
@@ -38,7 +38,7 @@ instance Show Comment where
   show (Comment c) = comment c
 
 --instance Show Pipe where
-  --show (Pipe func ins out) = prefixOp "makePipe" [func, show ins, show out]
+  --show (Pipe func ins out) = prefixOp "makeEdge" [func, show ins, show out]
 
 instance Show TypeExpr where
   show NumType = "Num"
@@ -143,10 +143,10 @@ showZeroArityFunctions funcs
 showPipes :: Map Name Queue -> [Pipe] -> String
 showPipes queueMap pipes
   =  pipes
-  <&> paren . ("domain, ..." ++) . showPipe queueMap
-  <&> indent . ("makePipe" ++)
+  <&> paren . showPipe queueMap
+  <&> indent . ("makeEdge" ++)
  -- <&> show . pipeToExpr queueMap
-  & ("export function makePipes(domain) " ++) . curly . ('\n':) . unlines
+  & ("export function makeGraph(domain) " ++) . curly . ('\n':) . unlines
 
 --pipeToExpr :: Map Name Queue -> Pipe -> Expr
 --pipeToExpr queueMap Pipe { funcName, inQueueNames, outQueueName } =
@@ -158,6 +158,6 @@ showPipes queueMap pipes
 
 showPipe :: Map Name Queue -> Pipe -> String
 showPipe queueMap Pipe { funcName, inQueueNames, outQueueName } =
-  showList [funcName, inQueuesNamesBuffers, show outQueueName]
+  intercalate ", " ["domain", funcName, inQueuesNamesBuffers, show outQueueName]
   where
     inQueuesNamesBuffers = showList ((\name -> showList [show name, (show . buffer) (queueMap ! name)]) <$> inQueueNames)

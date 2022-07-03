@@ -4,6 +4,8 @@ const Chipmunk = 2
 
 export const empty = $empty()
 
+export function makeGraph(domain) {
+}
 
 // Signature: ((a -> (a -> Atom)) -> (a -> (a -> Atom)))
 export function not(f) {
@@ -242,9 +244,9 @@ function equal(a, b) {
   return +false;
 }
 
-function makePipe(domain, fxn, inQueues, outQueueName) {
+function makeEdge(domain, fxn, inQueues, outQueueName) {
   const apply = (fxn, [head, ...tail]) => {
-    if (typeof(head) === 'undefined') return fxn;
+    if (typeof (head) === "undefined") return fxn;
     return apply(fxn(head), tail);
   };
   const fmtName = (name) => [domain, name].filter(Boolean).join("/");
@@ -267,5 +269,5 @@ function makePipe(domain, fxn, inQueues, outQueueName) {
 }
 
 // for testing
-export const _makePipe = makePipe;
+export const _makeEdge = makeEdge;
 export const _equal = equal;
