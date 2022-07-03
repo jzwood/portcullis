@@ -4,7 +4,8 @@ const True = 1
 export const one1 = $one1()
 export const one2 = $one2()
 
-export function makeGraph(domain) {
+export function getTopology(){
+  return [];
 }
 
 // Signature: (x -> x)
@@ -127,7 +128,13 @@ function equal(a, b) {
   return +false;
 }
 
-function makeEdge(domain, fxn, inQueues, outQueueName) {
+export function makeGrah(topology, domain = "") {
+  topology.forEach(([fxn, inQueues, outQueueName]) => {
+    makeEdge(domain, fxn, inQueues, outQueueName);
+  });
+}
+
+export function makeEdge(domain, fxn, inQueues, outQueueName) {
   const apply = (fxn, [head, ...tail]) => {
     if (typeof (head) === "undefined") return fxn;
     return apply(fxn(head), tail);

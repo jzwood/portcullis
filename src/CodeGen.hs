@@ -15,11 +15,11 @@ import qualified Data.Map as Map
 
 instance Show Module where
   show Module { functions, comments, queueMap, pipes }
-    = unlines $ atoms : zeroArityFuncs : pipeline : (show <$> functions)
+    = unlines $ atoms : zeroArityFuncs : topology : "" : (show <$> functions)
       where
         atoms = unlines $ showAtoms functions
         zeroArityFuncs = unlines $ showZeroArityFunctions functions
-        pipeline = showPipes queueMap pipes ++ "\n"
+        topology = showTopology queueMap pipes
 
 instance Show Function where
   show (Function name tExpr vars expr)
@@ -36,9 +36,6 @@ instance Show Function where
 
 instance Show Comment where
   show (Comment c) = comment c
-
---instance Show Pipe where
-  --show (Pipe func ins out) = prefixOp "makeEdge" [func, show ins, show out]
 
 instance Show TypeExpr where
   show NumType = "Num"
@@ -140,24 +137,15 @@ showZeroArityFunctions funcs
  <&> name
  <&> (\name -> unwords ["export", "const", name, "=", '$' : name ++ "()" ])
 
-showPipes :: Map Name Queue -> [Pipe] -> String
-showPipes queueMap pipes
+showTopology :: Map Name Queue -> [Pipe] -> String
+showTopology _ [] = "export function getTopology()" ++ (curly . indent) "return [];"
+showTopology queueMap pipes
   =  pipes
-  <&> paren . showPipe queueMap
-  <&> indent . ("makeEdge" ++)
- -- <&> show . pipeToExpr queueMap
-  & ("export function makeGraph(domain) " ++) . curly . ('\n':) . unlines
-
---pipeToExpr :: Map Name Queue -> Pipe -> Expr
---pipeToExpr queueMap Pipe { funcName, inQueueNames, outQueueName } =
-  --Val $ Tuple (strToExpr funcName) (Val $ Tuple queueExprs (strToExpr outQueueName))
-    --where
-      --strToExpr :: String -> Expr
-      --strToExpr str = Val (List CharType (Val . Character <$> str))
-      --queueExprs = Val $ List CharType (inQueueNames <&> \name -> Val $ Tuple (strToExpr name) (Val $ Number (fromIntegral (buffer (queueMap ! name)))))
+ <&> showPipe queueMap
+  &  ("export function getTopology() " ++) . curly . indent . ("return (\n" ++) . (++ "\n)") . indent . intercalate ",\n"
 
 showPipe :: Map Name Queue -> Pipe -> String
 showPipe queueMap Pipe { funcName, inQueueNames, outQueueName } =
-  intercalate ", " ["domain", funcName, inQueuesNamesBuffers, show outQueueName]
+  showList [funcName, inQueuesNamesBuffers, show outQueueName]
   where
     inQueuesNamesBuffers = showList ((\name -> showList [show name, (show . buffer) (queueMap ! name)]) <$> inQueueNames)

@@ -23,13 +23,14 @@ bracket :: String -> String
 bracket a = "[" ++ a ++ "]"
 
 curly :: String -> String
-curly a = "{" ++ a ++ "}"
+curly a = "{\n" ++ a ++ "\n}"
 
 pad :: String -> String
 pad a = " " ++ a ++ " "
 
 unlines' :: [String] -> String
-unlines' = init . unlines
+unlines' [] = ""
+unlines' xs = init . unlines $ xs
 
 indent :: String -> String
 indent = unlines' . fmap ("  "++) . lines
