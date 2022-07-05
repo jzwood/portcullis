@@ -1,6 +1,6 @@
 module Util where
 
-import Data.List (intercalate, group, sort, all)
+import Data.List
 
 (.&&) :: (a -> Bool) -> (a -> Bool) -> a -> Bool
 (.&&) f1 f2 a = f1 a && f2 a
@@ -64,3 +64,6 @@ uniq xs = all (==1) $ length <$> (group . sort) xs
 
 dupes :: Ord a => [a] -> [a]
 dupes xs = head <$> filter ((>1) . length) $ (group . sort) xs
+
+dupesOn :: Ord b => [a] -> (a -> b) -> [a]
+dupesOn xs on = head <$> filter ((>1) . length) $ (groupBy (\p1 p2 -> on p1 == on p2) . sortOn on) xs
