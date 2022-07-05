@@ -17,6 +17,7 @@ import qualified Data.Map as Map
 
 data TypeError
   = NotFunction Name  -- maybe make better show
+  | DuplicateFunction
   | TypeMismatch TypeExpr TypeExpr String
   | ArityMismatch
   deriving (Show, Eq)
@@ -30,12 +31,17 @@ instance Show TypecheckError where
 
 typecheckModule :: Module -> Either [TypecheckError] Module
 typecheckModule mod@Module { functions }
-  = if null typeErrors then Right mod else Left typeErrors
+  | (not . null) typeErrors = Left typeErrors
+  | (not . null) dupeFuncs = Left $ dupeFuncs <&> (`TypecheckError` DuplicateFunction)
+  | otherwise = Right mod
     where
+      typeErrors :: [TypecheckError]
       typeErrors
         =  functions
        <&> typecheckFunc (modToFuncMap mod)
         &  lefts
+      dupeFuncs :: [Function]
+      dupeFuncs = dupes (name <$> functions)
 
 typecheckFunc :: Map Name Function -> Function -> Either TypecheckError TypeExpr
 typecheckFunc funcMap func@Function { body, args, signature } = do

@@ -1,6 +1,6 @@
 module Util where
 
-import Data.List (intercalate)
+import Data.List (intercalate, group, sort, all)
 
 (.&&) :: (a -> Bool) -> (a -> Bool) -> a -> Bool
 (.&&) f1 f2 a = f1 a && f2 a
@@ -58,3 +58,9 @@ mapLeft _ (Right x) = Right x
 
 showList :: [String] -> String
 showList = bracket . intercalate ", "
+
+uniq :: Ord a => [a] -> Bool
+uniq xs = all (==1) $ length <$> (group . sort) xs
+
+dupes :: Ord a => [a] -> [a]
+dupes xs = head <$> filter ((>1) . length) $ (group . sort) xs
