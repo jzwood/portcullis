@@ -41,7 +41,7 @@ typecheckModule mod@Module { functions }
        <&> typecheckFunc (modToFuncMap mod)
         &  lefts
       dupeFuncs :: [Function]
-      dupeFuncs = dupesOn functions name
+      dupeFuncs = dupesOn name functions
 
 typecheckFunc :: Map Name Function -> Function -> Either TypecheckError TypeExpr
 typecheckFunc funcMap func@Function { body, args, signature } = do

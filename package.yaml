@@ -1,14 +1,15 @@
-name:                portcullis
-version:             0.1.0.0
-github:              "git@github.com:jzwood/portcullis.git"
-license:             BSD3
-author:              "Jake Wood"
-maintainer:          ""
-copyright:           "2021 Jake Wood"
+---
+name: portcullis
+version: 0.1.0.0
+github: "git@github.com:jzwood/portcullis.git"
+license: BSD3
+author: "Jake Wood"
+maintainer: ""
+copyright: "2021 Jake Wood"
 
 extra-source-files:
-- README.md
-- ChangeLog.md
+  - README.md
+  - ChangeLog.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -17,35 +18,44 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/jzwood/portcullis#readme>
+description: A minimal programming language
 
 dependencies:
-- base >= 4.7 && < 5
-- containers >= 0.6.5.1
-- hspec == 2.7.10
-- QuickCheck == 2.14.2
+  - base >= 4.7 && < 5
+  - containers >= 0.6.5.1
+  - hspec == 2.7.10
+  - QuickCheck == 2.14.2
 
 library:
   source-dirs: src
 
 executables:
   portcullis-exe:
-    main:                Main.hs
-    source-dirs:         app
+    main: Main.hs
+    source-dirs: app
     ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
     dependencies:
-    - portcullis
+      - portcullis
 
 tests:
   portcullis-test:
-    main:                Spec.hs
-    source-dirs:         test
+    main: Spec.hs
+    source-dirs: test
     ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
     dependencies:
-    - portcullis
+      - portcullis
+  doctests:
+    source-dirs: doctests
+    main: Main.hs
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - doctest

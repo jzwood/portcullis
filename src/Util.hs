@@ -65,5 +65,12 @@ showList = bracket . intercalate ", "
 --dupes :: Ord a => [a] -> [a]
 --dupes xs = head <$> (filter ((>1) . length) $ (group . sort) xs)
 
-dupesOn :: Ord b => [a] -> (a -> b) -> [a]
-dupesOn xs on = head <$> filter ((>1) . length) ((groupBy (\p1 p2 -> on p1 == on p2) . sortOn on) xs)
+-- |
+-- >>> dupesOn id []
+-- []
+-- >>> dupesOn id [1, 2, 3, 4]
+-- []
+-- >>> dupesOn id [4, 3, 4, 5, 6, 5]
+-- [4,5]
+dupesOn :: Ord b => (a -> b) -> [a] -> [a]
+dupesOn on xs = head <$> filter ((>1) . length) ((groupBy (\p1 p2 -> on p1 == on p2) . sortOn on) xs)

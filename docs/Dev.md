@@ -26,6 +26,10 @@
 
 - `bash test.sh`
 
+**doctests**
+
+- `stack test :doctests`
+
 **hspec tests**
 
 - `stack test`
