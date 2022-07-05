@@ -59,11 +59,11 @@ mapLeft _ (Right x) = Right x
 showList :: [String] -> String
 showList = bracket . intercalate ", "
 
-uniq :: Ord a => [a] -> Bool
-uniq xs = all (==1) $ length <$> (group . sort) xs
+--uniq :: Ord a => [a] -> Bool
+--uniq xs = all (==1) $ length <$> (group . sort) xs
 
-dupes :: Ord a => [a] -> [a]
-dupes xs = head <$> filter ((>1) . length) $ (group . sort) xs
+--dupes :: Ord a => [a] -> [a]
+--dupes xs = head <$> (filter ((>1) . length) $ (group . sort) xs)
 
 dupesOn :: Ord b => [a] -> (a -> b) -> [a]
-dupesOn xs on = head <$> filter ((>1) . length) $ (groupBy (\p1 p2 -> on p1 == on p2) . sortOn on) xs
+dupesOn xs on = head <$> filter ((>1) . length) ((groupBy (\p1 p2 -> on p1 == on p2) . sortOn on) xs)
