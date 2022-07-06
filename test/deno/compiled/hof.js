@@ -4,51 +4,47 @@ const True = 1
 export const one1 = $one1()
 export const one2 = $one2()
 
-export function getTopology(){
-  return [];
-}
-
-// Signature: (x -> x)
+// signature: (x -> x)
 export function id(x) {
   return x;
 }
 
-// Signature: ((b -> c) -> ((a -> b) -> (a -> c)))
+// signature: ((b -> c) -> ((a -> b) -> (a -> c)))
 export function compose(f) {
   return (g) => (x) => f(g(x));
 }
 
-// Signature: (Num -> Num)
+// signature: (Num -> Num)
 export function double(x) {
   return (2.0 * x);
 }
 
-// Signature: (Num -> Num)
+// signature: (Num -> Num)
 export function quadruple(n) {
   return compose(double)(double)(n);
 }
 
-// Signature: (x -> x)
+// signature: (x -> x)
 export function id2(x) {
   return compose(id)(id)(x);
 }
 
-// Signature: Num
+// signature: Num
 function $one1() {
   return 1.0;
 }
 
-// Signature: Num
+// signature: Num
 function $one2() {
   return compose(id)(id)(one1);
 }
 
-// Signature: (z -> ([z] -> [z]))
+// signature: (z -> ([z] -> [z]))
 export function id3(x) {
   return (xs) => xs;
 }
 
-// Signature: ([t] -> [t])
+// signature: ([t] -> [t])
 export function tail(xs) {
   return (
     /* if */ equal(xs, []) ?
@@ -57,27 +53,27 @@ export function tail(xs) {
   );
 }
 
-// Signature: ((h -> h) -> (h -> h))
+// signature: ((h -> h) -> (h -> h))
 export function a(fx) {
   return (x) => fx(x);
 }
 
-// Signature: (q -> q)
+// signature: (q -> q)
 export function b(w) {
   return w;
 }
 
-// Signature: (p -> p)
+// signature: (p -> p)
 export function c(y) {
   return a(b)(y);
 }
 
-// Signature: ([h] -> (h -> ([h] -> [h])))
+// signature: ([h] -> (h -> ([h] -> [h])))
 export function push(ys) {
   return (x) => (xs) => [x, ...concat(xs)(ys)];
 }
 
-// Signature: ([a] -> ([a] -> [a]))
+// signature: ([a] -> ([a] -> [a]))
 export function concat(xs) {
   return (ys) => (
     /* if */ equal(xs, []) ?
@@ -86,7 +82,7 @@ export function concat(xs) {
   );
 }
 
-// Signature: ((x -> Atom) -> (x -> ([x] -> [x])))
+// signature: ((x -> Atom) -> (x -> ([x] -> [x])))
 export function filter2(g) {
   return (w) => (ws) => concat((
     /* if */ g(w) ?
@@ -95,7 +91,7 @@ export function filter2(g) {
   ))(filter(g)(ws));
 }
 
-// Signature: ((j -> Atom) -> ([j] -> [j]))
+// signature: ((j -> Atom) -> ([j] -> [j]))
 export function filter(f) {
   return (xs) => (
     /* if */ equal(xs, []) ?
@@ -104,16 +100,21 @@ export function filter(f) {
   );
 }
 
-// Signature: (a -> (a -> Atom))
+// signature: (a -> (a -> Atom))
 export function eq(x) {
   return (y) => equal(x, y);
 }
 
-// Signature: ([Num] -> [Num])
+// signature: ([Num] -> [Num])
 export function seven(xs) {
   return filter(eq(7.0))(xs);
 }
 
+export function getTopology(){
+  return [];
+}
+
+// INTERNAL
 function equal(a, b) {
   if (a === b) {
     return +true;
@@ -121,13 +122,12 @@ function equal(a, b) {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length === 0 && b.length === 0) return +true;
     if (a.length !== b.length) return +false;
-    const [aHead, ...aTail] = a;
-    const [bHead, ...bTail] = b;
-    return equal(aHead, bHead) && equal(aTail, bTail);
+    return equal(a.at(0), b.at(0)) && equal(a.slice(1), b.slice(1));
   }
   return +false;
 }
 
+// UTILS FOR BUILDING DATAFLOWS
 export function makeGrah(topology, domain = "") {
   topology.forEach(([fxn, inQueues, outQueueName]) => {
     makeEdge(domain, fxn, inQueues, outQueueName);
@@ -159,5 +159,4 @@ export function makeEdge(domain, fxn, inQueues, outQueueName) {
 }
 
 // for testing
-export const _makeEdge = makeEdge;
 export const _equal = equal;

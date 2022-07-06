@@ -44,6 +44,6 @@ save src _ (Left err) = putStrLn ("!\t" ++ src ++ " " ++ show err)
 runCompilation :: String -> String -> IO ()
 runCompilation src dest = do
   code <- readFile src <&> compile
-  core <- readFile core
+  core <- ('\n':) <$> readFile core
   save src dest $ (++core) <$> code where
     core = "src/core.js"

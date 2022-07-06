@@ -1,3 +1,4 @@
+// INTERNAL
 function equal(a, b) {
   if (a === b) {
     return +true;
@@ -5,13 +6,12 @@ function equal(a, b) {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length === 0 && b.length === 0) return +true;
     if (a.length !== b.length) return +false;
-    const [aHead, ...aTail] = a;
-    const [bHead, ...bTail] = b;
-    return equal(aHead, bHead) && equal(aTail, bTail);
+    return equal(a.at(0), b.at(0)) && equal(a.slice(1), b.slice(1));
   }
   return +false;
 }
 
+// UTILS FOR BUILDING DATAFLOWS
 export function makeGrah(topology, domain = "") {
   topology.forEach(([fxn, inQueues, outQueueName]) => {
     makeEdge(domain, fxn, inQueues, outQueueName);
@@ -43,5 +43,4 @@ export function makeEdge(domain, fxn, inQueues, outQueueName) {
 }
 
 // for testing
-export const _makeEdge = makeEdge;
 export const _equal = equal;

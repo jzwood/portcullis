@@ -17,13 +17,14 @@ parseProgram :: Parser Module
 parseProgram = parseModule <* spaces
 
 moduleAlg :: Stmt -> Module -> Module
-moduleAlg (F function) mod@Module { functions } = mod { functions = function : functions}
+moduleAlg (F function) mod@Module { functions, functionMap } = mod { functions = function : functions, functionMap = Map.insert (name function) function functionMap }
 moduleAlg (C comment) mod@Module { comments } = mod { comments = comment : comments}
 moduleAlg (Q queue@Queue { queueName }) mod@Module{ queueMap } = mod { queueMap = Map.insert queueName queue queueMap}
+
 moduleAlg (P pipe) mod@Module{ pipes } = mod { pipes = pipe : pipes}
 
 stmtsToModule:: [Stmt] -> Module
-stmtsToModule = foldr moduleAlg (Module { functions = [], comments = [], queueMap = Map.empty, pipes = [] })
+stmtsToModule = foldr moduleAlg (Module { functions = [], functionMap = Map.empty, comments = [], queueMap = Map.empty, pipes = [] })
 
 parseModule :: Parser Module
 parseModule =  stmtsToModule <$> oneOrMore parseStmt

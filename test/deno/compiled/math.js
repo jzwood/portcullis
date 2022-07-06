@@ -4,11 +4,7 @@ const Chipmunk = 2
 
 export const empty = $empty()
 
-export function getTopology(){
-  return [];
-}
-
-// Signature: ((a -> (a -> Atom)) -> (a -> (a -> Atom)))
+// signature: ((a -> (a -> Atom)) -> (a -> (a -> Atom)))
 export function not(f) {
   return (a) => (b) => (
     /* if */ equal(False, f(a)(b)) ?
@@ -17,12 +13,12 @@ export function not(f) {
   );
 }
 
-// Signature: (a -> ([a] -> Num))
+// signature: (a -> ([a] -> Num))
 export function _length(x) {
   return (xs) => (1.0 + length(xs));
 }
 
-// Signature: ([a] -> Num)
+// signature: ([a] -> Num)
 export function length(xs) {
   return (
     /* if */ equal(xs, []) ?
@@ -31,12 +27,12 @@ export function length(xs) {
   );
 }
 
-// Signature: ([h] -> (h -> ([h] -> [h])))
+// signature: ([h] -> (h -> ([h] -> [h])))
 export function push(ys) {
   return (x) => (xs) => [x, ...concat(xs)(ys)];
 }
 
-// Signature: ([a] -> ([a] -> [a]))
+// signature: ([a] -> ([a] -> [a]))
 export function concat(xs) {
   return (ys) => (
     /* if */ equal(xs, []) ?
@@ -45,12 +41,12 @@ export function concat(xs) {
   );
 }
 
-// Signature: (x -> ([x] -> [x]))
+// signature: (x -> ([x] -> [x]))
 export function identity2(x) {
   return (xs) => xs;
 }
 
-// Signature: ([p] -> [p])
+// signature: ([p] -> [p])
 export function tail(xs) {
   return (
     /* if */ equal(xs, []) ?
@@ -59,7 +55,7 @@ export function tail(xs) {
   );
 }
 
-// Signature: ([g] -> (Num -> [g]))
+// signature: ([g] -> (Num -> [g]))
 export function drop(xs) {
   return (n) => (
     /* if */ (n <= 0.0) ?
@@ -68,7 +64,7 @@ export function drop(xs) {
   );
 }
 
-// Signature: (Num -> (f -> ([f] -> [f])))
+// signature: (Num -> (f -> ([f] -> [f])))
 export function _take(n) {
   return (x) => (xs) => (
     /* if */ (n <= 0.0) ?
@@ -77,7 +73,7 @@ export function _take(n) {
   );
 }
 
-// Signature: ([k] -> (Num -> [k]))
+// signature: ([k] -> (Num -> [k]))
 export function take(xs) {
   return (n) => (
     /* if */ equal(xs, []) ?
@@ -86,12 +82,12 @@ export function take(xs) {
   );
 }
 
-// Signature: ([q] -> (Num -> (Num -> [q])))
+// signature: ([q] -> (Num -> (Num -> [q])))
 export function slice(xs) {
   return (i) => (j) => take(drop(xs)(i))((j - i));
 }
 
-// Signature: ((x -> Atom) -> (x -> ([x] -> [x])))
+// signature: ((x -> Atom) -> (x -> ([x] -> [x])))
 export function filter2(g) {
   return (w) => (ws) => concat((
     /* if */ g(w) ?
@@ -100,7 +96,7 @@ export function filter2(g) {
   ))(filter(g)(ws));
 }
 
-// Signature: ((j -> Atom) -> ([j] -> [j]))
+// signature: ((j -> Atom) -> ([j] -> [j]))
 export function filter(f) {
   return (xs) => (
     /* if */ equal(xs, []) ?
@@ -109,22 +105,22 @@ export function filter(f) {
   );
 }
 
-// Signature: (Num -> Num)
+// signature: (Num -> Num)
 export function neg(x) {
   return (0.0 - x);
 }
 
-// Signature: [Num]
+// signature: [Num]
 function $empty() {
   return /* [Num] */ [];
 }
 
-// Signature: ([Num] -> [Num])
+// signature: ([Num] -> [Num])
 export function msort(ns) {
   return msort2(length(ns))(ns);
 }
 
-// Signature: (Num -> ([Num] -> [Num]))
+// signature: (Num -> ([Num] -> [Num]))
 export function msort2(len) {
   return (ns) => (
     /* if */ (len <= 1.0) ?
@@ -133,7 +129,7 @@ export function msort2(len) {
   );
 }
 
-// Signature: (Num -> ([Num] -> (Num -> ([Num] -> [Num]))))
+// signature: (Num -> ([Num] -> (Num -> ([Num] -> [Num]))))
 export function merge3(x) {
   return (xs) => (y) => (ys) => (
     /* if */ (x <= y) ?
@@ -142,7 +138,7 @@ export function merge3(x) {
   );
 }
 
-// Signature: ([Num] -> (Num -> ([Num] -> [Num])))
+// signature: ([Num] -> (Num -> ([Num] -> [Num])))
 export function merge2(ys) {
   return (x) => (xs) => (
     /* if */ equal(ys, []) ?
@@ -151,7 +147,7 @@ export function merge2(ys) {
   );
 }
 
-// Signature: ([Num] -> ([Num] -> [Num]))
+// signature: ([Num] -> ([Num] -> [Num]))
 export function merge(xs) {
   return (ys) => (
     /* if */ equal(xs, []) ?
@@ -160,22 +156,22 @@ export function merge(xs) {
   );
 }
 
-// Signature: (Num -> (Num -> Num))
+// signature: (Num -> (Num -> Num))
 export function avg(a) {
   return (b) => (0.5 * (a + b));
 }
 
-// Signature: ([Num] -> Num)
+// signature: ([Num] -> Num)
 export function mean(xs) {
   return (sum(xs) / length(xs));
 }
 
-// Signature: (Num -> ([Num] -> Num))
+// signature: (Num -> ([Num] -> Num))
 export function sum2(x) {
   return (xs) => (x + sum(xs));
 }
 
-// Signature: ([Num] -> Num)
+// signature: ([Num] -> Num)
 export function sum(xs) {
   return (
     /* if */ equal(xs, []) ?
@@ -184,12 +180,12 @@ export function sum(xs) {
   );
 }
 
-// Signature: ((b -> c) -> ((a -> b) -> (a -> c)))
+// signature: ((b -> c) -> ((a -> b) -> (a -> c)))
 export function compose(f) {
   return (g) => (x) => f(g(x));
 }
 
-// Signature: (Atom -> (Atom -> [Atom Atom]))
+// signature: (Atom -> (Atom -> [Atom Atom]))
 export function rankPet(p1) {
   return (p2) => (
     /* if */ equal(Chipmunk, p1) ?
@@ -198,22 +194,22 @@ export function rankPet(p1) {
   );
 }
 
-// Signature: (Num -> (Num -> Atom))
+// signature: (Num -> (Num -> Atom))
 export function lt(x) {
   return (y) => (x > y);
 }
 
-// Signature: (Num -> (Num -> Atom))
+// signature: (Num -> (Num -> Atom))
 export function gte(x) {
   return (y) => (x <= y);
 }
 
-// Signature: (Num -> ([Num] -> [Num]))
+// signature: (Num -> ([Num] -> [Num]))
 export function qsortp(x) {
   return (xs) => concat(qsort(filter(lt(x))(xs)))([x, ...qsort(filter(gte(x))(xs))]);
 }
 
-// Signature: ([Num] -> [Num])
+// signature: ([Num] -> [Num])
 export function qsort(xs) {
   return (
     /* if */ equal(xs, []) ?
@@ -222,7 +218,7 @@ export function qsort(xs) {
   );
 }
 
-// Signature: ((a -> Atom) -> ([a] -> [a]))
+// signature: ((a -> Atom) -> ([a] -> [a]))
 export function hofBad(f) {
   return (xs) => (
     /* if */ f(xs) ?
@@ -231,6 +227,11 @@ export function hofBad(f) {
   );
 }
 
+export function getTopology(){
+  return [];
+}
+
+// INTERNAL
 function equal(a, b) {
   if (a === b) {
     return +true;
@@ -238,13 +239,12 @@ function equal(a, b) {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length === 0 && b.length === 0) return +true;
     if (a.length !== b.length) return +false;
-    const [aHead, ...aTail] = a;
-    const [bHead, ...bTail] = b;
-    return equal(aHead, bHead) && equal(aTail, bTail);
+    return equal(a.at(0), b.at(0)) && equal(a.slice(1), b.slice(1));
   }
   return +false;
 }
 
+// UTILS FOR BUILDING DATAFLOWS
 export function makeGrah(topology, domain = "") {
   topology.forEach(([fxn, inQueues, outQueueName]) => {
     makeEdge(domain, fxn, inQueues, outQueueName);
@@ -276,5 +276,4 @@ export function makeEdge(domain, fxn, inQueues, outQueueName) {
 }
 
 // for testing
-export const _makeEdge = makeEdge;
 export const _equal = equal;

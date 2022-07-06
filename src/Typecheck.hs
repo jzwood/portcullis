@@ -30,18 +30,18 @@ instance Show TypecheckError where
     = "Typecheck Error in function " ++ name ++ ": " ++ show typeError
 
 typecheckModule :: Module -> Either [TypecheckError] Module
-typecheckModule mod@Module { functions }
+typecheckModule mod@Module { functions, functionMap }
   | (not . null) typeErrors = Left typeErrors
-  | (not . null) dupeFuncs = Left $ dupeFuncs <&> (`TypecheckError` DuplicateFunction)
+  | (not . null) duplicateFuncs = Left $ duplicateFuncs <&> (`TypecheckError` DuplicateFunction)
   | otherwise = Right mod
     where
       typeErrors :: [TypecheckError]
       typeErrors
         =  functions
-       <&> typecheckFunc (modToFuncMap mod)
+       <&> typecheckFunc functionMap
         &  lefts
-      dupeFuncs :: [Function]
-      dupeFuncs = dupesOn name functions
+      duplicateFuncs :: [Function]
+      duplicateFuncs = dupesOn name functions
 
 typecheckFunc :: Map Name Function -> Function -> Either TypecheckError TypeExpr
 typecheckFunc funcMap func@Function { body, args, signature } = do
@@ -57,12 +57,6 @@ typeEqual te1@(Unspecfied a) (Unspecfied b) = Right te1
 typeEqual (ListType te1) (ListType te2) = ListType <$> typeEqual te1 te2
 typeEqual (TupType te1 te2) (TupType te3 te4) = liftA2 TupType (typeEqual te1 te3) (typeEqual te2 te4)
 typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 "typeEqual"
-
-modToFuncMap :: Module -> Map Name Function
-modToFuncMap Module { functions }
-  =  functions
- <&> (\func@Function { name } -> (name, func))
-  &  Map.fromList
 
 typecheckExpr :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typecheckExpr t (Arrow tl tr)

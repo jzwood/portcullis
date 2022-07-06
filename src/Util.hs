@@ -16,9 +16,15 @@ xs !? n
                                    0 -> Just x
                                    _ -> r (k-1)) (const Nothing) xs n
 
+-- |
+-- >>> paren "cat"
+-- "(cat)"
 paren :: String -> String
 paren a = "(" ++ a ++ ")"
 
+-- |
+-- >>> bracket "cat"
+-- "[cat]"
 bracket :: String -> String
 bracket a = "[" ++ a ++ "]"
 
@@ -28,6 +34,11 @@ curly a = "{\n" ++ a ++ "\n}"
 pad :: String -> String
 pad a = " " ++ a ++ " "
 
+-- |
+-- >>> unlines' ["cat", "mouse"]
+-- "cat\nmouse"
+-- >>> unlines' []
+-- ""
 unlines' :: [String] -> String
 unlines' [] = ""
 unlines' xs = init . unlines $ xs
@@ -41,8 +52,8 @@ comment = unlines' . map ("// " ++) . lines
 multComment :: String -> String
 multComment str = concat ["/*\n", unlines . map (" *  " ++) . lines $ str, " */"]
 
-divider :: String
-divider =  concat $ "// " : replicate 60 "#"
+--divider :: String
+--divider =  concat $ "// " : replicate 60 "#"
 
 head' :: a -> [a] -> a
 head' x [] = x

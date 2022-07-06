@@ -15,7 +15,7 @@ import qualified Data.Map as Map
 
 instance Show Module where
   show Module { functions, comments, queueMap, pipes }
-    = unlines $ atoms : zeroArityFuncs : topology : "" : (show <$> functions)
+    = unlines $ atoms : zeroArityFuncs : (show <$> functions) ++ [topology]
       where
         atoms = unlines $ showAtoms functions
         zeroArityFuncs = unlines $ showZeroArityFunctions functions
@@ -30,7 +30,7 @@ instance Show Function where
     , "}"
     ]
       where
-        docstring = comment $ unwords ["Signature:", show tExpr]
+        docstring = comment $ unwords ["signature:", show tExpr]
         header = concat [ if null vars then "function $" else "export function " , name , (paren . head' "") vars ]
         body = (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , show expr , ";" ]
 
@@ -142,7 +142,7 @@ showTopology _ [] = "export function getTopology()" ++ (curly . indent) "return 
 showTopology queueMap pipes
   =  pipes
  <&> showPipe queueMap
-  &  ("export function getTopology() " ++) . curly . indent . ("return (\n" ++) . (++ "\n)") . indent . intercalate ",\n"
+  &  ("export const topology = " ++) . ("[\n" ++) . (++ "\n]") . indent . intercalate ",\n"
 
 showPipe :: Map Name Queue -> Pipe -> String
 showPipe queueMap Pipe { funcName, inQueueNames, outQueueName } =
