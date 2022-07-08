@@ -73,8 +73,13 @@ showList = bracket . intercalate ", "
 --uniq :: Ord a => [a] -> Bool
 --uniq xs = all (==1) $ length <$> (group . sort) xs
 
---dupes :: Ord a => [a] -> [a]
---dupes xs = head <$> (filter ((>1) . length) $ (group . sort) xs)
+-- |
+-- >>> dupes [1, 2, 3, 1, 4, 3]
+-- [1,3]
+-- >>> dupes []
+-- []
+dupes :: Ord a => [a] -> [a]
+dupes xs = head <$> filter ((>1) . length) ((group . sort) xs)
 
 -- |
 -- >>> dupesOn id []

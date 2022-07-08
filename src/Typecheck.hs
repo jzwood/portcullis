@@ -18,21 +18,23 @@ import qualified Data.Map as Map
 data TypeError
   = NotFunction Name  -- maybe make better show
   | DuplicateFunction
-  | TypeMismatch TypeExpr TypeExpr String
+  | TypeMismatch TypeExpr TypeExpr
   | ArityMismatch
   deriving (Show, Eq)
 
-data TypecheckError = TypecheckError Function TypeError
+data TypecheckError = FunctionError Function TypeError | PipeError Pipe TypeError
   deriving (Eq)
 
 instance Show TypecheckError where
-  show (TypecheckError Function { name, signature, args } typeError)
-    = "Typecheck Error in function " ++ name ++ ": " ++ show typeError
+  show (FunctionError Function { name, signature, args } typeError)
+     = "Typecheck Error in function " ++ name ++ ": " ++ show typeError
+  show (PipeError pipe typeError)
+     = unwords ["Typecheck Error in pipe", show pipe, ":", show typeError]
 
 typecheckModule :: Module -> Either [TypecheckError] Module
-typecheckModule mod@Module { functions, functionMap }
+typecheckModule mod@Module { functions, functionMap, queueMap, pipes }
   | (not . null) typeErrors = Left typeErrors
-  | (not . null) duplicateFuncs = Left $ duplicateFuncs <&> (`TypecheckError` DuplicateFunction)
+  | (not . null) duplicateFuncs = Left $ duplicateFuncs <&> (`FunctionError` DuplicateFunction)
   | otherwise = Right mod
     where
       typeErrors :: [TypecheckError]
@@ -43,6 +45,15 @@ typecheckModule mod@Module { functions, functionMap }
       duplicateFuncs :: [Function]
       duplicateFuncs = dupesOn name functions
 
+xcheckQueues :: Map Name Queue -> [Pipe] -> [TypecheckError]
+xcheckQueues queueMap pipes
+  =  pipes
+  &  filter ((`Map.notMember` queueMap) . funcName)
+ <&> \pipe -> PipeError pipe (NotFunction (funcName pipe))
+
+doesQueueFunctionExist :: Map Name Queue -> Pipe -> Bool
+doesQueueFunctionExist queueMap Pipe { funcName } = Map.member funcName queueMap
+
 typecheckFunc :: Map Name Function -> Function -> Either TypecheckError TypeExpr
 typecheckFunc funcMap func@Function { body, args, signature } = do
   typeofBody <- typeofExpr funcMap func body
@@ -50,31 +61,31 @@ typecheckFunc funcMap func@Function { body, args, signature } = do
                       & drop (length args)
                       & typeExprFromList
   typeEqual expectedTypeOfBody typeofBody
-  &   mapLeft (TypecheckError func)
+  &   mapLeft (FunctionError func)
 
 typeEqual :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typeEqual te1@(Unspecfied a) (Unspecfied b) = Right te1
 typeEqual (ListType te1) (ListType te2) = ListType <$> typeEqual te1 te2
 typeEqual (TupType te1 te2) (TupType te3 te4) = liftA2 TupType (typeEqual te1 te3) (typeEqual te2 te4)
-typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 "typeEqual"
+typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2
 
 typecheckExpr :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typecheckExpr t (Arrow tl tr)
   = typecheck t tl Map.empty  -- compare type with sig
   <&> resolveType tr
-typecheckExpr t1 t2 = Left $ TypeMismatch t1 t2 "typecheckExpr"
+typecheckExpr t1 t2 = Left $ TypeMismatch t1 t2
 
 typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map Name TypeExpr)
 typecheck t (Unspecfied n) m =
   case Map.lookup n m of
     Nothing -> Right $ Map.insert n t m
-    Just t' -> if t == t' then Right m else Left $ TypeMismatch t t' "typecheck"
+    Just t' -> if t == t' then Right m else Left $ TypeMismatch t t'
 typecheck (Arrow t0 t1) (Arrow t2 t3) m = typecheck t0 t2 m >>= typecheck t1 t3
 typecheck (TupType te0 te1) (TupType te2 te3) m = typecheck te0 te2 m >>= typecheck te1 te3
 typecheck (ListType te0) (ListType te1) m = typecheck te0 te1 m
 typecheck t1 t2 m =
   if t1 == t2 then Right m
-              else Left $ TypeMismatch t1 t2 "typecheck"
+              else Left $ TypeMismatch t1 t2
 
 resolveType :: TypeExpr -> Map Name TypeExpr -> TypeExpr
 resolveType t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
