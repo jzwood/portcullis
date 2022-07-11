@@ -29,12 +29,13 @@ instance Show TypecheckError where
   show (FunctionError Function { name, signature, args } typeError)
      = "Typecheck Error in function " ++ name ++ ": " ++ show typeError
   show (PipeError pipe typeError)
-     = unwords ["Typecheck Error in pipe", show pipe, ":", show typeError]
+     = unwords ["Typecheck Error in", show pipe, ":", show typeError]
 
 typecheckModule :: Module -> Either [TypecheckError] Module
 typecheckModule mod@Module { functions, functionMap, queueMap, pipes }
   | (not . null) typeErrors = Left typeErrors
   | (not . null) duplicateFuncs = Left $ duplicateFuncs <&> (`FunctionError` DuplicateFunction)
+  | (not . null) pipeErrors = Left pipeErrors
   | otherwise = Right mod
     where
       typeErrors :: [TypecheckError]
@@ -44,15 +45,13 @@ typecheckModule mod@Module { functions, functionMap, queueMap, pipes }
         &  lefts
       duplicateFuncs :: [Function]
       duplicateFuncs = dupesOn name functions
+      pipeErrors = xcheckQueues queueMap pipes
 
 xcheckQueues :: Map Name Queue -> [Pipe] -> [TypecheckError]
 xcheckQueues queueMap pipes
   =  pipes
   &  filter ((`Map.notMember` queueMap) . funcName)
  <&> \pipe -> PipeError pipe (NotFunction (funcName pipe))
-
-doesQueueFunctionExist :: Map Name Queue -> Pipe -> Bool
-doesQueueFunctionExist queueMap Pipe { funcName } = Map.member funcName queueMap
 
 typecheckFunc :: Map Name Function -> Function -> Either TypecheckError TypeExpr
 typecheckFunc funcMap func@Function { body, args, signature } = do

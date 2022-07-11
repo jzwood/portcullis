@@ -20,7 +20,7 @@ spec = do
           binop = BinOp Plus (Val $ Number 1) (Val $ Number 2)
       typeofExpr Map.empty dummyStatement binop `shouldBe` Right NumType
       let binop = BinOp Plus (BinOp Minus (Val $ Number 4) (BinOp Times (Val $ Number 1) (Val $ Number 5))) (Val $ Number 2)
-      typeofExpr Map.empty dummyStatement binop `shouldBe` Right (NumType)
+      typeofExpr Map.empty dummyStatement binop `shouldBe` Right NumType
       let binop = BinOp GreaterThan (BinOp Minus (Val $ Number 4) (BinOp Times (Val $ Number 1) (Val $ Number 5))) (Val $ Number 2)
       typeofExpr Map.empty dummyStatement binop `shouldBe` Right AtomType
 
@@ -124,8 +124,8 @@ spec = do
                           , body = BinOp Times (BinOp Plus (Ident "num1") (Ident "num2")) (Val $ Number 0.5)
                           }
           m = Map.singleton "avg" func
-      typeofExpr m func (body func) `shouldBe` (Right NumType)
-      typecheckFunc m func `shouldBe` (Right NumType)
+      typeofExpr m func (body func) `shouldBe` Right NumType
+      typecheckFunc m func `shouldBe` Right NumType
 
 
     it "typecheck call vs ident function" $ do
@@ -145,10 +145,10 @@ spec = do
                           , body = Ident "one1"
                           }
           m = Map.fromList [("one1", one1), ("one2", one2), ("one3", one3)]
-      typecheckFunc m one1 `shouldBe` (Right NumType)
-      typecheckFunc m one2 `shouldBe` (Right NumType)
+      typecheckFunc m one1 `shouldBe` Right NumType
+      typecheckFunc m one2 `shouldBe` Right NumType
 
-      typecheckFunc m one3 `shouldBe` (Right NumType)  -- HERE
+      typecheckFunc m one3 `shouldBe` Right NumType  -- HERE
 
     -- TODO: redo to not include fallback param
     it "typecheck map" $ do
@@ -158,8 +158,8 @@ spec = do
                           , body = Call "f" [Ident "a"]
                           }
           m = Map.fromList [("map", map')]
-      typeofExpr m map' (body map') `shouldBe` (Right $ Unspecfied "y")
-      typecheckFunc m map' `shouldBe` (Right $ Unspecfied "y")
+      typeofExpr m map' (body map') `shouldBe` Right (Unspecfied "y")
+      typecheckFunc m map' `shouldBe` Right (Unspecfied "y")
 
     it "typecheck compose" $ do
       let id1 = Function { name = "id1"
@@ -188,12 +188,12 @@ spec = do
                           , body = Call "compose" [ Ident "add1", Ident "add1", Ident "n"]
                           }
           m = Map.fromList [("id1", id1), ("id1", id1), ("compose", compose), ("add1", add1)]
-      typeofExpr m compose (body compose) `shouldBe` (Right $ Unspecfied "c")
-      typecheckFunc m compose `shouldBe` (Right $ Unspecfied "c")
-      typeofExpr m id2 (body id2) `shouldBe` (Right $ Unspecfied "y")
-      typecheckFunc m compose `shouldBe` (Right $ Unspecfied "c")
-      typeofExpr m add2 (body add2) `shouldBe` (Right NumType)
-      typecheckFunc m add2 `shouldBe` (Right NumType)
+      typeofExpr m compose (body compose) `shouldBe` Right (Unspecfied "c")
+      typecheckFunc m compose `shouldBe` Right (Unspecfied "c")
+      typeofExpr m id2 (body id2) `shouldBe` Right (Unspecfied "y")
+      typecheckFunc m compose `shouldBe` Right (Unspecfied "c")
+      typeofExpr m add2 (body add2) `shouldBe` Right NumType
+      typecheckFunc m add2 `shouldBe` Right NumType
 
     it "typecheck guards" $ do
       let trivial = Function { name = "trivial"
@@ -202,8 +202,8 @@ spec = do
                              , body = TernOp If ( BinOp Equal (Val $ Atom "Cat") (Ident "atom")) (Val $ Character 'y') (Val $ Character 'n')
                              }
           m = Map.fromList [("trivial", trivial)]
-      typeofExpr m trivial (body trivial) `shouldBe` (Right CharType)
-      typecheckFunc m trivial `shouldBe` (Right CharType)
+      typeofExpr m trivial (body trivial) `shouldBe` Right CharType
+      typecheckFunc m trivial `shouldBe` Right CharType
 
     it "typecheck guards 2" $ do
       let hof1 = Function { name = "hof1"

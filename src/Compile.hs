@@ -12,7 +12,7 @@ import Typecheck (typecheckModule)
 import Util (mapLeft)
 
 data CompileError = ParseError ParseLib.ParseError | TypecheckError [Typecheck.TypecheckError]
-  deriving (Show)
+  deriving (Eq, Show)
 
 -- testing util
 runp :: Parser a -> String -> Either ParseLib.ParseError (a, Cursor, String)

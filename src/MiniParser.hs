@@ -12,6 +12,7 @@ data Cursor = Cursor { line :: Integer, col :: Integer}
   deriving (Show, Eq)
 
 newtype ParseError = ParseError Cursor
+  deriving (Eq)
 
 instance Show ParseError where
   show (ParseError Cursor { line, col}) = concat ["Parse Error at line: ", show line, ", column: ", show col]

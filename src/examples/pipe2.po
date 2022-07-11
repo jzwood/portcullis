@@ -12,11 +12,9 @@ add3 a b c = + + a b c
 pipe example
 #
 
-
 &a1 4 Num  # queue #
 &b1 4 Num  # queue #
 &c1 4 Num  # queue #
-
 
 | sum1 [&a1 &b1] &c1  # pipe #
 | sum2 [&a1 &b1] &c1  # pipe #
