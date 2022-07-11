@@ -1,4 +1,4 @@
-module TypecheckSpec (spec) where
+module TypecheckASTSpec (spec) where
 
 import Test.Hspec
 import Data.Function

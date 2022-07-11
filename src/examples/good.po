@@ -1,0 +1,6 @@
+
+good -> Atom Num
+good a = 3
+
+good [Num]
+good = Num [3]
