@@ -39,7 +39,7 @@ typecheckModule mod@Module { functions, functionMap, queues, queueMap, pipes }
   | (not . null) typeErrors = Left typeErrors
   | (not . null) duplicateFuncs = Left $ duplicateFuncs <&> (`FunctionError` DuplicateFunction)
   | (not . null) duplicateQueues = Left $ duplicateQueues <&> (`QueueError` DuplicateQueue)
-  | (not . null) pipeErrors = Left pipeErrors
+  | (not . null) unknownPipeFuncs = Left $ unknownPipeFuncs <&> (PipeError <*> NotFunction . funcName)
   | otherwise = Right mod
     where
       typeErrors :: [TypecheckError]
@@ -51,13 +51,8 @@ typecheckModule mod@Module { functions, functionMap, queues, queueMap, pipes }
       duplicateFuncs = dupesOn name functions
       duplicateQueues :: [Queue]
       duplicateQueues = dupesOn queueName queues
-      pipeErrors = xcheckQueues queueMap pipes
-
-xcheckQueues :: Map Name Queue -> [Pipe] -> [TypecheckError]
-xcheckQueues queueMap pipes
-  =  pipes
-  &  filter ((`Map.notMember` queueMap) . funcName)
- <&> \pipe -> PipeError pipe (NotFunction (funcName pipe))
+      unknownPipeFuncs :: [Pipe]
+      unknownPipeFuncs = filter ((`Map.notMember` functionMap) . funcName) pipes
 
 typecheckFunc :: Map Name Function -> Function -> Either TypecheckError TypeExpr
 typecheckFunc funcMap func@Function { body, args, signature } = do

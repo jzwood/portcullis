@@ -63,12 +63,11 @@ spec = do
       let pipesQueues = "&a1 4 Num  # queue #\
                 \&b1 4 Num  # queue #\
                 \&c1 4 Num  # queue #\n\
-                \| sum [&a1 &b1] &c1  # pipe #\
                 \| sum [&a1 &b1] &c1  # pipe #"
           sum = "sum -> Num -> Num Num\
                 \sum a b = + a b"
       expectLeft pipesQueues `shouldSatisfy` ("NotFunction" `isInfixOf`)
-      expectLeft (pipesQueues ++ '\n' : sum) `shouldSatisfy` ("" `isInfixOf`)
+      compile (pipesQueues ++ '\n' : sum) `shouldSatisfy` isRight
 
     it "expect DuplicateQueue pipe errors" $ do
       let pipesQueues = "&a1 4 Num\
