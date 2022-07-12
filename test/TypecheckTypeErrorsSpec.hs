@@ -1,4 +1,4 @@
-module TestTypeErrorsSpec (spec) where
+module TypecheckTypeErrorsSpec (spec) where
 
 import Test.Hspec
 import Data.Function
@@ -17,7 +17,6 @@ expectLeft program =
     Left err -> err
     Right _ -> error "function expected to error did not"
 
-
 --data TypeError
   -- NotFunction Name  -- maybe make better show
   -- DuplicateFunction
@@ -26,7 +25,7 @@ expectLeft program =
 
 spec :: Spec
 spec = do
-  describe "Typecheck TypeErrors" $ do
+  describe "Typecheck Function TypeErrors" $ do
 
     it "expect NotFound" $ do
       let bad1 = "bad1 -> Num a\
@@ -58,3 +57,20 @@ spec = do
       let bad0 = "bad -> Num Num\
                  \good a b c d e f = a"
       expectLeft bad0 `shouldSatisfy` ("ArityMismatch" `isInfixOf`)
+
+  describe "Typecheck Pipe TypeErrors" $ do
+    it "expect NotFunction pipe errors" $ do
+      let pipesQueues = "&a1 4 Num  # queue #\
+                \&b1 4 Num  # queue #\
+                \&c1 4 Num  # queue #\n\
+                \| sum [&a1 &b1] &c1  # pipe #\
+                \| sum [&a1 &b1] &c1  # pipe #"
+          sum = "sum -> Num -> Num Num\
+                \sum a b = + a b"
+      expectLeft pipesQueues `shouldSatisfy` ("NotFunction" `isInfixOf`)
+      expectLeft (pipesQueues ++ '\n' : sum) `shouldSatisfy` ("" `isInfixOf`)
+
+    it "expect DuplicateQueue pipe errors" $ do
+      let pipesQueues = "&a1 4 Num\
+                        \&a1 2 Char"
+      expectLeft pipesQueues `shouldSatisfy` ("DuplicateQueue" `isInfixOf`)

@@ -11,7 +11,7 @@ import Util
 
 type Name = String
 
-data Module = Module { functions :: [Function], functionMap :: Map Name Function, comments :: [Comment], queueMap :: Map Name Queue, pipes :: [Pipe] }
+data Module = Module { functions :: [Function], functionMap :: Map Name Function, comments :: [Comment], queues :: [Queue], queueMap :: Map Name Queue, pipes :: [Pipe] }
 
 data Queue = Queue { queueName :: Name, buffer :: Integer, queueSig :: TypeExpr }
   deriving (Eq)

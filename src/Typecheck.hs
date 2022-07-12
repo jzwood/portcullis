@@ -18,11 +18,12 @@ import qualified Data.Map as Map
 data TypeError
   = NotFunction Name  -- maybe make better show
   | DuplicateFunction
+  | DuplicateQueue
   | TypeMismatch TypeExpr TypeExpr
   | ArityMismatch
   deriving (Show, Eq)
 
-data TypecheckError = FunctionError Function TypeError | PipeError Pipe TypeError
+data TypecheckError = FunctionError Function TypeError | PipeError Pipe TypeError | QueueError Queue TypeError
   deriving (Eq)
 
 instance Show TypecheckError where
@@ -30,11 +31,14 @@ instance Show TypecheckError where
      = "Typecheck Error in function " ++ name ++ ": " ++ show typeError
   show (PipeError pipe typeError)
      = unwords ["Typecheck Error in", show pipe, ":", show typeError]
+  show (QueueError Queue { queueName } typeError)
+     = unwords ["Typecheck Error in", queueName, ":", show typeError]
 
 typecheckModule :: Module -> Either [TypecheckError] Module
-typecheckModule mod@Module { functions, functionMap, queueMap, pipes }
+typecheckModule mod@Module { functions, functionMap, queues, queueMap, pipes }
   | (not . null) typeErrors = Left typeErrors
   | (not . null) duplicateFuncs = Left $ duplicateFuncs <&> (`FunctionError` DuplicateFunction)
+  | (not . null) duplicateQueues = Left $ duplicateQueues <&> (`QueueError` DuplicateQueue)
   | (not . null) pipeErrors = Left pipeErrors
   | otherwise = Right mod
     where
@@ -45,6 +49,8 @@ typecheckModule mod@Module { functions, functionMap, queueMap, pipes }
         &  lefts
       duplicateFuncs :: [Function]
       duplicateFuncs = dupesOn name functions
+      duplicateQueues :: [Queue]
+      duplicateQueues = dupesOn queueName queues
       pipeErrors = xcheckQueues queueMap pipes
 
 xcheckQueues :: Map Name Queue -> [Pipe] -> [TypecheckError]

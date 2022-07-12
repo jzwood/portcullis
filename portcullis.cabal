@@ -78,8 +78,8 @@ test-suite portcullis-test
   main-is: Spec.hs
   other-modules:
       ParserSpec
-      TestTypeErrorsSpec
       TypecheckASTSpec
+      TypecheckTypeErrorsSpec
       Paths_portcullis
   hs-source-dirs:
       test
