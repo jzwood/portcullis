@@ -1,6 +1,8 @@
 module Util where
 
 import Data.List
+import Data.Map (Map)
+import qualified Data.Map as Map
 
 (.&&) :: (a -> Bool) -> (a -> Bool) -> a -> Bool
 (.&&) f1 f2 a = f1 a && f2 a
@@ -90,3 +92,9 @@ dupes xs = head <$> filter ((>1) . length) ((group . sort) xs)
 -- [4,5]
 dupesOn :: Ord b => (a -> b) -> [a] -> [a]
 dupesOn on xs = head <$> filter ((>1) . length) ((groupBy (\p1 p2 -> on p1 == on p2) . sortOn on) xs)
+
+lookup' :: Ord k => Map k v -> (k -> x) -> k -> Either x v
+lookup' m f k =
+  case Map.lookup k m of
+    Nothing -> Left $ f k
+    Just v -> Right v
