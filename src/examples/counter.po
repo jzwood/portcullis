@@ -1,10 +1,3 @@
-
-huh2 Num
-huh2 = 3
-
-huh3 {Num { Num Atom}}
-huh3 = {3 {2 Nil}}
-
 _add -> Num -> Num Num
 _add a b = + a b
 
@@ -17,9 +10,3 @@ _sub a b = - a b
 
 | _add [&counter &add] &counter  # pipe #
 | _sub [&counter &sub] &counter  # pipe #
-
-
-id -> x x
-id x = x
-
-| id [&a] &a  # pipe #

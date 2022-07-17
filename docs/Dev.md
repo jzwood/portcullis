@@ -54,4 +54,6 @@
 [Deno](https://deno.land/manual@v1.22.0) `v1.22.0` or higher is the recommended
 backend runtime for compiled portcullis programs.
 
-    deno repl --eval-file=<path/to/file.po>
+    deno repl --unstable --eval-file=<path/to/file.js>
+
+&ast; *At the moment the `BroadcastChannel` API requires the `--unstable` flag to be exposed.*

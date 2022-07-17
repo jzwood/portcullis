@@ -17,10 +17,15 @@ import Util
 compile :: String -> Either String String
 compile program = mapLeft show (C.compile program)
 
+errorOf :: String -> T.TypecheckError
+errorOf program = case C.compile program of
+  Left (C.TypecheckError [typecheckError]) -> typecheckError
+  _ -> error "program expected to raise 1 TypecheckError (but didn't)"
+
 errorsOf :: String -> Set T.TypecheckError
 errorsOf program = case C.compile program of
   Left (C.TypecheckError typecheckErrors) -> Set.fromList typecheckErrors
-  _ -> error "program expected to raise TypecheckError did not"
+  _ -> error "program expected to raise TypecheckErrors (but didn't)"
 
 unsafeCompile :: String -> Module
 unsafeCompile program =
@@ -48,17 +53,17 @@ spec = do
                  \bad2 f x = (f x)"
           bad3 = "bad3 -> -> Num Atom -> Num Num \
                  \ bad3 f x = (bad2 f x)"
-      errorsOf bad1 `shouldBe` Set.singleton (FunctionError (unsafeFunc bad1) (NotFunction "x"))
-      expectLeft bad2 `shouldSatisfy` ("NotFunction" `isInfixOf`)
-      expectLeft bad3 `shouldSatisfy` ("NotFunction" `isInfixOf`)
+      errorOf bad1 `shouldBe` FunctionError (unsafeFunc bad1) (NotFunction "x")
+      errorOf bad2 `shouldBe` FunctionError (unsafeFunc bad2) (NotFunction "f")
+      errorOf bad3 `shouldBe` FunctionError (unsafeFunc bad3) (NotFunction "bad2")
 
     it "expect TypeMismatch" $ do
       let bad0 = "bad0 -> z Num\
                  \bad0 x = x"
-          bad1 = "bad -> Num -> Num -> Num -> Num Num\
-                 \good p = p"
-      expectLeft bad0 `shouldSatisfy` ("TypeMismatch {expected = Num, actual = z}" `isInfixOf`)
-      expectLeft bad1 `shouldSatisfy` ("TypeMismatch {expected = (Num -> (Num -> (Num -> Num))), actual = Num}" `isInfixOf`)
+          bad1 = "bad1 -> Num -> Num Num\
+                 \bad1 p = p"
+      errorOf bad0 `shouldBe` FunctionError (unsafeFunc bad0) (TypeMismatch {expected = NumType, actual = Unspecfied "z"})
+      errorOf bad1 `shouldBe` FunctionError (unsafeFunc bad1) (TypeMismatch {expected = Arrow NumType NumType, actual = NumType})
 
     it "expect DuplicateFunction" $ do
       let bad0 = "good -> Atom Num\

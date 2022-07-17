@@ -57,6 +57,7 @@ typecheckModule mod@Module { functions, functionMap, queues, queueMap, pipes }
                 <&> typecheckPipe queueMap functionMap
                  &  lefts
 
+-- TODO Refactor once more tests are written
 typecheckPipe :: Map Name Queue -> Map Name Function -> Pipe -> Either TypecheckError TypeExpr
 typecheckPipe queueMap funcMap pipe@Pipe { funcName, inQueueNames, outQueueName }
   =   pipeFunction
