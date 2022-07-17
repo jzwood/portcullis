@@ -5,36 +5,50 @@ import Data.Function
 import Data.Functor
 import Data.Either (isLeft, isRight)
 import Data.List
+import Data.Set (Set)
+import Syntax
+import qualified Data.Set as Set
+import Typecheck hiding (TypecheckError)
+import qualified Typecheck as T
 import qualified Compile as C
 import Util
 
+
 compile :: String -> Either String String
 compile program = mapLeft show (C.compile program)
+
+errorsOf :: String -> Set T.TypecheckError
+errorsOf program = case C.compile program of
+  Left (C.TypecheckError typecheckErrors) -> Set.fromList typecheckErrors
+  _ -> error "program expected to raise TypecheckError did not"
+
+unsafeCompile :: String -> Module
+unsafeCompile program =
+  case C.parse program of
+    Right mod -> mod
+    Left _ -> error "program unexpectedly failed to parse"
+
+unsafeFunc :: String -> Function
+unsafeFunc program = head . functions $ unsafeCompile program
 
 expectLeft :: String -> String
 expectLeft program =
   case compile program of
     Left err -> err
-    Right _ -> error "function expected to error did not"
-
---data TypeError
-  -- NotFunction Name  -- maybe make better show
-  -- DuplicateFunction
-  -- TypeMismatch TypeExpr TypeExpr
-  -- ArityMismatch
+    Right _ -> error "program expected to error did not"
 
 spec :: Spec
 spec = do
   describe "Typecheck Function TypeErrors" $ do
 
-    it "expect NotFound" $ do
+    it "expect NotFunction" $ do
       let bad1 = "bad1 -> Num a\
                  \bad1 x = x"
           bad2 = "bad2 -> -> a b -> a b\
                  \bad2 f x = (f x)"
           bad3 = "bad3 -> -> Num Atom -> Num Num \
                  \ bad3 f x = (bad2 f x)"
-      expectLeft bad1 `shouldSatisfy` ("NotFunction" `isInfixOf`)
+      errorsOf bad1 `shouldBe` Set.singleton (FunctionError (unsafeFunc bad1) (NotFunction "x"))
       expectLeft bad2 `shouldSatisfy` ("NotFunction" `isInfixOf`)
       expectLeft bad3 `shouldSatisfy` ("NotFunction" `isInfixOf`)
 
@@ -43,8 +57,8 @@ spec = do
                  \bad0 x = x"
           bad1 = "bad -> Num -> Num -> Num -> Num Num\
                  \good p = p"
-      expectLeft bad0 `shouldSatisfy` ("TypeMismatch Num z" `isInfixOf`)
-      expectLeft bad1 `shouldSatisfy` ("TypeMismatch (Num -> (Num -> (Num -> Num))) Num" `isInfixOf`)
+      expectLeft bad0 `shouldSatisfy` ("TypeMismatch {expected = Num, actual = z}" `isInfixOf`)
+      expectLeft bad1 `shouldSatisfy` ("TypeMismatch {expected = (Num -> (Num -> (Num -> Num))), actual = Num}" `isInfixOf`)
 
     it "expect DuplicateFunction" $ do
       let bad0 = "good -> Atom Num\
@@ -73,3 +87,11 @@ spec = do
       let pipesQueues = "&a1 4 Num\
                         \&a1 2 Char"
       expectLeft pipesQueues `shouldSatisfy` ("DuplicateQueue" `isInfixOf`)
+
+{-
+    it "expect QueueNotFound pipe errors" $ do
+      let pipe = "id -> z z\
+                 \id x = x"
+      expectLeft pipe `shouldSatisfy` ("QueueNotFound" `isInfixOf`)
+
+-}

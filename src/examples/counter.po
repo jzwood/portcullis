@@ -17,3 +17,9 @@ _sub a b = - a b
 
 | _add [&counter &add] &counter  # pipe #
 | _sub [&counter &sub] &counter  # pipe #
+
+
+id -> x x
+id x = x
+
+| id [&a] &a  # pipe #

@@ -15,23 +15,25 @@ import CodeGen
 import Util
 import qualified Data.Map as Map
 
+-- TODO ugh should disambiguate between NotFunction and QueueNotFound
 data TypeError
-  = NotFound Name  -- maybe make better show
+  = NotFunction Name  -- maybe make better show
+  | QueueNotFound Name
   | DuplicateFunction
-  | TypeMismatch TypeExpr TypeExpr
+  | TypeMismatch { expected :: TypeExpr, actual :: TypeExpr }
   | ArityMismatch
-  deriving (Show, Eq)
+  deriving (Show, Ord, Eq)
 
 data TypecheckError = FunctionError Function TypeError | PipeError Pipe TypeError | DuplicateQueueError Queue
-  deriving (Eq)
+  deriving (Eq, Ord)
 
 instance Show TypecheckError where
   show (FunctionError Function { name, signature, args } typeError)
-     = "Function Typecheck Error in function " ++ name ++ ": " ++ show typeError
+     = unwords [ show typeError, "in function", name ]
   show (PipeError pipe typeError)
-     = unwords ["Pipe Typecheck Error in", show pipe, ":", show typeError]
+     = unwords [ show typeError, "in", show pipe ]
   show (DuplicateQueueError Queue { queueName })
-     = unwords ["Queue Typecheck Error in", queueName, ": DuplicateQueue"]
+     = unwords [ "DuplicateQueue", queueName ]
 
 typecheckModule :: Module -> Either [TypecheckError] Module
 typecheckModule mod@Module { functions, functionMap, queues, queueMap, pipes }
@@ -61,7 +63,7 @@ typecheckPipe queueMap funcMap pipe@Pipe { funcName, inQueueNames, outQueueName 
   >>= typecheckFunc funcMap
   where
     queues :: Either TypecheckError [Queue]
-    queues = traverse (lookup' queueMap (PipeError pipe . NotFound)) (inQueueNames ++ [outQueueName])
+    queues = traverse (lookup' queueMap (PipeError pipe . QueueNotFound)) (inQueueNames ++ [outQueueName])
     expectedTypeExpr :: Either TypecheckError TypeExpr
     expectedTypeExpr =
       (fmap . fmap) queueSig queues
@@ -139,11 +141,11 @@ typeofExpr m f@Function { signature = sig, args } e =
     Ident name ->
       maybeSignature name
       <&> Right
-       &  fromMaybe (Left $ NotFound name)
+       &  fromMaybe (Left $ NotFunction name)
     Call name exprs ->
       maybeSignature name
       <&> check exprs
-       &  fromMaybe (Left $ NotFound name)
+       &  fromMaybe (Left $ NotFunction name)
     UnOp unop expr1 -> check [expr1] (typeofUnOp unop)
     BinOp bop expr1 expr2 -> check [expr1, expr2] (typeofBop bop)
     TernOp top expr1 expr2 expr3 -> check [expr1, expr2, expr3] (typeofTop top)
