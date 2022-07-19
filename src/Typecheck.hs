@@ -15,9 +15,8 @@ import CodeGen
 import Util
 import qualified Data.Map as Map
 
--- TODO ugh should disambiguate between NotFunction and QueueNotFound
 data TypeError
-  = NotFunction Name  -- maybe make better show
+  = NotFunction Name
   | QueueNotFound Name
   | DuplicateFunction
   | TypeMismatch { expected :: TypeExpr, actual :: TypeExpr }
@@ -57,11 +56,16 @@ typecheckModule mod@Module { functions, functionMap, queues, queueMap, pipes }
                 <&> typecheckPipe queueMap functionMap
                  &  lefts
 
+toPipeError :: Pipe -> TypecheckError -> TypecheckError
+toPipeError pipe (FunctionError _ te) = PipeError pipe te
+toPipeError _ tce = tce
+
 -- TODO Refactor once more tests are written
 typecheckPipe :: Map Name Queue -> Map Name Function -> Pipe -> Either TypecheckError TypeExpr
 typecheckPipe queueMap funcMap pipe@Pipe { funcName, inQueueNames, outQueueName }
   =   pipeFunction
   >>= typecheckFunc funcMap
+  & mapLeft (toPipeError pipe)
   where
     queues :: Either TypecheckError [Queue]
     queues = traverse (lookup' queueMap (PipeError pipe . QueueNotFound)) (inQueueNames ++ [outQueueName])
