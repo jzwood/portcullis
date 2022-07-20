@@ -20,7 +20,8 @@ compile program = mapLeft show (C.compile program)
 errorOf :: String -> T.TypecheckError
 errorOf program = case C.compile program of
   Left (C.TypecheckError [typecheckError]) -> typecheckError
-  _ -> error "program expected to raise 1 TypecheckError (but didn't)"
+  Left (C.TypecheckError tes) -> error $ unwords ["program expected to raise 1 TypecheckError but actually raised many:", show tes]
+  _ -> error "program expected to raise 1 TypecheckError but didn't raise any"
 
 errorsOf :: String -> Set T.TypecheckError
 errorsOf program = case C.compile program of
@@ -36,29 +37,23 @@ unsafeCompile program =
 unsafeFunc :: String -> Function
 unsafeFunc program = head . functions $ unsafeCompile program
 
-expectLeft :: String -> String
-expectLeft program =
-  case compile program of
-    Left err -> err
-    Right _ -> error "program expected to error did not"
+unsafePipe :: String -> Pipe
+unsafePipe program = head . pipes $ unsafeCompile program
+
+unsafeQueue :: String -> Queue
+unsafeQueue program = head . queues $ unsafeCompile program
 
 spec :: Spec
 spec = do
   describe "Typecheck Function TypeErrors" $ do
 
     it "expect NotFunction" $ do
-      let bad1 = "bad1 -> Num a\
-                 \bad1 x = x"
-          bad2 = "bad2 -> -> a b -> a b\
-                 \bad2 f x = (f x)"
-          bad3 = "bad3 -> -> Num Atom -> Num Num \
-                 \ bad3 f x = (bad2 f x)"
-      errorOf bad1 `shouldBe` FunctionError (unsafeFunc bad1) (NotFunction "x")
-      errorOf bad2 `shouldBe` FunctionError (unsafeFunc bad2) (NotFunction "f")
-      errorOf bad3 `shouldBe` FunctionError (unsafeFunc bad3) (NotFunction "bad2")
+      let bad0 = "bad0 -> Num Num \
+                 \bad0 x = (f x)"
+      errorOf bad0 `shouldBe` FunctionError (unsafeFunc bad0) (NotFunction "f")
 
     it "expect TypeMismatch" $ do
-      let bad0 = "bad0 -> z Num\
+      let bad0 = "bad0 -> z Num \
                  \bad0 x = x"
           bad1 = "bad1 -> Num -> Num Num\
                  \bad1 p = p"
@@ -66,37 +61,37 @@ spec = do
       errorOf bad1 `shouldBe` FunctionError (unsafeFunc bad1) (TypeMismatch {expected = Arrow NumType NumType, actual = NumType})
 
     it "expect DuplicateFunction" $ do
-      let bad0 = "good -> Atom Num\
-                 \good a = 3\n\
-                 \good [Num]\
+      let bad0 = "good -> Atom Num \
+                 \good a = 3 \
+                 \good [Num] \
                  \good = Num [3]"
-      expectLeft bad0 `shouldSatisfy` ("DuplicateFunction" `isInfixOf`)
+      errorOf bad0 `shouldBe` FunctionError (unsafeFunc bad0) DuplicateFunction
 
     it "expect ArityMismatch" $ do
-      let bad0 = "bad -> Num Num\
+      let bad0 = "bad -> Num Num \
                  \good a b c d e f = a"
-      expectLeft bad0 `shouldSatisfy` ("ArityMismatch" `isInfixOf`)
+      errorOf bad0 `shouldBe` FunctionError (unsafeFunc bad0) ArityMismatch
 
   describe "Typecheck Pipe TypeErrors" $ do
     it "expect NotFunction pipe errors" $ do
-      let pipesQueues = "&a1 4 Num  # queue #\
-                \&b1 4 Num  # queue #\
-                \&c1 4 Num  # queue #\n\
-                \| sum [&a1 &b1] &c1  # pipe #"
-          sum = "sum -> Num -> Num Num\
+      let bad0 = "&a1 4 Num \
+                 \&b1 4 Num \
+                 \&c1 4 Num \
+                 \| sum [&a1 &b1] &c1  # pipe #"
+          sum = "sum -> Num -> Num Num \
                 \sum a b = + a b"
-      expectLeft pipesQueues `shouldSatisfy` ("NotFunction" `isInfixOf`)
-      compile (pipesQueues ++ '\n' : sum) `shouldSatisfy` isRight
+          good = unlines [bad0, sum]
+      errorOf bad0 `shouldBe` PipeError (unsafePipe bad0) (NotFunction "sum")
+      compile good `shouldSatisfy` isRight
 
     it "expect DuplicateQueue pipe errors" $ do
-      let pipesQueues = "&a1 4 Num\
-                        \&a1 2 Char"
-      expectLeft pipesQueues `shouldSatisfy` ("DuplicateQueue" `isInfixOf`)
+      let bad0 = "&a1 4 Num \
+                 \&a1 2 Char"
+      errorOf bad0 `shouldBe` DuplicateQueueError (unsafeQueue bad0)
 
-{-
     it "expect QueueNotFound pipe errors" $ do
-      let pipe = "id -> z z\
-                 \id x = x"
-      expectLeft pipe `shouldSatisfy` ("QueueNotFound" `isInfixOf`)
-
--}
+      let good0 = "id -> z z \n\
+                  \id z = z"
+          bad0 = unlines [good0, "| id [&a] &b"]
+      compile good0 `shouldSatisfy` isRight
+      errorOf bad0 `shouldBe` PipeError (unsafePipe bad0) (QueueNotFound "a")

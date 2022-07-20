@@ -128,7 +128,7 @@ function equal(a, b) {
 }
 
 // UTILS FOR BUILDING DATAFLOWS
-export function makeGrah(topology, domain = "") {
+export function makeGraph(topology, domain = "") {
   topology.forEach(([fxn, inQueues, outQueueName]) => {
     makeEdge(domain, fxn, inQueues, outQueueName);
   });
