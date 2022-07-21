@@ -79,7 +79,7 @@ test-suite portcullis-test
   other-modules:
       ParserSpec
       TypecheckASTSpec
-      TypecheckTypeErrorsSpec
+      TypecheckSpec
       Paths_portcullis
   hs-source-dirs:
       test

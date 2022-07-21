@@ -138,7 +138,7 @@ showZeroArityFunctions funcs
  <&> (\name -> unwords ["export", "const", name, "=", '$' : name ++ "()" ])
 
 showTopology :: Map Name Queue -> [Pipe] -> String
-showTopology _ [] = "export function getTopology()" ++ (curly . indent) "return [];"
+showTopology _ [] = "export function exportGraph()" ++ (curly . indent) "return [];"
 showTopology queueMap pipes
   =  pipes
  <&> showPipe queueMap

@@ -14,9 +14,7 @@ import qualified Data.Map as Map
 (!?) :: [a] -> Int -> Maybe a
 xs !? n
   | n < 0     = Nothing
-  | otherwise = foldr (\x r k -> case k of
-                                   0 -> Just x
-                                   _ -> r (k-1)) (const Nothing) xs n
+  | otherwise = foldr (\x r k -> case k of 0 -> Just x; _ -> r (k-1)) (const Nothing) xs n
 
 -- |
 -- >>> paren "cat"
@@ -57,10 +55,20 @@ multComment str = concat ["/*\n", unlines . map (" *  " ++) . lines $ str, " */"
 --divider :: String
 --divider =  concat $ "// " : replicate 60 "#"
 
+-- |
+-- >>> head' 'x' "asdf"
+-- 'a'
+-- >>> head' 'x' ""
+-- 'x'
 head' :: a -> [a] -> a
 head' x [] = x
 head' _ (x:xs) = x
 
+-- |
+-- >>> tail' "asdf"
+-- "sdf"
+-- >>> tail' ""
+-- ""
 tail' :: [a] -> [a]
 tail' [] = []
 tail' (x:xs) = xs
@@ -69,11 +77,14 @@ mapLeft :: (a -> b) -> Either a c -> Either b c
 mapLeft f (Left x) = Left $ f x
 mapLeft _ (Right x) = Right x
 
+-- |
+-- >>> showList ["a", "b"]
+-- "[a, b]"
 showList :: [String] -> String
 showList = bracket . intercalate ", "
 
---uniq :: Ord a => [a] -> Bool
---uniq xs = all (==1) $ length <$> (group . sort) xs
+uniq :: Ord a => [a] -> Bool
+uniq xs = all (==1) $ length <$> (group . sort) xs
 
 -- |
 -- >>> dupes [1, 2, 3, 1, 4, 3]
