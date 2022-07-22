@@ -78,7 +78,7 @@ mapLeft f (Left x) = Left $ f x
 mapLeft _ (Right x) = Right x
 
 -- |
--- >>> showList ["a", "b"]
+-- >>> Util.showList ["a", "b"]
 -- "[a, b]"
 showList :: [String] -> String
 showList = bracket . intercalate ", "

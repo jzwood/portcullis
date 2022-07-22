@@ -39,6 +39,8 @@ library
       QuickCheck ==2.14.2
     , base >=4.7 && <5
     , containers >=0.6.5.1
+    , directory >=1.3.6.0
+    , filepath ==1.4.2.1
     , hspec ==2.7.10
   default-language: Haskell2010
 
@@ -53,6 +55,8 @@ executable portcullis-exe
       QuickCheck ==2.14.2
     , base >=4.7 && <5
     , containers >=0.6.5.1
+    , directory >=1.3.6.0
+    , filepath ==1.4.2.1
     , hspec ==2.7.10
     , portcullis
   default-language: Haskell2010
@@ -69,7 +73,9 @@ test-suite doctests
       QuickCheck ==2.14.2
     , base >=4.7 && <5
     , containers >=0.6.5.1
+    , directory >=1.3.6.0
     , doctest
+    , filepath ==1.4.2.1
     , hspec ==2.7.10
   default-language: Haskell2010
 
@@ -88,6 +94,8 @@ test-suite portcullis-test
       QuickCheck ==2.14.2
     , base >=4.7 && <5
     , containers >=0.6.5.1
+    , directory >=1.3.6.0
+    , filepath ==1.4.2.1
     , hspec ==2.7.10
     , portcullis
   default-language: Haskell2010

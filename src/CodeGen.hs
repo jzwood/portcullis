@@ -138,11 +138,11 @@ showZeroArityFunctions funcs
  <&> (\name -> unwords ["export", "const", name, "=", '$' : name ++ "()" ])
 
 showTopology :: Map Name Queue -> [Pipe] -> String
-showTopology _ [] = "export function exportGraph()" ++ (curly . indent) "return [];"
+showTopology _ [] = "export const pipes = [];"
 showTopology queueMap pipes
   =  pipes
  <&> showPipe queueMap
-  &  ("export const topology = " ++) . ("[\n" ++) . (++ "\n]") . indent . intercalate ",\n"
+  &  ("export const pipes = " ++) . ("[\n" ++) . (++ "\n]") . indent . intercalate ",\n"
 
 showPipe :: Map Name Queue -> Pipe -> String
 showPipe queueMap Pipe { funcName, inQueueNames, outQueueName } =

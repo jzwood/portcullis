@@ -23,6 +23,8 @@ description: A minimal programming language
 dependencies:
   - base >= 4.7 && < 5
   - containers >= 0.6.5.1
+  - directory >= 1.3.6.0
+  - filepath == 1.4.2.1
   - hspec == 2.7.10
   - QuickCheck == 2.14.2
 
