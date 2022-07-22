@@ -1,0 +1,28 @@
+
+_map -> -> a b -> a -> [a] [b]
+_map f x xs = +> (f x) (map f xs)
+
+map -> -> a b -> [a] [b]
+map f xs =
+  <+ xs b [] (_map f)
+
+range -> Num -> Num [Num]
+range n0 n1 =
+  ? > n0 n1 Num []
+  +> n0 (range + n0 1 n1)
+
+_fizzbuzz -> Num Num
+_fizzbuzz n =
+  ? == 0 % n 15
+    - 0 3
+  ? == 0 % n 5
+    - 0 2
+  ? == 0 % n 3
+    - 0 1
+  n
+
+fizzbuzz -> Num [Num]
+fizzbuzz n = (map _fizzbuzz (range 1 n))
+
+fb [Num]
+fb = (fizzbuzz 20)
