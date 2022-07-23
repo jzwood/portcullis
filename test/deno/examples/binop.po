@@ -1,8 +1,0 @@
-
-add -> Num -> Num Num
-add a b = + a b
-
-
-add3 -> Num -> Num -> Num Num
-add3 a b c = + + a b c
-

@@ -1,0 +1,51 @@
+# BINARY OPERATIONS #
+
+# MATH #
+add -> Num -> Num Num
+add a b = + a b
+
+add3 -> Num -> Num -> Num Num
+add3 a b c = + + a b c
+
+calc0 -> Num Num
+calc0 num = + (- 0 (* num 9)) (/ 3 4)
+
+calc1 -> Num Num
+calc1 num = + - 0 * num 9 / 3 4
+
+choose0 -> Num Atom
+choose0 num =
+  ? > num 0
+    Cool
+  ? == num 0
+    Hmm
+    Bad
+
+choose1 -> Num Atom
+choose1 num =
+  ? <= num 0
+    Cool
+  ? < num 100
+    Hmm
+    Bad
+
+isEven -> Num Atom
+isEven num = == % num 2 0
+
+append3 -> a -> [a] [a]
+append3 x xs =
+  +> x
+  +> x
+  +> x
+  xs
+
+#
+data Bop
+  | GreaterThanOrEqual
+  | LessThan
+  | LessThanOrEqual
+  | Equal
+  | Rem
+  | Cons
+  deriving (Eq, Ord)
+#

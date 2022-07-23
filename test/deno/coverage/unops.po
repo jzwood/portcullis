@@ -1,0 +1,8 @@
+#
+data UnOp
+  = Fst
+  | Snd
+  | Head -- INTERNAL ONLY
+  | Tail  -- INTERNAL ONLY
+  deriving (Eq, Ord)
+  #
