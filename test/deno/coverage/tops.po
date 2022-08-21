@@ -1,7 +1,16 @@
+# TERNARY OPERATIONS #
 
-#
-data Top
-  = Uncons
-  | If
-  deriving (Show, Eq, Ord)
-  #
+hello -> Atom Num
+hello what =
+  ? == what World
+    42
+  ? == what Ma
+    10
+  - 0 100
+
+_sum -> Num -> [Num] Num
+_sum x xs = + x (sum xs)
+
+sum -> [Num] Num
+sum xs =
+  <+ xs 0 _sum

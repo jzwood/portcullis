@@ -1,6 +1,5 @@
 # BINARY OPERATIONS #
 
-# MATH #
 add -> Num -> Num Num
 add a b = + a b
 
@@ -38,14 +37,3 @@ append3 x xs =
   +> x
   +> x
   xs
-
-#
-data Bop
-  | GreaterThanOrEqual
-  | LessThan
-  | LessThanOrEqual
-  | Equal
-  | Rem
-  | Cons
-  deriving (Eq, Ord)
-#

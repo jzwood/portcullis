@@ -1,4 +1,4 @@
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE NamedFieldPuns, TupleSections #-}
 
 module Typecheck where
 
@@ -92,11 +92,20 @@ typeEqual (ListType te1) (ListType te2) = ListType <$> typeEqual te1 te2
 typeEqual (TupType te1 te2) (TupType te3 te4) = liftA2 TupType (typeEqual te1 te3) (typeEqual te2 te4)
 typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2
 
-typecheckExpr :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
-typecheckExpr t (Arrow tl tr)
-  = typecheck t tl Map.empty  -- compare type with sig
-  <&> resolveType tr
-typecheckExpr t1 t2 = Left $ TypeMismatch t1 t2
+-- TODO make typecheckExpr return (Map Name TypeExpr) b/c
+typecheckExpr :: Map Name TypeExpr -> TypeExpr -> TypeExpr -> Either TypeError (Map Name TypeExpr, TypeExpr)
+typecheckExpr m t (Arrow tl tr)
+  =  typecheck t tl m  -- compare type with sig
+ <&> resolveType tr
+ <&> (m,)
+typecheckExpr m t1 t2 = Left $ TypeMismatch t1 t2
+
+resolveType :: TypeExpr -> Map Name TypeExpr -> TypeExpr
+resolveType t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
+resolveType t@(TupType t1 t2) m = TupType (resolveType t1 m) (resolveType t2 m)
+resolveType (ListType t) m = ListType (resolveType t m)
+resolveType (Arrow tl tr) m = Arrow (resolveType tl m) (resolveType tr m)
+resolveType t _ = t
 
 typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map Name TypeExpr)
 typecheck t (Unspecfied n) m =
@@ -109,13 +118,6 @@ typecheck (ListType te0) (ListType te1) m = typecheck te0 te1 m
 typecheck t1 t2 m =
   if t1 == t2 then Right m
               else Left $ TypeMismatch t1 t2
-
-resolveType :: TypeExpr -> Map Name TypeExpr -> TypeExpr
-resolveType t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
-resolveType t@(TupType t1 t2) m = TupType (resolveType t1 m) (resolveType t2 m)
-resolveType (ListType t) m = ListType (resolveType t m)
-resolveType (Arrow tl tr) m = Arrow (resolveType tl m) (resolveType tr m)
-resolveType t _ = t
 
 typeExprToList :: TypeExpr -> [TypeExpr]
 typeExprToList (Arrow t0 t1) = t0 : typeExprToList t1
@@ -158,8 +160,9 @@ typeofExpr m f@Function { signature = sig, args } e =
     maybeSignature :: String -> Maybe TypeExpr
     maybeSignature name = argToMaybeSig name args sig <|> (signature <$> Map.lookup name m)
     check :: [Expr] -> TypeExpr -> Either TypeError TypeExpr
-    check es sig = traverse (typeofExpr m f) es
-      >>= foldl' (\s t -> s >>= typecheckExpr t) (Right sig)
+    check es sig = mapM (typeofExpr m f) es
+      >>= foldl' (\ms t -> ms >>= \(m, s) -> typecheckExpr m s t) (Right (Map.empty, sig))
+      <&> snd
 
 typeofUnOp :: UnOp -> TypeExpr
 typeofUnOp Fst = Arrow (TupType (Unspecfied "a") (Unspecfied "b")) (Unspecfied "a")

@@ -1,0 +1,41 @@
+# TODO THIS SHOWS CURRENT ERROR CASES #
+
+_hof0 -> -> t Atom -> [t] [t]
+_hof0 f xs = ? (f xs) xs a []
+
+n2a -> Num Atom
+n2a n = Cat
+
+hof0 [Num]
+hof0 = (_hof0 n2a Num [])
+
+# fails compilation correctly #
+#
+good0 -> -> t Atom -> [t] [t]
+good0 f xs = (f xs)
+#
+
+iff -> Atom Atom
+iff t = t
+
+# compiles but shouldn't #
+bad1 -> -> t Atom -> [t] Atom
+bad1 f xs = ? (f xs) A B
+
+# fails compilation (correctly) but with weird error #
+#
+bad2 -> -> t Atom -> [t] Atom
+bad2 f xs = (iff (f xs) A B)
+#
+
+# fails compilation successfully #
+#
+good1 -> -> Num Atom -> [Num] Atom
+good1 xs = ? (f xs) A B
+#
+
+
+# [-> t Atom, [t], Atom] #
+
+bad3 -> -> t Atom -> [t] Atom
+bad3 f xs = ? (f xs) A B

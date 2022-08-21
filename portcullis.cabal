@@ -26,6 +26,7 @@ library
   exposed-modules:
       CodeGen
       Compile
+      Debug
       MiniParser
       Parser
       Syntax
