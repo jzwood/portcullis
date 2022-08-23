@@ -15,14 +15,15 @@ good0 -> -> t Atom -> [t] [t]
 good0 f xs = (f xs)
 #
 
-iff -> Atom Atom
-iff t = t
-
 # compiles but shouldn't #
 bad1 -> -> t Atom -> [t] Atom
 bad1 f xs = ? (f xs) A B
 
 # fails compilation (correctly) but with weird error #
+
+iff -> Atom Atom
+iff t = t
+
 #
 bad2 -> -> t Atom -> [t] Atom
 bad2 f xs = (iff (f xs) A B)

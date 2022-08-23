@@ -6,7 +6,7 @@ import Data.Function
 import Data.Functor
 import Data.List (elemIndex, foldl', drop)
 import Data.Map (Map)
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, listToMaybe, mapMaybe)
 import Data.Either (lefts)
 import Control.Applicative
 import Data.Traversable
@@ -21,6 +21,7 @@ data TypeError
   | DuplicateFunction
   | TypeMismatch { expected :: TypeExpr, actual :: TypeExpr }
   | ArityMismatch
+  | RecursiveType
   deriving (Show, Ord, Eq)
 
 data TypecheckError = FunctionError Function TypeError | PipeError Pipe TypeError | DuplicateQueueError Queue
@@ -96,9 +97,23 @@ typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te
 typecheckExpr :: Map Name TypeExpr -> TypeExpr -> TypeExpr -> Either TypeError (Map Name TypeExpr, TypeExpr)
 typecheckExpr m t (Arrow tl tr)
   =  typecheck t tl m  -- compare type with sig
- <&> resolveType tr
+ >>= \m -> case flagCycles m of
+             Nothing -> Right $ resolveType tr m
+             Just e -> Left RecursiveType
  <&> (m,)
 typecheckExpr m t1 t2 = Left $ TypeMismatch t1 t2
+
+flagCycles :: Map Name TypeExpr -> Maybe TypeError
+flagCycles m
+  = mapM (uncurry findCycles) (Map.toList m)
+  >>= listToMaybe
+  where
+    findCycles :: Name -> TypeExpr -> Maybe TypeError
+    findCycles name (Unspecfied n) = if name == n then Just RecursiveType else Nothing
+    findCycles name (TupType t1 t2) = undefined
+    findCycles name (ListType t) = findCycles name t
+    findCycles name (Arrow tl tr) = listToMaybe $ mapMaybe (findCycles name) [tl, tr]
+    findCycles name t = Nothing
 
 resolveType :: TypeExpr -> Map Name TypeExpr -> TypeExpr
 resolveType t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
@@ -160,8 +175,8 @@ typeofExpr m f@Function { signature = sig, args } e =
     maybeSignature :: String -> Maybe TypeExpr
     maybeSignature name = argToMaybeSig name args sig <|> (signature <$> Map.lookup name m)
     check :: [Expr] -> TypeExpr -> Either TypeError TypeExpr
-    check es sig = mapM (typeofExpr m f) es
-      >>= foldl' (\ms t -> ms >>= \(m, s) -> typecheckExpr m s t) (Right (Map.empty, sig))
+    check es sig = mapM (typeofExpr m f) es -- rewrite with mapM
+      >>= foldl' (\ms t -> ms >>= \(m, s) -> typecheckExpr m t s) (Right (Map.empty, sig))
       <&> snd
 
 typeofUnOp :: UnOp -> TypeExpr
