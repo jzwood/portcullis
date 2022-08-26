@@ -39,6 +39,12 @@ data TypeExpr
   | Arrow TypeExpr TypeExpr
   deriving (Eq, Ord)
 
+applyTypeExpr :: (TypeExpr -> TypeExpr) -> TypeExpr -> TypeExpr
+applyTypeExpr f (TupType t1 t2) = TupType (f t1) (f t2)
+applyTypeExpr f (ListType t) = ListType (f t)
+applyTypeExpr f (Arrow tl tr) = Arrow (f tl) (f tr)
+applyTypeExpr _ t = t
+
 data Value
   = Number Double -- 34.23
   | Character Char -- 'b'

@@ -1,4 +1,3 @@
-
 _map -> -> a b -> a -> [a] [b]
 _map f x xs = +> (f x) (map f xs)
 

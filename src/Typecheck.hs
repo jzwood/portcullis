@@ -11,6 +11,7 @@ import Data.Either (lefts)
 import Control.Applicative
 import Data.Traversable
 import Syntax
+import Parser
 import CodeGen
 import Util
 import qualified Data.Map as Map
@@ -21,7 +22,7 @@ data TypeError
   | DuplicateFunction
   | TypeMismatch { expected :: TypeExpr, actual :: TypeExpr }
   | ArityMismatch
-  | RecursiveType
+  | RecursiveType (Map Name TypeExpr)
   deriving (Show, Ord, Eq)
 
 data TypecheckError = FunctionError Function TypeError | PipeError Pipe TypeError | DuplicateQueueError Queue
@@ -99,7 +100,7 @@ typecheckExpr m t (Arrow tl tr)
   =  typecheck t tl m  -- compare type with sig
  >>= \m -> case flagCycles m of
              Nothing -> Right $ resolveType tr m
-             Just e -> Left RecursiveType
+             Just e -> Left e
  <&> (m,)
 typecheckExpr m t1 t2 = Left $ TypeMismatch t1 t2
 
@@ -109,8 +110,8 @@ flagCycles m
   >>= listToMaybe
   where
     findCycles :: Name -> TypeExpr -> Maybe TypeError
-    findCycles name (Unspecfied n) = if name == n then Just RecursiveType else Nothing
-    findCycles name (TupType t1 t2) = undefined
+    findCycles name t@(Unspecfied n) = if name == n then Just (RecursiveType m) else Nothing
+    findCycles name (TupType t1 t2) = listToMaybe $ mapMaybe (findCycles name) [t1, t2]
     findCycles name (ListType t) = findCycles name t
     findCycles name (Arrow tl tr) = listToMaybe $ mapMaybe (findCycles name) [tl, tr]
     findCycles name t = Nothing
@@ -123,10 +124,11 @@ resolveType (Arrow tl tr) m = Arrow (resolveType tl m) (resolveType tr m)
 resolveType t _ = t
 
 typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map Name TypeExpr)
-typecheck t (Unspecfied n) m =
+typecheck t1 t2@(Unspecfied n) m =
+  if t1 == t2 then Right m else
   case Map.lookup n m of
-    Nothing -> Right $ Map.insert n t m
-    Just t' -> if t == t' then Right m else Left $ TypeMismatch t t'
+    Nothing -> Right $ Map.insert n t1 m
+    Just t' -> if t1 == t' then Right m else Left $ TypeMismatch t1 t'
 typecheck (Arrow t0 t1) (Arrow t2 t3) m = typecheck t0 t2 m >>= typecheck t1 t3
 typecheck (TupType te0 te1) (TupType te2 te3) m = typecheck te0 te2 m >>= typecheck te1 te3
 typecheck (ListType te0) (ListType te1) m = typecheck te0 te1 m
@@ -180,8 +182,8 @@ typeofExpr m f@Function { signature = sig, args } e =
       <&> snd
 
 typeofUnOp :: UnOp -> TypeExpr
-typeofUnOp Fst = Arrow (TupType (Unspecfied "a") (Unspecfied "b")) (Unspecfied "a")
-typeofUnOp Snd = Arrow (TupType (Unspecfied "a") (Unspecfied "b")) (Unspecfied "b")
+typeofUnOp Fst = alphaConversion "fst" $ Arrow (TupType (Unspecfied "a") (Unspecfied "b")) (Unspecfied "a")
+typeofUnOp Snd = alphaConversion "snd" $ Arrow (TupType (Unspecfied "a") (Unspecfied "b")) (Unspecfied "b")
 
 typeofBop :: Bop -> TypeExpr
 typeofBop bop =
@@ -190,17 +192,17 @@ typeofBop bop =
     Minus -> nnn
     Divide -> nnn
     Times -> nnn
-    Equal -> Arrow (Unspecfied "a") (Arrow (Unspecfied "b") AtomType)
+    Equal -> alphaConversion "eq" $ Arrow (Unspecfied "a") (Arrow (Unspecfied "b") AtomType)
     GreaterThan -> nnb
     GreaterThanOrEqual -> nnb
     Rem -> nnb
     LessThan -> nnb
     LessThanOrEqual -> nnb
-    Cons -> Arrow (Unspecfied "a") (Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a")))
+    Cons -> alphaConversion "cons" $ Arrow (Unspecfied "a") (Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a")))
   where
     nnn = Arrow NumType (Arrow NumType NumType)
     nnb = Arrow NumType (Arrow NumType AtomType)
 
 typeofTop :: Top -> TypeExpr
-typeofTop Uncons = Arrow (ListType (Unspecfied "a")) (Arrow (Unspecfied "b") (Arrow (Arrow (Unspecfied "a") (Arrow (ListType (Unspecfied "a")) (Unspecfied "b"))) (Unspecfied "b")))
-typeofTop If = Arrow AtomType (Arrow (Unspecfied "a") (Arrow (Unspecfied "a") (Unspecfied "a")))
+typeofTop Uncons = alphaConversion "uncons" $ Arrow (ListType (Unspecfied "a")) (Arrow (Unspecfied "b") (Arrow (Arrow (Unspecfied "a") (Arrow (ListType (Unspecfied "a")) (Unspecfied "b"))) (Unspecfied "b")))
+typeofTop If = alphaConversion "if" $ Arrow AtomType (Arrow (Unspecfied "a") (Arrow (Unspecfied "a") (Unspecfied "a")))
