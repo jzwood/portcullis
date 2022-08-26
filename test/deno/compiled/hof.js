@@ -4,12 +4,12 @@ const True = 1
 export const one1 = $one1()
 export const one2 = $one2()
 
-// signature: (x -> x)
+// signature: (id.x -> id.x)
 export function id(x) {
   return x;
 }
 
-// signature: ((b -> c) -> ((a -> b) -> (a -> c)))
+// signature: ((compose.b -> compose.c) -> ((compose.a -> compose.b) -> (compose.a -> compose.c)))
 export function compose(f) {
   return (g) => (x) => f(g(x));
 }
@@ -24,7 +24,7 @@ export function quadruple(n) {
   return compose(double)(double)(n);
 }
 
-// signature: (x -> x)
+// signature: (id2.x -> id2.x)
 export function id2(x) {
   return compose(id)(id)(x);
 }
@@ -39,12 +39,12 @@ function $one2() {
   return compose(id)(id)(one1);
 }
 
-// signature: (z -> ([z] -> [z]))
+// signature: (id3.z -> ([id3.z] -> [id3.z]))
 export function id3(x) {
   return (xs) => xs;
 }
 
-// signature: ([t] -> [t])
+// signature: ([tail.t] -> [tail.t])
 export function tail(xs) {
   return (
     /* if */ equal(xs, []) ?
@@ -53,27 +53,27 @@ export function tail(xs) {
   );
 }
 
-// signature: ((h -> h) -> (h -> h))
+// signature: ((a.h -> a.h) -> (a.h -> a.h))
 export function a(fx) {
   return (x) => fx(x);
 }
 
-// signature: (q -> q)
+// signature: (b.q -> b.q)
 export function b(w) {
   return w;
 }
 
-// signature: (p -> p)
+// signature: (c.p -> c.p)
 export function c(y) {
   return a(b)(y);
 }
 
-// signature: ([h] -> (h -> ([h] -> [h])))
+// signature: ([push.h] -> (push.h -> ([push.h] -> [push.h])))
 export function push(ys) {
   return (x) => (xs) => [x, ...concat(xs)(ys)];
 }
 
-// signature: ([a] -> ([a] -> [a]))
+// signature: ([concat.a] -> ([concat.a] -> [concat.a]))
 export function concat(xs) {
   return (ys) => (
     /* if */ equal(xs, []) ?
@@ -82,7 +82,7 @@ export function concat(xs) {
   );
 }
 
-// signature: ((x -> Atom) -> (x -> ([x] -> [x])))
+// signature: ((filter2.x -> Atom) -> (filter2.x -> ([filter2.x] -> [filter2.x])))
 export function filter2(g) {
   return (w) => (ws) => concat((
     /* if */ g(w) ?
@@ -91,7 +91,7 @@ export function filter2(g) {
   ))(filter(g)(ws));
 }
 
-// signature: ((j -> Atom) -> ([j] -> [j]))
+// signature: ((filter.j -> Atom) -> ([filter.j] -> [filter.j]))
 export function filter(f) {
   return (xs) => (
     /* if */ equal(xs, []) ?
@@ -100,7 +100,7 @@ export function filter(f) {
   );
 }
 
-// signature: (a -> (a -> Atom))
+// signature: (eq.a -> (eq.a -> Atom))
 export function eq(x) {
   return (y) => equal(x, y);
 }

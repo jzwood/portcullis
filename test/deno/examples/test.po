@@ -1,5 +1,6 @@
 # TODO THIS SHOWS CURRENT ERROR CASES #
 
+#
 _hof0 -> -> t Atom -> [t] [t]
 _hof0 f xs = ? (f xs) xs a []
 
@@ -8,6 +9,7 @@ n2a n = Cat
 
 hof0 [Num]
 hof0 = (_hof0 n2a Num [])
+#
 
 # fails compilation correctly #
 #
@@ -30,11 +32,8 @@ bad2 f xs = (iff (f xs) A B)
 #
 
 # fails compilation successfully #
-#
 good1 -> -> Num Atom -> [Num] Atom
-good1 xs = ? (f xs) A B
-#
-
+good1 f xs = ? (f xs) A B
 
 # [-> t Atom, [t], Atom] #
 

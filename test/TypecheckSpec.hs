@@ -56,7 +56,7 @@ spec = do
                  \bad0 x = x"
           bad1 = "bad1 -> Num -> Num Num\
                  \bad1 p = p"
-      errorOf bad0 `shouldBe` FunctionError (unsafeFunc bad0) (TypeMismatch {expected = NumType, actual = Unspecfied "z"})
+      errorOf bad0 `shouldBe` FunctionError (unsafeFunc bad0) (TypeMismatch {expected = NumType, actual = Unspecfied "bad0.z"})
       errorOf bad1 `shouldBe` FunctionError (unsafeFunc bad1) (TypeMismatch {expected = Arrow NumType NumType, actual = NumType})
 
     it "expect DuplicateFunction" $ do
