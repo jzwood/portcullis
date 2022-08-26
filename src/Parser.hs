@@ -16,16 +16,9 @@ import Util hiding (paren)
 parseProgram :: Parser Module
 parseProgram = parseModule <* spaces
 
-alphaConversion :: String -> TypeExpr -> TypeExpr
-alphaConversion id (Unspecfied name) = Unspecfied (id ++ "." ++ name)
-alphaConversion id (TupType t1 t2) = TupType (alphaConversion id t1) (alphaConversion id t2)
-alphaConversion id (ListType t) =  ListType (alphaConversion id t)
-alphaConversion id (Arrow tl tr) = Arrow (alphaConversion id tl) (alphaConversion id tr)
-alphaConversion id t = t
-
-alphaConversion' :: Name -> TypeExpr -> TypeExpr
-alphaConversion' fname (Unspecfied name) = Unspecfied (fname ++ "." ++ name)
-alphaConversion' fname t = applyTypeExpr (alphaConversion' fname) t
+alphaConversion :: Name -> TypeExpr -> TypeExpr
+alphaConversion fname (Unspecfied name) = Unspecfied (fname ++ "." ++ name)
+alphaConversion fname t = applyTypeExpr (alphaConversion fname) t
 
 moduleAlg :: Stmt -> Module -> Module
 moduleAlg (F func@Function { name = fname , signature }) mod@Module { functions, functionMap } =

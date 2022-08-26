@@ -22,7 +22,7 @@ data TypeError
   | DuplicateFunction
   | TypeMismatch { expected :: TypeExpr, actual :: TypeExpr }
   | ArityMismatch
-  | RecursiveType (Map Name TypeExpr)
+  | RecursiveType [(Name, TypeExpr)]
   deriving (Show, Ord, Eq)
 
 data TypecheckError = FunctionError Function TypeError | PipeError Pipe TypeError | DuplicateQueueError Queue
@@ -62,7 +62,6 @@ toPipeError :: Pipe -> TypecheckError -> TypecheckError
 toPipeError pipe (FunctionError _ te) = PipeError pipe te
 toPipeError _ tce = tce
 
--- TODO Refactor once more tests are written
 typecheckPipe :: Map Name Queue -> Map Name Function -> Pipe -> Either TypecheckError TypeExpr
 typecheckPipe queueMap funcMap pipe@Pipe { funcName, inQueueNames, outQueueName }
   =   pipeFunction
@@ -72,10 +71,7 @@ typecheckPipe queueMap funcMap pipe@Pipe { funcName, inQueueNames, outQueueName 
     queues :: Either TypecheckError [Queue]
     queues = traverse (lookup' queueMap (PipeError pipe . QueueNotFound)) (inQueueNames ++ [outQueueName])
     expectedTypeExpr :: Either TypecheckError TypeExpr
-    expectedTypeExpr =
-      (fmap . fmap) queueSig queues
-      >>= mapLeft (PipeError pipe) . typeExprFromList
-      -- queues >>= mapLeft (PipeError pipe) . typeExprFromList . fmap queueSig
+    expectedTypeExpr = queues >>= mapLeft (PipeError pipe) . typeExprFromList . fmap queueSig
     pipeFunction :: Either TypecheckError Function
     pipeFunction = Function funcName <$> expectedTypeExpr <*> pure inQueueNames <*> pure (Call funcName (Ident <$> inQueueNames))
 
@@ -94,23 +90,20 @@ typeEqual (ListType te1) (ListType te2) = ListType <$> typeEqual te1 te2
 typeEqual (TupType te1 te2) (TupType te3 te4) = liftA2 TupType (typeEqual te1 te3) (typeEqual te2 te4)
 typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2
 
--- TODO make typecheckExpr return (Map Name TypeExpr) b/c
 typecheckExpr :: Map Name TypeExpr -> TypeExpr -> TypeExpr -> Either TypeError (Map Name TypeExpr, TypeExpr)
 typecheckExpr m t (Arrow tl tr)
-  =  typecheck t tl m  -- compare type with sig
- >>= \m -> case flagCycles m of
-             Nothing -> Right $ resolveType tr m
+  =  typecheck t tl m
+ >>= \m -> case listToMaybe (flagCycles m) of
+             Nothing -> Right (m, resolveType tr m)
              Just e -> Left e
- <&> (m,)
 typecheckExpr m t1 t2 = Left $ TypeMismatch t1 t2
 
-flagCycles :: Map Name TypeExpr -> Maybe TypeError
+flagCycles :: Map Name TypeExpr -> [TypeError]
 flagCycles m
-  = mapM (uncurry findCycles) (Map.toList m)
-  >>= listToMaybe
+  = mapMaybe (uncurry findCycles) (Map.toList m)
   where
     findCycles :: Name -> TypeExpr -> Maybe TypeError
-    findCycles name t@(Unspecfied n) = if name == n then Just (RecursiveType m) else Nothing
+    findCycles name t@(Unspecfied n) = if name == n then Just (RecursiveType $ Map.toList m) else Nothing
     findCycles name (TupType t1 t2) = listToMaybe $ mapMaybe (findCycles name) [t1, t2]
     findCycles name (ListType t) = findCycles name t
     findCycles name (Arrow tl tr) = listToMaybe $ mapMaybe (findCycles name) [tl, tr]
