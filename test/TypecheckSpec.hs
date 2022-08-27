@@ -71,6 +71,11 @@ spec = do
                  \good a b c d e f = a"
       errorOf bad0 `shouldBe` FunctionError (unsafeFunc bad0) ArityMismatch
 
+    it "expect RecursiveType" $ do
+      let bad0 = "bad0 -> -> t Atom -> [t] Num \
+                 \bad0 f xs = ? (f xs) 1 2"
+      errorOf bad0 `shouldBe` FunctionError (unsafeFunc bad0) (RecursiveType [("bad0.t",ListType (Unspecfied "bad0.t"))])
+
   describe "Typecheck Pipe TypeErrors" $ do
     it "expect NotFunction pipe errors" $ do
       let bad0 = "&a1 4 Num \

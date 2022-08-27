@@ -1,4 +1,4 @@
-{-# LANGUAGE NamedFieldPuns, TupleSections #-}
+{-# LANGUAGE NamedFieldPuns #-}
 
 module Typecheck where
 
@@ -82,7 +82,7 @@ typecheckFunc funcMap func@Function { body, args, signature } = do
                       & drop (length args)
                       & typeExprFromList
   typeEqual expectedTypeOfBody typeofBody
-  &   mapLeft (FunctionError func)
+  & mapLeft (FunctionError func)
 
 typeEqual :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
 typeEqual te1@(Unspecfied a) (Unspecfied b) = Right te1
@@ -93,28 +93,21 @@ typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te
 typecheckExpr :: Map Name TypeExpr -> TypeExpr -> TypeExpr -> Either TypeError (Map Name TypeExpr, TypeExpr)
 typecheckExpr m t (Arrow tl tr)
   =  typecheck t tl m
- >>= \m -> case listToMaybe (flagCycles m) of
-             Nothing -> Right (m, resolveType tr m)
-             Just e -> Left e
+ >>= \m -> if Map.null $ Map.filterWithKey existCycles m
+           then Right (m, resolveType m tr)
+           else Left (RecursiveType (Map.toList m))
 typecheckExpr m t1 t2 = Left $ TypeMismatch t1 t2
 
-flagCycles :: Map Name TypeExpr -> [TypeError]
-flagCycles m
-  = mapMaybe (uncurry findCycles) (Map.toList m)
-  where
-    findCycles :: Name -> TypeExpr -> Maybe TypeError
-    findCycles name t@(Unspecfied n) = if name == n then Just (RecursiveType $ Map.toList m) else Nothing
-    findCycles name (TupType t1 t2) = listToMaybe $ mapMaybe (findCycles name) [t1, t2]
-    findCycles name (ListType t) = findCycles name t
-    findCycles name (Arrow tl tr) = listToMaybe $ mapMaybe (findCycles name) [tl, tr]
-    findCycles name t = Nothing
+existCycles :: Name -> TypeExpr -> Bool
+existCycles name t@(Unspecfied n) = name == n
+existCycles name (TupType t1 t2) = any (existCycles name) [t1, t2]
+existCycles name (ListType t) = existCycles name t
+existCycles name (Arrow tl tr) = any (existCycles name) [tl, tr]
+existCycles name t = False
 
-resolveType :: TypeExpr -> Map Name TypeExpr -> TypeExpr
-resolveType t@(Unspecfied n) m = fromMaybe t (Map.lookup n m)
-resolveType t@(TupType t1 t2) m = TupType (resolveType t1 m) (resolveType t2 m)
-resolveType (ListType t) m = ListType (resolveType t m)
-resolveType (Arrow tl tr) m = Arrow (resolveType tl m) (resolveType tr m)
-resolveType t _ = t
+resolveType :: Map Name TypeExpr -> TypeExpr -> TypeExpr
+resolveType m t@(Unspecfied n) = fromMaybe t (Map.lookup n m)
+resolveType m t = applyTypeExpr (resolveType m) t
 
 typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map Name TypeExpr)
 typecheck t1 t2@(Unspecfied n) m =
