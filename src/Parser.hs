@@ -17,7 +17,7 @@ parseProgram :: Parser Module
 parseProgram = parseModule <* spaces
 
 alphaConversion :: Name -> TypeExpr -> TypeExpr
-alphaConversion fname (Unspecfied name) = Unspecfied (fname ++ "." ++ name)
+alphaConversion fname (Unspecified name) = Unspecified (fname ++ "." ++ name)
 alphaConversion fname t = applyTypeExpr (alphaConversion fname) t
 
 moduleAlg :: Stmt -> Module -> Module
@@ -74,7 +74,7 @@ parseTypeExpr
    $  NumType <$ word (show NumType)
   <|> CharType <$ word (show CharType)
   <|> AtomType <$ word (show AtomType)
-  <|> Unspecfied <$> camel
+  <|> Unspecified <$> camel
   <|> ListType <$> brack (trim parseTypeExpr)
   <|> parseTupType
   <|> parseArrow

@@ -118,13 +118,6 @@ qsort -> [Num] [Num]
 qsort xs =
   <+ xs xs qsortp
 
-# BAD #
-hofBad -> -> a Atom -> [a] [a]
-hofBad f xs =
-  ? (f xs) xs
-    xs
-
-
 # end comment #
 
 

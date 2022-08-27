@@ -30,19 +30,19 @@ spec = do
           te = Right AtomType
       typecheckExpr t ts `shouldBe` te
       let t = Arrow NumType CharType
-          ts = Arrow (Arrow NumType (Unspecfied "a")) AtomType
+          ts = Arrow (Arrow NumType (Unspecified "a")) AtomType
           te = Right AtomType
       typecheckExpr t ts `shouldBe` te
       let t = Arrow AtomType NumType
-          ts = Arrow (Arrow (Unspecfied "a") (Unspecfied "b")) (Arrow (Unspecfied "a") CharType)
+          ts = Arrow (Arrow (Unspecified "a") (Unspecified "b")) (Arrow (Unspecified "a") CharType)
           te = Right $ Arrow AtomType CharType
       typecheckExpr t ts `shouldBe` te
       let t = Arrow AtomType CharType
-          ts = Arrow (Arrow (Unspecfied "a") (Unspecfied "b")) (Arrow (Unspecfied "a") (Unspecfied "b"))
+          ts = Arrow (Arrow (Unspecified "a") (Unspecified "b")) (Arrow (Unspecified "a") (Unspecified "b"))
           te = Right $ Arrow AtomType CharType
       typecheckExpr t ts `shouldBe` te  -- same as previous but but with unspecified types named differently
       let t = Arrow AtomType CharType
-          ts = Arrow (Arrow (Unspecfied "x") (Unspecfied "z")) (Arrow (Unspecfied "x") (Unspecfied "z"))
+          ts = Arrow (Arrow (Unspecified "x") (Unspecified "z")) (Arrow (Unspecified "x") (Unspecified "z"))
           te = Right $ Arrow AtomType CharType
       typecheckExpr t ts `shouldBe` te
 
@@ -65,13 +65,13 @@ spec = do
 
     it "typecheck identity" $ do
       let func = Function { name = "id"
-                          , signature = Arrow (Unspecfied "x") (Unspecfied "x")
+                          , signature = Arrow (Unspecified "x") (Unspecified "x")
                           , args = ["x"]
                           , body = Ident "x"
                           }
           m = Map.singleton "id" func
-      typeofExpr m func (body func) `shouldBe` Right (Unspecfied "x")
-      typecheckFunc m func `shouldBe` Right (Unspecfied "x")
+      typeofExpr m func (body func) `shouldBe` Right (Unspecified "x")
+      typecheckFunc m func `shouldBe` Right (Unspecified "x")
 
     it "typecheck empty" $ do
       let func = Function { name = "empty"
@@ -102,20 +102,20 @@ spec = do
 
     it "typecheck id" $ do
       let id1 = Function { name = "id1"
-                         , signature = Arrow (Unspecfied "z") (Unspecfied "z")
+                         , signature = Arrow (Unspecified "z") (Unspecified "z")
                          , args = ["val"]
                          , body = Ident "val"
                          }
           id2 = Function { name = "id2"
-                         , signature = Arrow (Unspecfied "p") (Unspecfied "p")
+                         , signature = Arrow (Unspecified "p") (Unspecified "p")
                          , args = ["x"]
                          , body = Call "id1" [Ident "x"]
                          }
           m = Map.fromList [("id1", id1), ("id2", id2)]
-      typeofExpr m id1 (body id1) `shouldBe` Right (Unspecfied "z")
-      typecheckFunc m id1 `shouldBe` Right (Unspecfied "z")
-      typeofExpr m id2 (body id2) `shouldBe` Right (Unspecfied "p")
-      typecheckFunc m id2 `shouldBe` Right (Unspecfied "p")
+      typeofExpr m id1 (body id1) `shouldBe` Right (Unspecified "z")
+      typecheckFunc m id1 `shouldBe` Right (Unspecified "z")
+      typeofExpr m id2 (body id2) `shouldBe` Right (Unspecified "p")
+      typecheckFunc m id2 `shouldBe` Right (Unspecified "p")
 
     it "typecheck avg" $ do
       let func = Function { name = "avg"
@@ -153,17 +153,17 @@ spec = do
     -- TODO: redo to not include fallback param
     it "typecheck map" $ do
       let map' = Function { name = "map"
-                          , signature = Arrow (Arrow (Unspecfied "x") (Unspecfied "y")) (Arrow (Unspecfied "x") (Unspecfied "y"))
+                          , signature = Arrow (Arrow (Unspecified "x") (Unspecified "y")) (Arrow (Unspecified "x") (Unspecified "y"))
                           , args = ["f", "a"]
                           , body = Call "f" [Ident "a"]
                           }
           m = Map.fromList [("map", map')]
-      typeofExpr m map' (body map') `shouldBe` Right (Unspecfied "y")
-      typecheckFunc m map' `shouldBe` Right (Unspecfied "y")
+      typeofExpr m map' (body map') `shouldBe` Right (Unspecified "y")
+      typecheckFunc m map' `shouldBe` Right (Unspecified "y")
 
     it "typecheck compose" $ do
       let id1 = Function { name = "id1"
-                         , signature = Arrow (Unspecfied "z") (Unspecfied "z")
+                         , signature = Arrow (Unspecified "z") (Unspecified "z")
                          , args = ["val"]
                          , body = Ident "val"
                          }
@@ -173,12 +173,12 @@ spec = do
                           , body = BinOp Plus (Val $ Number 1) (Ident "n")
                           }
           compose = Function { name = "compose"
-                             , signature = Arrow (Arrow (Unspecfied "b") (Unspecfied "c")) (Arrow (Arrow (Unspecfied "a") (Unspecfied "b")) (Arrow (Unspecfied "a") (Unspecfied "c")))
+                             , signature = Arrow (Arrow (Unspecified "b") (Unspecified "c")) (Arrow (Arrow (Unspecified "a") (Unspecified "b")) (Arrow (Unspecified "a") (Unspecified "c")))
                              , args = ["f", "g", "x"]
                              , body = Call "f" [Call "g" [Ident "x"]]
                              }
           id2 = Function { name = "id2"
-                         , signature = Arrow (Unspecfied "y") (Unspecfied "y")
+                         , signature = Arrow (Unspecified "y") (Unspecified "y")
                          , args = ["z"]
                          , body = Call "compose" [Ident "id1", Ident "id1", Ident "z"]
                          }
@@ -188,10 +188,10 @@ spec = do
                           , body = Call "compose" [ Ident "add1", Ident "add1", Ident "n"]
                           }
           m = Map.fromList [("id1", id1), ("id1", id1), ("compose", compose), ("add1", add1)]
-      typeofExpr m compose (body compose) `shouldBe` Right (Unspecfied "c")
-      typecheckFunc m compose `shouldBe` Right (Unspecfied "c")
-      typeofExpr m id2 (body id2) `shouldBe` Right (Unspecfied "y")
-      typecheckFunc m compose `shouldBe` Right (Unspecfied "c")
+      typeofExpr m compose (body compose) `shouldBe` Right (Unspecified "c")
+      typecheckFunc m compose `shouldBe` Right (Unspecified "c")
+      typeofExpr m id2 (body id2) `shouldBe` Right (Unspecified "y")
+      typecheckFunc m compose `shouldBe` Right (Unspecified "c")
       typeofExpr m add2 (body add2) `shouldBe` Right NumType
       typecheckFunc m add2 `shouldBe` Right NumType
 
@@ -207,12 +207,12 @@ spec = do
 
     it "typecheck guards 2" $ do
       let hof1 = Function { name = "hof1"
-                          , signature = Arrow (Arrow (Unspecfied "a") AtomType) (Arrow (ListType NumType) (ListType NumType))
+                          , signature = Arrow (Arrow (Unspecified "a") AtomType) (Arrow (ListType NumType) (ListType NumType))
                           , args = ["f", "xs"]
                           , body = TernOp If (Call "f" [Ident "xs"]) (Ident "xs") (Ident "xs")
                           }
           hof2 = Function { name = "hof2"
-                          , signature = Arrow (Arrow (Unspecfied "a") AtomType) (Arrow (ListType NumType) (ListType NumType))
+                          , signature = Arrow (Arrow (Unspecified "a") AtomType) (Arrow (ListType NumType) (ListType NumType))
                           , args = ["f", "xs"]
                           , body = Call "f" [Ident "xs"]
                           }

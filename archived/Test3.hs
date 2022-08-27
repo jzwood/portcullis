@@ -9,7 +9,7 @@ import qualified Data.Map as Map
 
 
 --typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map Name TypeExpr)
-res = typecheck (Arrow (Unspecfied "a") (Unspecfied "a")) (Arrow (Unspecfied "b") (Unspecfied "b")) Map.empty
+res = typecheck (Arrow (Unspecified "a") (Unspecified "a")) (Arrow (Unspecified "b") (Unspecified "b")) Map.empty
 
 
 
@@ -17,7 +17,7 @@ res = typecheck (Arrow (Unspecfied "a") (Unspecfied "a")) (Arrow (Unspecfied "b"
 --id2 x xs = xs
 
 id2 = Function { name = "id2"
-               , signature = Arrow (Unspecfied "w") (Arrow (ListType (Unspecfied "w")) (ListType (Unspecfied "w")))
+               , signature = Arrow (Unspecified "w") (Arrow (ListType (Unspecified "w")) (ListType (Unspecified "w")))
                , args = ["q", "qs"]
                , body = Ident "qs"
                }
@@ -26,7 +26,7 @@ id2 = Function { name = "id2"
 -- tail xs =
 -- <+ xs xs id2
 tail2 = Function { name = "tail2"
-                 , signature = Arrow (ListType (Unspecfied "t")) (ListType (Unspecfied "t"))
+                 , signature = Arrow (ListType (Unspecified "t")) (ListType (Unspecified "t"))
                  , args = ["ts"]
                  , body = TernOp Uncons (Ident "ts") (Ident "ts") (Ident "id2")
                  }
@@ -43,10 +43,10 @@ shouldBeT = typeofExpr m tail2 (body tail2)
 --t2 = typeofExpr m tail2 (Ident "ts")
 --t3 = typeofExpr m tail2 (Ident "id2")
 
-t3 = Arrow (Unspecfied "w") (Arrow (ListType (Unspecfied "w")) (ListType (Unspecfied "w")))
+t3 = Arrow (Unspecified "w") (Arrow (ListType (Unspecified "w")) (ListType (Unspecified "w")))
 
-tc = typecheckExpr (ListType (Unspecfied "t")) (typeofTop Uncons)
-  >>= typecheckExpr (ListType (Unspecfied "t"))
+tc = typecheckExpr (ListType (Unspecified "t")) (typeofTop Uncons)
+  >>= typecheckExpr (ListType (Unspecified "t"))
 
 --tc2 = t3 >>= typecheckExpr tc
 
@@ -56,7 +56,7 @@ tc = typecheckExpr (ListType (Unspecfied "t")) (typeofTop Uncons)
 -- map -> -> t g -> t g
 -- map f a = (f a)
 ma = Function { name = "ma"
-              , signature = Arrow (Arrow (Unspecfied "t") (Unspecfied "g")) (Arrow (Unspecfied "t") (Unspecfied "g"))
+              , signature = Arrow (Arrow (Unspecified "t") (Unspecified "g")) (Arrow (Unspecified "t") (Unspecified "g"))
               , args = ["f", "h"]
               , body = Call "f" [Ident "h"]
               }
@@ -65,7 +65,7 @@ ma = Function { name = "ma"
 -- mplus -> -> x y -> x y
 -- mplus f p = (map f p)
 ma2 = Function { name = "ma2"
-               , signature = Arrow (Arrow (Unspecfied "x") (Unspecfied "y")) (Arrow (Unspecfied "x") (Unspecfied "y"))
+               , signature = Arrow (Arrow (Unspecified "x") (Unspecified "y")) (Arrow (Unspecified "x") (Unspecified "y"))
                , args = ["b", "n"]
                , body = Call "ma" [Ident "b", Ident "n"]
                }

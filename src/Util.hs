@@ -109,3 +109,11 @@ lookup' m f k =
   case Map.lookup k m of
     Nothing -> Left $ f k
     Just v -> Right v
+
+-- |
+-- >>> extractExt "foo.bar"
+-- "bar"
+-- >>> extractExt "foo"
+-- "foo"
+extractExt :: String -> String
+extractExt = reverse . takeWhile (/= '.') . reverse

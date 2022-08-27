@@ -41,7 +41,7 @@ instance Show TypeExpr where
   show NumType = "Num"
   show CharType = "Char"
   show AtomType = "Atom"
-  show (Unspecfied t) = t
+  show (Unspecified t) = extractExt t
   show (ListType t)
     = show t
     & bracket
@@ -55,7 +55,7 @@ instance Show Value where
   show (Number n) = show n
   show (Character c) = ['\'', c, '\'']
   show (Atom n) = n
-  show (List (Unspecfied "") xs) = show xs -- so uncons displays nicely
+  show (List (Unspecified "") xs) = show xs -- so uncons displays nicely
   show (List t xs) = unwords ["/*", show $ ListType t, "*/", show xs]
   show (Tuple e1 e2)
     =  show <$> [e1, e2]
@@ -79,7 +79,7 @@ instance Show Expr where
     , "/* else */ " ++ show e2
     ]
   show (TernOp Uncons xs b fb) =
-    show $ TernOp If (BinOp Equal xs (Val $ List (Unspecfied "") [])) b (Call (show fb) [UnOp Head xs, UnOp Tail xs])
+    show $ TernOp If (BinOp Equal xs (Val $ List (Unspecified "") [])) b (Call (show fb) [UnOp Head xs, UnOp Tail xs])
 
 instance Show UnOp where
   show Fst = "[0]"

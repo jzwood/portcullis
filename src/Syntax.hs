@@ -33,7 +33,7 @@ data TypeExpr
   = NumType
   | CharType
   | AtomType
-  | Unspecfied Name
+  | Unspecified Name
   | TupType TypeExpr TypeExpr
   | ListType TypeExpr
   | Arrow TypeExpr TypeExpr

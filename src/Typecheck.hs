@@ -85,7 +85,7 @@ typecheckFunc funcMap func@Function { body, args, signature } = do
   & mapLeft (FunctionError func)
 
 typeEqual :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
-typeEqual te1@(Unspecfied a) (Unspecfied b) = Right te1
+typeEqual te1@(Unspecified a) (Unspecified b) = Right te1
 typeEqual (ListType te1) (ListType te2) = ListType <$> typeEqual te1 te2
 typeEqual (TupType te1 te2) (TupType te3 te4) = liftA2 TupType (typeEqual te1 te3) (typeEqual te2 te4)
 typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2
@@ -99,18 +99,18 @@ typecheckExpr m t (Arrow tl tr)
 typecheckExpr m t1 t2 = Left $ TypeMismatch t1 t2
 
 existCycles :: Name -> TypeExpr -> Bool
-existCycles name t@(Unspecfied n) = name == n
+existCycles name t@(Unspecified n) = name == n
 existCycles name (TupType t1 t2) = any (existCycles name) [t1, t2]
 existCycles name (ListType t) = existCycles name t
 existCycles name (Arrow tl tr) = any (existCycles name) [tl, tr]
 existCycles name t = False
 
 resolveType :: Map Name TypeExpr -> TypeExpr -> TypeExpr
-resolveType m t@(Unspecfied n) = fromMaybe t (Map.lookup n m)
+resolveType m t@(Unspecified n) = fromMaybe t (Map.lookup n m)
 resolveType m t = applyTypeExpr (resolveType m) t
 
 typecheck :: TypeExpr -> TypeExpr -> Map Name TypeExpr -> Either TypeError (Map Name TypeExpr)
-typecheck t1 t2@(Unspecfied n) m =
+typecheck t1 t2@(Unspecified n) m =
   if t1 == t2 then Right m else
   case Map.lookup n m of
     Nothing -> Right $ Map.insert n t1 m
@@ -168,8 +168,8 @@ typeofExpr m f@Function { signature = sig, args } e =
       <&> snd
 
 typeofUnOp :: UnOp -> TypeExpr
-typeofUnOp Fst = alphaConversion "fst" $ Arrow (TupType (Unspecfied "a") (Unspecfied "b")) (Unspecfied "a")
-typeofUnOp Snd = alphaConversion "snd" $ Arrow (TupType (Unspecfied "a") (Unspecfied "b")) (Unspecfied "b")
+typeofUnOp Fst = alphaConversion "fst" $ Arrow (TupType (Unspecified "a") (Unspecified "b")) (Unspecified "a")
+typeofUnOp Snd = alphaConversion "snd" $ Arrow (TupType (Unspecified "a") (Unspecified "b")) (Unspecified "b")
 
 typeofBop :: Bop -> TypeExpr
 typeofBop bop =
@@ -178,17 +178,17 @@ typeofBop bop =
     Minus -> nnn
     Divide -> nnn
     Times -> nnn
-    Equal -> alphaConversion "eq" $ Arrow (Unspecfied "a") (Arrow (Unspecfied "b") AtomType)
+    Equal -> alphaConversion "eq" $ Arrow (Unspecified "a") (Arrow (Unspecified "b") AtomType)
     GreaterThan -> nnb
     GreaterThanOrEqual -> nnb
     Rem -> nnb
     LessThan -> nnb
     LessThanOrEqual -> nnb
-    Cons -> alphaConversion "cons" $ Arrow (Unspecfied "a") (Arrow (ListType (Unspecfied "a")) (ListType (Unspecfied "a")))
+    Cons -> alphaConversion "cons" $ Arrow (Unspecified "a") (Arrow (ListType (Unspecified "a")) (ListType (Unspecified "a")))
   where
     nnn = Arrow NumType (Arrow NumType NumType)
     nnb = Arrow NumType (Arrow NumType AtomType)
 
 typeofTop :: Top -> TypeExpr
-typeofTop Uncons = alphaConversion "uncons" $ Arrow (ListType (Unspecfied "a")) (Arrow (Unspecfied "b") (Arrow (Arrow (Unspecfied "a") (Arrow (ListType (Unspecfied "a")) (Unspecfied "b"))) (Unspecfied "b")))
-typeofTop If = alphaConversion "if" $ Arrow AtomType (Arrow (Unspecfied "a") (Arrow (Unspecfied "a") (Unspecfied "a")))
+typeofTop Uncons = alphaConversion "uncons" $ Arrow (ListType (Unspecified "a")) (Arrow (Unspecified "b") (Arrow (Arrow (Unspecified "a") (Arrow (ListType (Unspecified "a")) (Unspecified "b"))) (Unspecified "b")))
+typeofTop If = alphaConversion "if" $ Arrow AtomType (Arrow (Unspecified "a") (Arrow (Unspecified "a") (Unspecified "a")))

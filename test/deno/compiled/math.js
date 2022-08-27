@@ -218,15 +218,6 @@ export function qsort(xs) {
   );
 }
 
-// signature: ((a -> Atom) -> ([a] -> [a]))
-export function hofBad(f) {
-  return (xs) => (
-    /* if */ f(xs) ?
-    /* then */ xs :
-    /* else */ xs
-  );
-}
-
 export const pipes = [];
 
 // INTERNAL
