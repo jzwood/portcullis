@@ -11,11 +11,11 @@
   <script type="module">
     import { visualize } from './visualizer.js'
     const main = document.getElementById('main')
-    const _add = () => {}
-    const _sub = () => {}
+    const add = () => {}
+    const sub = () => {}
     const pipes = [
-      [_add, [["counter", 1], ["add", 100]], "counter"],
-      [_sub, [["counter", 1], ["sub", 100]], "counter"]
+      [add, [["counter", 1], ["add", 100]], "counter"],
+      [sub, [["counter", 1], ["sub", 100]], "counter"]
     ]
 
     visualize(main, pipes)
