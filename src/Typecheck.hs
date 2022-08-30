@@ -96,7 +96,7 @@ typecheckExpr m t (Arrow tl tr)
  >>= \m -> if Map.null $ Map.filterWithKey existCycles m
            then Right (m, resolveType m tr)
            else Left (RecursiveType (Map.toList m))
-typecheckExpr m t1 t2 = Left $ TypeMismatch t1 t2
+typecheckExpr m t1 t2 = Left ArityMismatch
 
 existCycles :: Name -> TypeExpr -> Bool
 existCycles name t@(Unspecified n) = name == n
