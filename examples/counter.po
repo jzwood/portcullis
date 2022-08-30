@@ -1,12 +1,12 @@
-add -> Num -> Num Num
-add a b = + a b
+_add -> Num -> Num Num
+_add a b = + a b
 
-sub -> Num -> Num Num
-sub a b = - a b
+_sub -> Num -> Num Num
+_sub a b = - a b
 
 &add 100 Num
 &sub 100 Num
 &counter 1 Num
 
-| add [&counter &add] &counter  # pipe #
-| sub [&counter &sub] &counter  # pipe #
+| _add [&counter &add] &counter  # pipe #
+| _sub [&counter &sub] &counter  # pipe #
