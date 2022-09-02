@@ -11,11 +11,11 @@ import Util
 
 type Name = String
 
-data Module = Module { functions :: [Function], functionMap :: Map Name Function, comments :: [Comment], queues :: [Queue], queueMap :: Map Name Queue, pipes :: [Pipe] }
+data Module = Module { functions :: [Function], functionMap :: Map Name Function, comments :: [Comment], addresses :: [Address], addressMap :: Map Name Address, pipes :: [Pipe] }
 
-data Queue = Queue { queueName :: Name, buffer :: Integer, queueSig :: TypeExpr }
+data Address = Address { addressName :: Name, buffer :: Integer, addressSig :: TypeExpr }
   deriving (Eq, Ord)
-data Pipe = Pipe { funcName :: Name, inQueueNames :: [Name], outQueueName :: Name }
+data Pipe = Pipe { funcName :: Name, inAddressNames :: [Name], outAddressName :: Name }
   deriving (Eq, Ord, Show)
 newtype Comment = Comment String
   deriving (Eq, Ord)
@@ -27,7 +27,7 @@ data Function = Function
   , body :: Expr
   } deriving (Eq, Ord)
 
-data Stmt = F Function | Q Queue | P Pipe | C Comment deriving (Eq)
+data Stmt = F Function | A Address | P Pipe | C Comment deriving (Eq)
 
 data TypeExpr
   = NumType

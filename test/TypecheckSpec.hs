@@ -40,8 +40,8 @@ unsafeFunc program = head . functions $ unsafeCompile program
 unsafePipe :: String -> Pipe
 unsafePipe program = head . pipes $ unsafeCompile program
 
-unsafeQueue :: String -> Queue
-unsafeQueue program = head . queues $ unsafeCompile program
+unsafeAddress :: String -> Address
+unsafeAddress program = head . addresses $ unsafeCompile program
 
 spec :: Spec
 spec = do
@@ -88,14 +88,14 @@ spec = do
       errorOf bad0 `shouldBe` PipeError (unsafePipe bad0) (NotFunction "sum")
       compile good `shouldSatisfy` isRight
 
-    it "expect DuplicateQueue pipe errors" $ do
+    it "expect DuplicateAddress pipe errors" $ do
       let bad0 = "&a1 4 Num \
                  \&a1 2 Char"
-      errorOf bad0 `shouldBe` DuplicateQueueError (unsafeQueue bad0)
+      errorOf bad0 `shouldBe` DuplicateAddressError (unsafeAddress bad0)
 
-    it "expect QueueNotFound pipe errors" $ do
+    it "expect AddressNotFound pipe errors" $ do
       let good0 = "id -> z z \n\
                   \id z = z"
           bad0 = unlines [good0, "| id [&a] &b"]
       compile good0 `shouldSatisfy` isRight
-      errorOf bad0 `shouldBe` PipeError (unsafePipe bad0) (QueueNotFound "a")
+      errorOf bad0 `shouldBe` PipeError (unsafePipe bad0) (AddressNotFound "&a")

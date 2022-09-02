@@ -6,8 +6,8 @@ add1 n = + n 1
 |> add1
 
 <!--data Stack = Stack Name Buffer TypeExpr-->
-data Queue = Queue Name Buffer TypeExpr
-data Pipe = Pipe Func [Queue] Queue
+data Address = Address Name Buffer TypeExpr
+data Pipe = Pipe Func [Address] Address
 
 &num1 4 Num
 &num2 4 Num
@@ -20,8 +20,8 @@ export function main() {
     const num1 = new BroadcastChannel('num1');
     const num2 = new BroadcastChannel('num2');
     const result = new BroadcastChannel('result');
-    const num1Queue = [];
-    const num2Queue = [];
+    const num1Address = [];
+    const num2Address = [];
     const num1Buffer = 3;
     const num2Buffer = 3;
     num1.onmessage = (data) => {
@@ -49,17 +49,17 @@ function apply(fxn, [head, ...tail]) {
   return apply(fxn(head), tail)
 }
 
-function(fxn, inQueueNames, outQueueName) {
-  const queueMap = inQueueNames.reduce((acc, queueName) => ({...acc, [queueName]: {queue: new BroadcastChannel(queueName), buffer: []}), {})
-  const outQueue = new BroadcastChannel(outQueueName)
-  inQueueNames.forEach(queueName => {
-    const {queue, buffer} = queueMap[queueName]
-    queue.onmessage = (data) => {
+function(fxn, inAddressNames, outAddressName) {
+  const addressMap = inAddressNames.reduce((acc, addressName) => ({...acc, [addressName]: {address: new BroadcastChannel(addressName), buffer: []}), {})
+  const outAddress = new BroadcastChannel(outAddressName)
+  inAddressNames.forEach(addressName => {
+    const {address, buffer} = addressMap[addressName]
+    address.onmessage = (data) => {
       buffer.push(data)
       if (buffers.every(buff => buff.length > 0)) {
         const args = buffers.map(buff => buff.shift())
         const result = apply(fxn, args)
-        outQueue.postMessage(result)
+        outAddress.postMessage(result)
       }
     }
   })
@@ -68,8 +68,8 @@ function(fxn, inQueueNames, outQueueName) {
     const num1 = new BroadcastChannel('num1');
     const num2 = new BroadcastChannel('num2');
     const result = new BroadcastChannel('result');
-    const num1Queue = [];
-    const num2Queue = [];
+    const num1Address = [];
+    const num2Address = [];
     const num1Buffer = 3;
     const num2Buffer = 3;
     num1.onmessage = (data) => {

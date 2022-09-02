@@ -25,17 +25,17 @@ moduleAlg (F func@Function { name = fname , signature }) mod@Module { functions,
   mod { functions = function : functions, functionMap = Map.insert (name function) function functionMap }
     where function = func { signature = alphaConversion fname signature }
 moduleAlg (C comment) mod@Module { comments } = mod { comments = comment : comments}
-moduleAlg (Q queue@Queue { queueName }) mod@Module{ queues, queueMap } = mod { queues = queue : queues, queueMap = Map.insert queueName queue queueMap}
+moduleAlg (A address@Address { addressName }) mod@Module{ addresses, addressMap } = mod { addresses = address : addresses, addressMap = Map.insert addressName address addressMap}
 moduleAlg (P pipe) mod@Module{ pipes } = mod { pipes = pipe : pipes}
 
 stmtsToModule:: [Stmt] -> Module
-stmtsToModule = foldr moduleAlg (Module { functions = [], functionMap = Map.empty, comments = [], queues = [], queueMap = Map.empty, pipes = [] })
+stmtsToModule = foldr moduleAlg (Module { functions = [], functionMap = Map.empty, comments = [], addresses = [], addressMap = Map.empty, pipes = [] })
 
 parseModule :: Parser Module
 parseModule =  stmtsToModule <$> oneOrMore parseStmt
 
-parseQueue :: Parser Queue
-parseQueue = Queue <$> address <*> trimLeft integer <*> parseTypeExpr
+parseAddress :: Parser Address
+parseAddress = Address <$> address <*> trimLeft integer <*> parseTypeExpr
 
 parsePipe :: Parser Pipe
 parsePipe = Pipe <$> (char '|' *> trimLeft camel) <*> trim (brack . trim $ zeroOrMore (trim address)) <*> address
@@ -58,7 +58,7 @@ parseFunc =  trimLeft
 parseStmt :: Parser Stmt
 parseStmt =  trimLeft
           $  F <$> parseFunc
-         <|> Q <$> parseQueue
+         <|> A <$> parseAddress
          <|> P <$> parsePipe
          <|> C <$> parseComment
 

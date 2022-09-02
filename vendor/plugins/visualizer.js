@@ -25,28 +25,28 @@ export function visualize(elem, pipes) {
   const rand = (dim, border) => border + Math.random() * (dim - 2 * border);
   svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
 
-  const queues = dedupe(
-    pipes.flatMap(([_, inQueues, queueName]) =>
-      inQueues.map(([queue, _]) => queue).concat(queueName)
+  const addresses = dedupe(
+    pipes.flatMap(([_, inAddresses, addressName]) =>
+      inAddresses.map(([address, _]) => address).concat(addressName)
     ),
   );
   const border = 5;
-  queues.forEach((queueName) => {
-    const queueNode = document.createElementNS(svgns, "text");
-    const queueLabel = "&" + queueName;
-    const label = document.createTextNode(queueLabel);
-    queueNode.setAttribute("x", rand(width, border));
-    queueNode.setAttribute("y", rand(height, border));
-    queueNode.id = queueLabel;
-    queueNode.style.fontFamily = "Courier New";
-    queueNode.style.fontSize = "5px";
-    queueNode.appendChild(label);
-    svg.appendChild(queueNode);
+  addresses.forEach((addressName) => {
+    const addressNode = document.createElementNS(svgns, "text");
+    const addressLabel = "&" + addressName;
+    const label = document.createTextNode(addressLabel);
+    addressNode.setAttribute("x", rand(width, border));
+    addressNode.setAttribute("y", rand(height, border));
+    addressNode.id = addressLabel;
+    addressNode.style.fontFamily = "Courier New";
+    addressNode.style.fontSize = "5px";
+    addressNode.appendChild(label);
+    svg.appendChild(addressNode);
   });
-  pipes.forEach(([fxn, inQueues, outQueueName]) => {
+  pipes.forEach(([fxn, inAddresses, outAddressName]) => {
     const functionNode = document.createElementNS(svgns, "text");
     const functionLabel = "λ." + fxn.name;
-    const outQueueLabel = "&" + outQueueName;
+    const outAddressLabel = "&" + outAddressName;
     const label = document.createTextNode(functionLabel);
     functionNode.setAttribute("x", rand(width, border));
     functionNode.setAttribute("y", rand(height, border));
@@ -58,17 +58,17 @@ export function visualize(elem, pipes) {
 
     const line = document.createElementNS(svgns, "line");
     line.dataset.src = functionLabel;
-    line.dataset.target = outQueueLabel;
+    line.dataset.target = outAddressLabel;
     svg.appendChild(line);
     line.setAttribute('stroke', 'black')
     line.setAttribute('stroke-width', '0.25')
 
-    inQueues.map(([inQueueName, _]) => {
-      const inQueueLabel = '&' + inQueueName
+    inAddresses.map(([inAddressName, _]) => {
+      const inAddressLabel = '&' + inAddressName
       const line = document.createElementNS(svgns, "line");
       line.setAttribute('stroke', 'black')
       line.setAttribute('stroke-width', '0.25')
-      line.dataset.src = inQueueLabel;
+      line.dataset.src = inAddressLabel;
       line.dataset.target = functionLabel;
       svg.appendChild(line);
     });

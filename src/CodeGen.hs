@@ -14,12 +14,12 @@ import Data.Map (Map, (!))
 import qualified Data.Map as Map
 
 instance Show Module where
-  show Module { functions, comments, queueMap, pipes }
+  show Module { functions, comments, addressMap, pipes }
     = unlines $ atoms : zeroArityFuncs : (show <$> functions) ++ [topology]
       where
         atoms = unlines $ showAtoms functions
         zeroArityFuncs = unlines $ showZeroArityFunctions functions
-        topology = showTopology queueMap pipes
+        topology = showTopology addressMap pipes
 
 instance Show Function where
   show (Function name tExpr vars expr)
@@ -137,15 +137,15 @@ showZeroArityFunctions funcs
  <&> name
  <&> (\name -> unwords ["export", "const", name, "=", '$' : name ++ "()" ])
 
-showTopology :: Map Name Queue -> [Pipe] -> String
+showTopology :: Map Name Address -> [Pipe] -> String
 showTopology _ [] = "export const pipes = [];"
-showTopology queueMap pipes
+showTopology addressMap pipes
   =  pipes
- <&> showPipe queueMap
+ <&> showPipe addressMap
   &  ("export const pipes = " ++) . ("[\n" ++) . (++ "\n]") . indent . intercalate ",\n"
 
-showPipe :: Map Name Queue -> Pipe -> String
-showPipe queueMap Pipe { funcName, inQueueNames, outQueueName } =
-  showList [funcName, inQueuesNamesBuffers, show outQueueName]
+showPipe :: Map Name Address -> Pipe -> String
+showPipe addressMap Pipe { funcName, inAddressNames, outAddressName } =
+  showList [funcName, inAddressesNamesBuffers, show outAddressName]
   where
-    inQueuesNamesBuffers = showList ((\name -> showList [show name, (show . buffer) (queueMap ! name)]) <$> inQueueNames)
+    inAddressesNamesBuffers = showList ((\name -> showList [show name, (show . buffer) (addressMap ! name)]) <$> inAddressNames)
