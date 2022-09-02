@@ -4,9 +4,9 @@ add a b = + a b
 sub -> Num -> Num Num
 sub a b = - a b
 
-&add 100 Num
-&sub 100 Num
-&counter 1 Num
+&add Num
+&sub Num
+&counter Num
 
-| add [&counter &add] &counter  # pipe #
-| sub [&counter &sub] &counter  # pipe #
+| add [&counter 1 &add 100] &counter  # pipe #
+| sub [&counter 1 &sub 100] &counter  # pipe #

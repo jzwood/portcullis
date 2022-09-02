@@ -78,10 +78,10 @@ spec = do
 
   describe "Typecheck Pipe TypeErrors" $ do
     it "expect NotFunction pipe errors" $ do
-      let bad0 = "&a1 4 Num \
-                 \&b1 4 Num \
-                 \&c1 4 Num \
-                 \| sum [&a1 &b1] &c1  # pipe #"
+      let bad0 = "&a1 Num \
+                 \&b1 Num \
+                 \&c1 Num \
+                 \| sum [&a1 2 &b1 4] &c1  # pipe #"
           sum = "sum -> Num -> Num Num \
                 \sum a b = + a b"
           good = unlines [bad0, sum]
@@ -89,13 +89,13 @@ spec = do
       compile good `shouldSatisfy` isRight
 
     it "expect DuplicateAddress pipe errors" $ do
-      let bad0 = "&a1 4 Num \
-                 \&a1 2 Char"
+      let bad0 = "&a1 Num \
+                 \&a1 Char"
       errorOf bad0 `shouldBe` DuplicateAddressError (unsafeAddress bad0)
 
     it "expect AddressNotFound pipe errors" $ do
       let good0 = "id -> z z \n\
                   \id z = z"
-          bad0 = unlines [good0, "| id [&a] &b"]
+          bad0 = unlines [good0, "| id [&a 1] &b"]
       compile good0 `shouldSatisfy` isRight
       errorOf bad0 `shouldBe` PipeError (unsafePipe bad0) (AddressNotFound "&a")

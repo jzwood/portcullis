@@ -13,9 +13,9 @@ type Name = String
 
 data Module = Module { functions :: [Function], functionMap :: Map Name Function, comments :: [Comment], addresses :: [Address], addressMap :: Map Name Address, pipes :: [Pipe] }
 
-data Address = Address { addressName :: Name, buffer :: Integer, addressSig :: TypeExpr }
+data Address = Address { addressName :: Name, addressSig :: TypeExpr }
   deriving (Eq, Ord)
-data Pipe = Pipe { funcName :: Name, inAddressNames :: [Name], outAddressName :: Name }
+data Pipe = Pipe { funcName :: Name, inAddresses :: [(Name, Integer)], outAddressName :: Name }
   deriving (Eq, Ord, Show)
 newtype Comment = Comment String
   deriving (Eq, Ord)

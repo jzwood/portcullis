@@ -35,10 +35,10 @@ parseModule :: Parser Module
 parseModule =  stmtsToModule <$> oneOrMore parseStmt
 
 parseAddress :: Parser Address
-parseAddress = Address <$> address <*> trimLeft integer <*> parseTypeExpr
+parseAddress = Address <$> address <*> parseTypeExpr
 
 parsePipe :: Parser Pipe
-parsePipe = Pipe <$> (char '|' *> trimLeft camel) <*> trim (brack . trim $ zeroOrMore (trim address)) <*> address
+parsePipe = Pipe <$> (char '|' *> trimLeft camel) <*> trim (brack . trim $ zeroOrMore (liftA2 (,) (trimLeft address) (trimLeft integer))) <*> address
 
 parseComment :: Parser Comment
 parseComment =  Comment

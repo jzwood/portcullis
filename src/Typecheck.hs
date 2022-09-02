@@ -63,11 +63,12 @@ toPipeError pipe (FunctionError _ te) = PipeError pipe te
 toPipeError _ tce = tce
 
 typecheckPipe :: Map Name Address -> Map Name Function -> Pipe -> Either TypecheckError TypeExpr
-typecheckPipe addressMap funcMap pipe@Pipe { funcName, inAddressNames, outAddressName }
+typecheckPipe addressMap funcMap pipe@Pipe { funcName, inAddresses, outAddressName }
   =   pipeFunction
   >>= typecheckFunc funcMap
   & mapLeft (toPipeError pipe)
   where
+    inAddressNames = fmap fst inAddresses
     addresses :: Either TypecheckError [Address]
     addresses = traverse (lookup' addressMap (PipeError pipe . AddressNotFound)) (inAddressNames ++ [outAddressName])
     expectedTypeExpr :: Either TypecheckError TypeExpr

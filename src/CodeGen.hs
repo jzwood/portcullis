@@ -5,6 +5,7 @@ module CodeGen where
 import Prelude hiding (showList)
 import Syntax
 import Data.Functor
+import Data.Bifunctor
 import Data.Function
 import Control.Applicative
 import Data.Char
@@ -145,7 +146,5 @@ showTopology addressMap pipes
   &  ("export const pipes = " ++) . ("[\n" ++) . (++ "\n]") . indent . intercalate ",\n"
 
 showPipe :: Map Name Address -> Pipe -> String
-showPipe addressMap Pipe { funcName, inAddressNames, outAddressName } =
-  showList [funcName, inAddressesNamesBuffers, show outAddressName]
-  where
-    inAddressesNamesBuffers = showList ((\name -> showList [show name, (show . buffer) (addressMap ! name)]) <$> inAddressNames)
+showPipe addressMap Pipe { funcName, inAddresses, outAddressName } =
+  showList [funcName, showList (fmap (\(name, buffer) -> showList [show name, show buffer]) inAddresses), show outAddressName]
