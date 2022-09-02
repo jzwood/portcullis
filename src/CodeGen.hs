@@ -1,43 +1,48 @@
+{-# LANGUAGE NamedFieldPuns #-}
+
 module CodeGen where
 
+import Prelude hiding (showList)
 import Syntax
 import Data.Functor
+import Data.Bifunctor
 import Data.Function
 import Control.Applicative
 import Data.Char
 import Data.List (intercalate, intersperse, nub)
 import Util
+import Data.Map (Map, (!))
+import qualified Data.Map as Map
 
 instance Show Module where
-  show (Module stmts) = unlines
-                      $ readAtoms stmts
-                      : readZeroArityFunctions stmts
-                      : (show <$> stmts)
+  show Module { functions, comments, addressMap, pipes }
+    = unlines $ atoms : zeroArityFuncs : (show <$> functions) ++ [topology]
+      where
+        atoms = unlines $ showAtoms functions
+        zeroArityFuncs = unlines $ showZeroArityFunctions functions
+        topology = showTopology addressMap pipes
 
-instance Show Stmt where
+instance Show Function where
   show (Function name tExpr vars expr)
-    = comment $ unwords ["function", show name, "has type", show tExpr]
-    ++ '\n'
-    : concat
-    [ def
-    , name
-    , (paren . head' "") vars
-    ]
-    ++ unlines'
-    [ " {"
-    , (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , show expr , ";" ]
+    = unlines
+    [ docstring
+    , unwords [header, "{"]
+    , body
     , "}"
     ]
       where
-        def = case vars of
-          []  -> "function $"
-          _ -> "export function "
+        docstring = comment $ unwords ["signature:", show tExpr]
+        header = concat [ if null vars then "function $" else "export function " , name , (paren . head' "") vars ]
+        body = (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , show expr , ";" ]
+
+instance Show Comment where
+  show (Comment c) = comment c
 
 instance Show TypeExpr where
   show NumType = "Num"
   show CharType = "Char"
   show AtomType = "Atom"
-  show (Unspecfied t) = t
+  show (Unspecified t) = extractExt t
   show (ListType t)
     = show t
     & bracket
@@ -51,11 +56,11 @@ instance Show Value where
   show (Number n) = show n
   show (Character c) = ['\'', c, '\'']
   show (Atom n) = n
-  show (List (Unspecfied "") xs) = show xs -- so uncons displays nicely
+  show (List (Unspecified "") xs) = show xs -- so uncons displays nicely
   show (List t xs) = unwords ["/*", show $ ListType t, "*/", show xs]
   show (Tuple e1 e2)
     =  show <$> [e1, e2]
-    &  bracket . intercalate ", "
+    &  showList
 
 instance Show Expr where
   show (Val p) = show p
@@ -75,7 +80,7 @@ instance Show Expr where
     , "/* else */ " ++ show e2
     ]
   show (TernOp Uncons xs b fb) =
-    show $ TernOp If (BinOp Equal xs (Val $ List (Unspecfied "") [])) b (Call (show fb) [UnOp Head xs, UnOp Tail xs])
+    show $ TernOp If (BinOp Equal xs (Val $ List (Unspecified "") [])) b (Call (show fb) [UnOp Head xs, UnOp Tail xs])
 
 instance Show UnOp where
   show Fst = "[0]"
@@ -94,7 +99,7 @@ instance Show Bop where
   show LessThanOrEqual = "<="
   show Rem = "%"
   show Equal = "equal"
-  -- show Cons = "+>"  -- not used for code gen
+  --show Cons = "+>"  -- not used for code gen
 
 prefixOp :: String -> [String] -> String
 prefixOp op = (op ++) . paren . intercalate ", "
@@ -120,17 +125,26 @@ findAtoms (BinOp _ e1 e2) = flatFindAtoms [e1, e2]
 findAtoms (TernOp _ e1 e2 e3) = flatFindAtoms [e1, e2, e3]
 findAtoms _ = []
 
-readAtoms :: [Stmt] -> String
-readAtoms stmts
-  =  concatMap (findAtoms . body) stmts
+showAtoms :: [Function] -> [String]
+showAtoms funcs
+  =  concatMap (findAtoms . body) funcs
   &  zip [0..] . nub . ("False" :) . ("True" :)
  <&> (\(i, atom) -> unwords ["const", atom, "=", show i])
-  &  unlines
 
-readZeroArityFunctions :: [Stmt] -> String
-readZeroArityFunctions stmts
-  =  stmts
+showZeroArityFunctions :: [Function] -> [String]
+showZeroArityFunctions funcs
+  =  funcs
   &  filter (null . args)
  <&> name
  <&> (\name -> unwords ["export", "const", name, "=", '$' : name ++ "()" ])
-  &  unlines
+
+showTopology :: Map Name Address -> [Pipe] -> String
+showTopology _ [] = "export const pipes = [];"
+showTopology addressMap pipes
+  =  pipes
+ <&> showPipe addressMap
+  &  ("export const pipes = " ++) . ("[\n" ++) . (++ "\n]") . indent . intercalate ",\n"
+
+showPipe :: Map Name Address -> Pipe -> String
+showPipe addressMap Pipe { funcName, inAddresses, outAddressName } =
+  showList [funcName, showList (fmap (\(name, buffer) -> showList [show name, show buffer]) inAddresses), show outAddressName]

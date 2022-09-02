@@ -1,6 +1,6 @@
 import _ from 'https://deno.land/x/lodash@4.17.15-es/lodash.js'
 import { assert, assertEquals } from "https://deno.land/std@0.119.0/testing/asserts.ts"
-import { equal } from '../../src/core.js'
+import { _equal as equal } from '../../src/core.js'
 
 Deno.test("equals", () => {
   const uniqThings = [

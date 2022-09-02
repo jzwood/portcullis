@@ -6,3 +6,5 @@ id x = x
 
 test -> q q
 test x = (hm1 x id)
+
+| id [&a] &a

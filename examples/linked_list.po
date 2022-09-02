@@ -1,0 +1,6 @@
+
+
+cons -> a -> {a b} {a {a b}}
+cons h t = { h t }
+
+

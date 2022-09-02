@@ -1,0 +1,7 @@
+fxn -> Atom Char
+fxn a = 'X'
+
+&fxn 100 Atom
+&res 1 Char
+
+| fxn [&fxn] &res

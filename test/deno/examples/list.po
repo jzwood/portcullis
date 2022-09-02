@@ -1,0 +1,32 @@
+cons -> a -> [a] [a]
+cons x xs =
+  +> x
+  +> x
+  +> x xs
+
+count -> a -> [a] Num
+count x xs = + 1 (length xs)
+
+
+uncons -> [a] -> b -> -> a -> [a] b b
+uncons as b f = b
+
+tail2 -> -> w -> [w] [w] -> [f] [f]
+tail2 f ns =
+  (uncons ns ns f)
+
+# USEFUL FUNCTIONS #
+
+_length -> a -> [a] Num
+_length x xs = + 1 (length xs)
+
+length -> [a] Num
+length xs =
+  <+ xs 0 _length
+
+push -> [a] -> a -> [a] [a]
+push ys x xs = +> x (concat xs ys)
+
+concat -> [a] -> [a] [a]
+concat xs ys =
+  <+ xs ys (push ys)

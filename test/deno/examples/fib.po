@@ -1,0 +1,6 @@
+
+fib -> Num Num
+fib n = ? <= n 1 1 + (fib - n 1) (fib - n 2)
+
+neg -> Num Num
+neg x = - 0 x

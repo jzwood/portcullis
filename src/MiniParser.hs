@@ -12,6 +12,7 @@ data Cursor = Cursor { line :: Integer, col :: Integer}
   deriving (Show, Eq)
 
 newtype ParseError = ParseError Cursor
+  deriving (Eq)
 
 instance Show ParseError where
   show (ParseError Cursor { line, col}) = concat ["Parse Error at line: ", show line, ", column: ", show col]
@@ -121,6 +122,9 @@ camel = identStartsWith (isLower .|| (== '_'))
 
 pascal :: Parser String
 pascal = identStartsWith isUpper
+
+address :: Parser String
+address = liftA2 (:) (char '&') camel
 
 wrap :: Char -> Char -> Parser a -> Parser a
 wrap l r p = char l *> p <* char r

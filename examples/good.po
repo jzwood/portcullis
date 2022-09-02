@@ -1,0 +1,19 @@
+
+good -> Atom Num
+good a = 3
+
+#
+good [Num]
+good = Num [3]
+#
+
+
+sum -> Num -> Num Num
+sum a b = + a b
+
+&a1 4 Num  # address #
+&b1 4 Num  # address #
+&c1 4 Num  # address #
+
+| sum [&a1 &b1] &c1  # pipe #
+

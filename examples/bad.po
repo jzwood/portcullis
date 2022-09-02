@@ -97,7 +97,8 @@ sum xs =
   <+ xs 0 sum2
 
 compose -> -> b c -> -> a b -> a c
-compose f g x = (f (g x))
+compose f g x =
+            (f (g x))
 
 # this is a comment #
 rankPet -> Atom -> Atom {Atom Atom}
@@ -117,6 +118,13 @@ qsortp x xs =
 qsort -> [Num] [Num]
 qsort xs =
   <+ xs xs qsortp
+
+# BAD #
+hofBad -> -> a Atom -> [a] [a]
+hofBad f xs =
+  ? (f xs) xs
+    xs
+
 
 # end comment #
 

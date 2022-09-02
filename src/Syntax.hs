@@ -5,42 +5,45 @@ import Data.Function
 import Control.Applicative
 import Data.Char
 import Data.List (intercalate, nub)
+import Data.Map (Map)
+import qualified Data.Map as Map
 import Util
-
--- Notes:
--- no Var (variables): instead you have functions with zero parameters
--- no Extern (external): we're just not gonna let you call external functions :/
--- TODO steal from this: https://blog.sumtypeofway.com/posts/introduction-to-recursion-schemes.html
 
 type Name = String
 
---data Stmt
-  -- = Data Type
-  -- | Function Name [Var] Expr
-  -- | FunType Name [Type]
-  -- | Pipe Name [Name] [Name] -- pipe name, input function names, output function names
+data Module = Module { functions :: [Function], functionMap :: Map Name Function, comments :: [Comment], addresses :: [Address], addressMap :: Map Name Address, pipes :: [Pipe] }
 
-newtype Module = Module [Stmt]
+data Address = Address { addressName :: Name, addressSig :: TypeExpr }
+  deriving (Eq, Ord)
+data Pipe = Pipe { funcName :: Name, inAddresses :: [(Name, Integer)], outAddressName :: Name }
+  deriving (Eq, Ord, Show)
+newtype Comment = Comment String
+  deriving (Eq, Ord)
 
-newtype Pipeline
-  = InOut Name
-
-data Stmt = Function
+data Function = Function
   { name :: Name
   , signature :: TypeExpr
   , args :: [Name]
   , body :: Expr
-  } deriving (Eq)
+  } deriving (Eq, Ord)
+
+data Stmt = F Function | A Address | P Pipe | C Comment deriving (Eq)
 
 data TypeExpr
   = NumType
   | CharType
   | AtomType
-  | Unspecfied Name
+  | Unspecified Name
   | TupType TypeExpr TypeExpr
   | ListType TypeExpr
   | Arrow TypeExpr TypeExpr
-  deriving (Eq)
+  deriving (Eq, Ord)
+
+applyTypeExpr :: (TypeExpr -> TypeExpr) -> TypeExpr -> TypeExpr
+applyTypeExpr f (TupType t1 t2) = TupType (f t1) (f t2)
+applyTypeExpr f (ListType t) = ListType (f t)
+applyTypeExpr f (Arrow tl tr) = Arrow (f tl) (f tr)
+applyTypeExpr _ t = t
 
 data Value
   = Number Double -- 34.23
@@ -48,7 +51,7 @@ data Value
   | Atom Name -- Apple
   | Tuple Expr Expr --- [1 'a']
   | List TypeExpr [Expr] --- num [1, 2, 3]
-  deriving (Eq)
+  deriving (Eq, Ord)
 
 data Expr
   = Val Value
@@ -57,14 +60,14 @@ data Expr
   | UnOp UnOp Expr
   | BinOp Bop Expr Expr  -- + 2 3
   | TernOp Top Expr Expr Expr
-  deriving (Eq)
+  deriving (Eq, Ord)
 
 data UnOp
   = Fst
   | Snd
   | Head -- INTERNAL ONLY
   | Tail  -- INTERNAL ONLY
-  deriving (Eq)
+  deriving (Eq, Ord)
 
 data Bop
   = Plus
@@ -78,9 +81,9 @@ data Bop
   | Equal
   | Rem
   | Cons
-  deriving (Eq)
+  deriving (Eq, Ord)
 
 data Top
   = Uncons
   | If
-  deriving (Show, Eq)
+  deriving (Show, Eq, Ord)

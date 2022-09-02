@@ -1,6 +1,6 @@
 import _ from 'https://deno.land/x/lodash@4.17.15-es/lodash.js'
 import { assert, assertEquals } from "https://deno.land/std@0.119.0/testing/asserts.ts"
-import { avg, neg, tail, msort, qsort, sum, mean, compose } from './math.js'
+import { avg, neg, tail, msort, qsort, sum, mean, compose } from './compiled/math.js'
 
 const generateNumArray = () => Array(Math.floor(100 * Math.random()))
     .fill(0)

@@ -1,14 +1,15 @@
-// function "equal" has type (a -> (a -> Atom))
-export function equal(a, b) {
+// INTERNAL
+function equal(a, b) {
   if (a === b) {
     return +true;
   }
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length === 0 && b.length === 0) return +true;
     if (a.length !== b.length) return +false;
-    const [aHead, ...aTail] = a
-    const [bHead, ...bTail] = b
-    return equal(aHead, bHead) && equal(aTail, bTail)
+    return equal(a.at(0), b.at(0)) && equal(a.slice(1), b.slice(1));
   }
   return +false;
 }
+
+// for testing
+export const _equal = equal;
