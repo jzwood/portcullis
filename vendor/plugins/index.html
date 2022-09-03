@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title></title>
-</head>
-<body>
-
-  <main id="main"></main>
-  <script type="module" src="visualizer.js" type=""></script>
-  <script type="module">
-    import { visualize } from './visualizer.js'
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+  </head>
+  <body>
+    <main id="main"></main>
+    <script type="module" src="visualizer.js" type=""></script>
+    <script type="module">
+      import { visualize } from './visualizer.js'
     const main = document.getElementById('main')
     const add = () => {}
     const sub = () => {}
     const pipes = [
-      [add, [["counter", 1], ["add", 100]], "counter"],
-      [sub, [["counter", 1], ["sub", 100]], "counter"]
+      [add, [["&counter", 1], ["&add", 100]], "&counter"],
+      // [sub, [["&counter", 1], ["&sub", 100]], "&counter"]
     ]
 
     visualize(main, pipes)
-  </script>
-</body>
+    </script>
+  </body>
 </html>
