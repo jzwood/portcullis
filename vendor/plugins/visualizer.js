@@ -45,18 +45,18 @@ export function visualize(elem, pipes) {
   elem.appendChild(svg);
   const defs = document.createElementNS(svgns, "defs");
   svg.appendChild(defs);
-  const marker = document.createElementNS(svgns, "marker")
-  marker.setAttribute("id", "arrow")
-  marker.setAttribute("viewBox", "0 0 10 10")
-  marker.setAttribute("refX", "5")
-  marker.setAttribute("refY", "5")
-  marker.setAttribute("markerWidth", "6")
-  marker.setAttribute("markerHeight", "6")
-  marker.setAttribute("orient", "auto-start-reverse")
-  defs.appendChild(marker)
-  const arrow = document.createElementNS(svgns, "path")
-  arrow.setAttribute("d", "M 0 0 L 10 5 L 0 10 z")
-  marker.appendChild(arrow)
+  const marker = document.createElementNS(svgns, "marker");
+  marker.setAttribute("id", "arrow");
+  marker.setAttribute("viewBox", "0 0 10 10");
+  marker.setAttribute("refX", "5");
+  marker.setAttribute("refY", "5");
+  marker.setAttribute("markerWidth", "6");
+  marker.setAttribute("markerHeight", "6");
+  marker.setAttribute("orient", "auto-start-reverse");
+  defs.appendChild(marker);
+  const arrow = document.createElementNS(svgns, "path");
+  arrow.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
+  marker.appendChild(arrow);
 
   const width = 200;
   const height = 100;

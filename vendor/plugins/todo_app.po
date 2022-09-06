@@ -1,0 +1,29 @@
+# addresses #
+&todo [[Char]]
+&update {Atom [Char]}
+&append [Char]
+&done [Char]
+
+# pipes #
+| update [ &update 100 &todo 1 ] &todo
+| append [ &append 50 ] &update
+| done [ &done 50 ] &update
+
+# pure functions #
+update -> {Atom [Char]} -> [[Char]] [[Char]]
+update tup todos =
+  ? == Append @1 tup
+    +> @2 tup todos
+  ? == Done @1 tup
+    (remove @2 tup todos)
+  todos
+
+append -> [Char] {Atom [Char]}
+append todo = { Append todo }
+
+done -> [Char] {Atom [Char]}
+done done = { Done done }
+
+remove -> [Char] -> [[Char]] [[Char]]
+remove todo todos = todos # TODO #
+
