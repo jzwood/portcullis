@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <script type="module" src="./main.js"></script>
+    <script>
+      function append(event) {
+        if (event.keyCode === 13) {
+          const note = event.target.value
+          const customEvent = new CustomEvent('&append', {
+            detail: note.split('')
+          });
+          document.dispatchEvent(customEvent)
+        }
+      }
+    </script>
+    <div class="flex">
+    <aside>
+      <input id="append" type="text"  onkeydown="append(event)" />
+      <ol id="todo"></ol>
+    </aside>
+    <main id="viz" class="flex-grow-1"></main>
+    </div>
+  </body>
+</html>

@@ -1,19 +1,18 @@
-const False = 0
-const True = 1
-const Append = 2
-const Done = 3
-
+const False = 0;
+const True = 1;
+const Append = 2;
+const Done = 3;
 
 // signature: ([Atom [Char]] -> ([[Char]] -> [[Char]]))
 export function update(tup) {
   return (todos) => (
-    /* if */ equal(Append, tup[0]) ?
-    /* then */ [tup[1], ...todos] :
-    /* else */ (
-      /* if */ equal(Done, tup[0]) ?
-      /* then */ remove(tup[1])(todos) :
-      /* else */ todos
-    )
+    /* if */ equal(Append, tup[0])
+      ? /* then */ [tup[1], ...todos]
+      : /* else */ (
+        /* if */ equal(Done, tup[0])
+          ? /* then */ remove(tup[1])(todos)
+          : /* else */ todos
+      )
   );
 }
 
@@ -35,8 +34,8 @@ export function remove(todo) {
 export const pipes = [
   [update, [["&update", 100], ["&todo", 1]], "&todo"],
   [append, [["&append", 50]], "&update"],
-  [done, [["&done", 50]], "&update"]
-]
+  [done, [["&done", 50]], "&update"],
+];
 
 // INTERNAL
 function equal(a, b) {

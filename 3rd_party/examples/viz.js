@@ -1,8 +1,3 @@
-//export const pipes = [
-//[add, [["&counter", 1], ["&add", 3]], "&counter"],
-//[sub, [["&counter", 1], ["&sub", 3]], "&counter"]
-//]
-
 function magnitude(...nums) {
   return Math.sqrt(nums.reduce((mag, num) => mag + num * num, 0));
 }
@@ -32,7 +27,7 @@ function dedupe(xs) {
   return xs.slice(0, 1).concat(dedupe(xs.slice(1).filter((x) => x !== xs[0])));
 }
 
-function removeAllChildren(elem) {
+export function removeAllChildren(elem) {
   while (elem.firstChild) {
     elem.removeChild(elem.firstChild);
   }
