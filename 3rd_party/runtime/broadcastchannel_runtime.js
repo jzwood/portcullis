@@ -1,15 +1,15 @@
-export function makeGrah(topology, domain = "") {
+export function makeGrah(topology, namespace = "") {
   topology.forEach(([fxn, inAddresses, outAddressName]) => {
-    makeEdge(domain, fxn, inAddresses, outAddressName);
+    makeEdge(namespace, fxn, inAddresses, outAddressName);
   });
 }
 
-export function makeEdge(domain, fxn, inAddresses, outAddressName) {
-  const apply = (fxn, [head, ...tail]) => {
-    if (typeof (head) === "undefined") return fxn;
-    return apply(fxn(head), tail);
-  };
-  const fmtName = (name) => [domain, name].filter(Boolean).join("/");
+function apply(fxn, [head, ...tail]) {
+  return typeof (head) === "undefined" ? fxn : apply(fxn(head), tail);
+}
+
+export function makeEdge(namespace, fxn, inAddresses, outAddressName) {
+  const fmtName = (name) => [namespace, name].filter(Boolean).join("/");
   const outAddress = new BroadcastChannel(fmtName(outAddressName));
   const buffers = [];
   inAddresses.forEach(([addressName, bufferSize]) => {

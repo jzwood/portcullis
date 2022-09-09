@@ -1,0 +1,14 @@
+
+_map -> -> a b -> a -> [a] [b]
+_map f x xs = +> (f x) (map f xs)
+
+map -> -> a b -> [c] [b]
+map f xs =
+  <+ xs c [] (_map f)
+
+four -> Char Num
+four x = 4
+
+m [Num]
+m = (map four Char ['a' 'b'])
+

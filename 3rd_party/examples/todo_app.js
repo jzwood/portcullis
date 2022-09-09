@@ -26,9 +26,48 @@ export function done(done) {
   return [Done, done];
 }
 
+// signature: ([a] -> (a -> ([a] -> [a])))
+export function push(ys) {
+  return (x) => (xs) => [x, ...concat(xs)(ys)];
+}
+
+// signature: ([a] -> ([a] -> [a]))
+export function concat(xs) {
+  return (ys) => (
+    /* if */ equal(xs, [])
+      ? /* then */ ys
+      : /* else */ push(ys)(xs.at(0))(xs.slice(1))
+  );
+}
+
+// signature: ((x -> Atom) -> (x -> ([x] -> [x])))
+export function _filter(f) {
+  return (x) =>
+    (xs) =>
+      concat(
+        (
+          /* if */ f(x) ? /* then */ /* [x] */ [x] : /* else */ /* [x] */ []
+        ),
+      )(filter(f)(xs));
+}
+
+// signature: ((j -> Atom) -> ([j] -> [j]))
+export function filter(f) {
+  return (xs) => (
+    /* if */ equal(xs, [])
+      ? /* then */ xs
+      : /* else */ _filter(f)(xs.at(0))(xs.slice(1))
+  );
+}
+
+// signature: (a -> (b -> Atom))
+export function neq(a) {
+  return (b) => equal(False, equal(a, b));
+}
+
 // signature: ([Char] -> ([[Char]] -> [[Char]]))
 export function remove(todo) {
-  return (todos) => todos;
+  return (todos) => filter(neq(todo))(todos);
 }
 
 export const pipes = [

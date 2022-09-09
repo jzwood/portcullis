@@ -24,6 +24,28 @@ append todo = { Append todo }
 done -> [Char] {Atom [Char]}
 done done = { Done done }
 
+push -> [a] -> a -> [a] [a]
+push ys x xs = +> x (concat xs ys)
+
+concat -> [a] -> [a] [a]
+concat xs ys =
+  <+ xs ys (push ys)
+
+_filter -> -> x Atom -> x -> [x] [x]
+_filter f x xs =
+  (concat
+    ? (f x)
+      x [x]
+      x []
+    (filter f xs))
+
+filter -> -> j Atom -> [j] [j]
+filter f xs =
+  <+ xs xs (_filter f)
+
+neq -> a -> b Atom
+neq a b = == False == a b
+
 remove -> [Char] -> [[Char]] [[Char]]
-remove todo todos = todos # TODO #
+remove todo todos = (filter (neq todo) todos)
 
