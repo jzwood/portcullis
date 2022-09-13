@@ -41,8 +41,9 @@ _All operators are prefix (ie not infix)_
 
 ## Expressions
 
+**grammar**
+
 ```
-(* EBNF grammer *)
 expression = value
            | identifier
            | "(" function-name expression ")"
@@ -51,22 +52,32 @@ expression = value
            | ternary-operator expression expression expression
 ```
 
+**examples**
+
+```javascript
+3.0
+myvar
++ 34 10
+(sqrt 5)
+```
+
 ## Functions
 
 All functions must include a type signature; Portcullis does not have lambda
 functions. Additionally, all functions are pure.
 
+**grammar**
+
 ```
-(* EBNF grammer *)
 function = function-name type
            function-name { identifier } "=" expression
 
 function-name = [ "_" ] <alphanum> { <alphanum> }
 ```
 
-**Example**
+**examples**
 
-```
+```haskell
 double -> Num Num
 double x = * 2 x
 
@@ -74,67 +85,64 @@ quadruple -> Num Num
 quadruple x = (double (double x))
 ```
 
-### Addresses
+## Addresses
 
 Addresses are globally namespaced values, analogous to cells in Excel.
 
+**grammar**
+
 ```
-(* EBNF grammer *)
 address = address-identifier type
 address-identifier = "&" alphanum { alphanum }
 ```
 
-**example**
+**examples**
 
-```
+```haskell
 &counter Num
+&todo [[Num]]
 ```
 
-### Pipes
+## Pipes
 
-Pipes are ...
+Pipes connect addresses via a function. Pipes all taken together can be used to derive the dataflow digram for a Portcullis program.
 
+**grammar**
 
 ```
-(* EBNF grammer *)
 pipe = "|" function-name "[" { address-identifier natural } "]" address-identifier
 ```
 
-**example**
+**examples**
 
-```
+```haskell
 | add [ &counter 1 &add 3 ] &counter
 ```
 
-The Portcullis typechecks these pipes by imagining the input addresses are
-values applied to the function with an output the same type as the
-`&outAddress`. Portcullis exports all the pipes as a graph and it is the job of
-the developer, potentially with a 3rd party library, to apply this graph to an
-effects system or [async runtime](./3rd_party/runtim).
-
-### Comments
+## Comments
 
 Bracket comments with `#`s. Comments are only allowed between function
 statements.
 
+**grammar**
+
 ```
-(* EBNF grammer *)
 comment = "#" { non-hash-char } "#"
 ```
 
 **example**
 
-```
+```haskell
 # comment here #
 one Num
 one = 1
 ```
 
-### Examples
+## More Examples
 
-#### Currying
+### Currying
 
-```
+```haskell
 double -> Num Num
 double x = * 2 x
 
@@ -145,7 +153,7 @@ add3 a b c = + + a b c
 Compiling the above portcullis functions results in exportable/runnable JS
 functions:
 
-```js
+```javascript
 // function "double" has type (Num -> Num)
 export function double(x) {
   return (2.0 * x);
@@ -156,7 +164,7 @@ export function add3(a) {
 }
 ```
 
-```
+```javascript
 double(5)
 // 10
 
@@ -164,11 +172,11 @@ add3(3)(5)(1)
 // 9
 ```
 
-#### Higher-Order Functions (HOF)
+### Higher-Order Functions (HOF)
 
 Portcullis
 
-```
+```haskell
 _length -> a -> [a] Num
 _length x xs = + 1 (length xs)
 
@@ -179,7 +187,7 @@ length xs =
 
 JavaScript
 
-```js
+```javascript
 // function "_length" has type (a -> ([a] -> Num))
 export function _length(x) {
   return (xs) => (1.0 + length(xs));
@@ -194,9 +202,9 @@ export function length(xs) {
 }
 ```
 
-#### Parametric polymorphism
+### Parametric polymorphism
 
-```
+```haskell
 _map -> -> q t -> q -> [q] [t]
 _map f x xs = +> (f x) (map f xs)
 
