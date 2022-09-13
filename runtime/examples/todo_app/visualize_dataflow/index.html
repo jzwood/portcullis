@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>VIZ DATAFLOW</title>
+  </head>
+  <body>
+    <script type="module">
+      import { visualize } from "./viz.js";
+      import { pipes } from "../todo_app.js";
+      const viz = document.getElementById("viz");
+      visualize(viz, pipes);
+    </script>
+    <body>
+      <main id="viz" style="flex-grow: 1;"></main>
+    </body>
+</html>

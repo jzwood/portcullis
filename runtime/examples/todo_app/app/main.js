@@ -1,14 +1,22 @@
-import { removeAllChildren, visualize } from "./viz.js";
-import { pipes } from "./todo_app.js";
-import { makeGrah } from "../runtime/event_runtime.js";
+import { pipes } from "../todo_app.js";
+import { makeGrah } from "./event_runtime.js";
 
 document.addEventListener("DOMContentLoaded", main);
 
-function main() {
-  const viz = document.getElementById("viz");
-  visualize(viz, pipes);
-  makeGrah(pipes);
+function removeAllChildren(elem) {
+  while (elem.firstChild) {
+    elem.removeChild(elem.firstChild);
+  }
+}
 
+function initTodo() {
+  const initTodo = new CustomEvent("&todo", {
+    detail: [],
+  });
+  document.dispatchEvent(initTodo);
+}
+
+function initTodoListener() {
   document.addEventListener("&todo", ({ detail: todos }) => {
     const todoElem = document.getElementById("todo");
     removeAllChildren(todoElem);
@@ -31,9 +39,10 @@ function main() {
       todoElem.appendChild(item);
     });
   });
+}
 
-  const initTodo = new CustomEvent("&todo", {
-    detail: [],
-  });
-  document.dispatchEvent(initTodo);
+function main() {
+  makeGrah(pipes);
+  initTodoListener();
+  initTodo();
 }

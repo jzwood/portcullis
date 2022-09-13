@@ -1,33 +1,32 @@
 # Portcullis Language Guide
 
-Many languages claim to be simple but few truly are. While Portcullis's compiler
-is arguably simple, clocking in around 600 LOC, writing Portcullis programs can
-be a bit of a puzzle. This is mostly the result of its restricted and minimalist
-syntax and uncommon design decisions:
+## Types
 
-There are no looping constructs (use recursion), no variable declaration, no
-built-in `Booleans` (use `Atoms`), and no `null` or `error` types.
+| Name        | Grammar                 | Example                                   |
+| ----------- | ----------------------- | ----------------------------------------- |
+| Number      | `"Num"`                 | `2.3`                                     |
+| Character   | `"Char"`                | `'c'`                                     |
+| Atom        | `"Atom"`                | `One`, `True`                             |
+| 2-Tuple     | `"{" type type "}"`     | `{'A' True}`                              |
+| Array       | `"[" type "]"`          | `Num [1 2 3 4]`, `Char ['j' 'a' 'k' 'e']` |
+| Arrow       | `"->" type type`        | `-> Num Num`, `-> (-> a b) -> a b`        |
+| Unspecified | `alphanum { alphanum }` | `-> Num Num`, `-> (-> a b) -> a b`        |
 
-The entirety of the language consists of function declaration, function
-invocation, and a handful of datatypes and built-in operators. A compiled
-Portcullis module cannot be run. It produces JavaScript functions which can be
-imported and run by other JS programs.
+## Values
 
-### Data Types
-
-| Name      | Type              | Example                                   |
-| --------- | ----------------- | ----------------------------------------- |
-| Number    | `Num`             | `2.3`                                     |
-| Character | `Char`            | `'c'`                                     |
-| Atom      | `Atom`            | `One`, `True`                             |
-| 2-Tuple   | `{<type> <type>}` | `{'A' True}`                              |
-| Array     | `[<type>]`        | `Num [1 2 3 4]`, `Char ['j' 'a' 'k' 'e']` |
+| Name      | Example                                   |
+| --------- | ----------------------------------------- |
+| Number    | `2.3`                                     |
+| Character | `'c'`                                     |
+| Atom      | `One`, `True`                             |
+| 2-Tuple   | `{'A' True}`                              |
+| Array     | `Num [1 2 3 4]`, `Char ['j' 'a' 'k' 'e']` |
 
 ## Operators
 
 _All operators are prefix (ie not infix)_
 
-| Operator(s)       | Name   | Arity | Signature                        | Example                            |
+| Operator(s)       | Name   | Arity | Type                             | Example                            |
 | ----------------- | ------ | ----- | -------------------------------- | ---------------------------------- |
 | `@1`              | fst    | 1     | `-> {a b} a`                     | `@1 {'a' 3}`  →  `'a'`             |
 | `@2`              | snd    | 1     | `-> {a b} b`                     | `@2 {'a' 3}`  →  `3`               |
@@ -39,23 +38,91 @@ _All operators are prefix (ie not infix)_
 | `<+`              | Uncons | 3     | `-> [a] -> b -> -> a -> [a] b b` | `<+ Num [1 2 3] 0 sum`  →  `6`     |
 | `?`               | If     | 3     | `-> Atom -> a -> a a`            | `? True Cat Dog`  →  `Cat`         |
 
-### Functions
 
-Functions are comprised of a **name**, **type signature**, **arguments**, and
-body **expression**:
+## Expressions
 
 ```
-<function name> <type signature>
-<function name> [args...] = <expr>
+(* EBNF grammer *)
+expression = value
+           | identifier
+           | "(" function-name expression ")"
+           | unary-operator expression
+           | binary-operator expression expression
+           | ternary-operator expression expression expression
 ```
 
-Function names must be camelCased but may start with an underscore. Portcullis
-does not have lambda functions.
+## Functions
+
+All functions must include a type signature; Portcullis does not have lambda
+functions. Additionally, all functions are pure.
+
+```
+(* EBNF grammer *)
+function = function-name type
+           function-name { identifier } "=" expression
+
+function-name = [ "_" ] <alphanum> { <alphanum> }
+```
+
+**Example**
+
+```
+double -> Num Num
+double x = * 2 x
+
+quadruple -> Num Num
+quadruple x = (double (double x))
+```
+
+### Addresses
+
+Addresses are globally namespaced values, analogous to cells in Excel.
+
+```
+(* EBNF grammer *)
+address = address-identifier type
+address-identifier = "&" alphanum { alphanum }
+```
+
+**example**
+
+```
+&counter Num
+```
+
+### Pipes
+
+Pipes are ...
+
+
+```
+(* EBNF grammer *)
+pipe = "|" function-name "[" { address-identifier natural } "]" address-identifier
+```
+
+**example**
+
+```
+| add [ &counter 1 &add 3 ] &counter
+```
+
+The Portcullis typechecks these pipes by imagining the input addresses are
+values applied to the function with an output the same type as the
+`&outAddress`. Portcullis exports all the pipes as a graph and it is the job of
+the developer, potentially with a 3rd party library, to apply this graph to an
+effects system or [async runtime](./3rd_party/runtim).
 
 ### Comments
 
 Bracket comments with `#`s. Comments are only allowed between function
 statements.
+
+```
+(* EBNF grammer *)
+comment = "#" { non-hash-char } "#"
+```
+
+**example**
 
 ```
 # comment here #

@@ -56,4 +56,5 @@ backend runtime for compiled portcullis programs.
 
     deno repl --unstable --eval-file=<path/to/file.js>
 
-&ast; *At the moment the `BroadcastChannel` API requires the `--unstable` flag to be exposed.*
+&ast; _At the moment the `BroadcastChannel` API requires the `--unstable` flag
+to be exposed._
