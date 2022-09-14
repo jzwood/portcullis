@@ -2,25 +2,25 @@
 
 ## Types
 
-| Name        | Grammar                 | Example                                   |
-| ----------- | ----------------------- | ----------------------------------------- |
-| Number      | `"Num"`                 | `2.3`                                     |
-| Character   | `"Char"`                | `'c'`                                     |
-| Atom        | `"Atom"`                | `One`, `True`                             |
-| 2-Tuple     | `"{" type type "}"`     | `{'A' True}`                              |
-| Array       | `"[" type "]"`          | `Num [1 2 3 4]`, `Char ['j' 'a' 'k' 'e']` |
-| Arrow       | `"->" type type`        | `-> Num Num`, `-> (-> a b) -> a b`        |
-| Unspecified | `alphanum { alphanum }` | `-> Num Num`, `-> (-> a b) -> a b`        |
+| Name        | Grammar                 | Example                            |
+| ----------- | ----------------------- | ---------------------------------- |
+| Number      | `"Num"`                 | `Num`                              |
+| Character   | `"Char"`                | `Char`                             |
+| Atom        | `"Atom"`                | `Atom`                             |
+| 2-Tuple     | `"{" type type "}"`     | `{Num Char}`                       |
+| Array       | `"[" type "]"`          | `[ Atom ]`                         |
+| Unspecified | `alphanum { alphanum }` | `a`, `name`                        |
+| Arrow       | `"->" type type`        | `-> Num Num`, `-> (-> a b) -> a b` |
 
 ## Values
 
-| Name      | Example                                   |
-| --------- | ----------------------------------------- |
-| Number    | `2.3`                                     |
-| Character | `'c'`                                     |
-| Atom      | `One`, `True`                             |
-| 2-Tuple   | `{'A' True}`                              |
-| Array     | `Num [1 2 3 4]`, `Char ['j' 'a' 'k' 'e']` |
+| Name      | Grammer                         | Example                                   |
+| --------- | ------------------------------- | ----------------------------------------- |
+| Number    | decimal                         | `2.3`                                     |
+| Character | char                            | `'c'`                                     |
+| Atom      | pascal-word                     | `One`, `True`                             |
+| 2-Tuple   | `"{" expression expression "}"` | `{'A' True}`                              |
+| Array     | `type "[" { expression } "]"`   | `Num [1 2 3 4]`, `Char ['j' 'a' 'k' 'e']` |
 
 ## Operators
 
@@ -37,7 +37,6 @@ _All operators are prefix (ie not infix)_
 | `+>`              | Cons   | 2     | `-> a -> [a] [a]`                | `+> 1 Num [2 3]`  →  `Num [1 2 3]` |
 | `<+`              | Uncons | 3     | `-> [a] -> b -> -> a -> [a] b b` | `<+ Num [1 2 3] 0 sum`  →  `6`     |
 | `?`               | If     | 3     | `-> Atom -> a -> a a`            | `? True Cat Dog`  →  `Cat`         |
-
 
 ## Expressions
 
@@ -100,12 +99,13 @@ address-identifier = "&" alphanum { alphanum }
 
 ```haskell
 &counter Num
-&todo [[Num]]
+&todo [[Char]]
 ```
 
 ## Pipes
 
-Pipes connect addresses via a function. Pipes all taken together can be used to derive the dataflow digram for a Portcullis program.
+Pipes connect addresses via a function. Pipes all taken together can be used to
+derive the dataflow digram for a Portcullis program.
 
 **grammar**
 
@@ -165,10 +165,10 @@ export function add3(a) {
 ```
 
 ```javascript
-double(5)
+double(5);
 // 10
 
-add3(3)(5)(1)
+add3(3)(5)(1);
 // 9
 ```
 
