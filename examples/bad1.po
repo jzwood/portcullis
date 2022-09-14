@@ -1,0 +1,5 @@
+bad -> a a
+bad x = x
+
+bad1 -> y y
+bad1 z = (bad z)

@@ -86,7 +86,7 @@ typecheckFunc funcMap func@Function { body, args, signature } = do
   & mapLeft (FunctionError func)
 
 typeEqual :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
-typeEqual te1@(Unspecified a) (Unspecified b) = Right te1
+--typeEqual te1@(Unspecified a) (Unspecified b) = Right te1  -- TODO what is up with this?????
 typeEqual (ListType te1) (ListType te2) = ListType <$> typeEqual te1 te2
 typeEqual (TupType te1 te2) (TupType te3 te4) = liftA2 TupType (typeEqual te1 te3) (typeEqual te2 te4)
 typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2
