@@ -6,7 +6,7 @@ import Data.Function
 import Data.Functor
 import Data.List (elemIndex, foldl', drop)
 import Data.Map (Map)
-import Data.Maybe (fromMaybe, listToMaybe, mapMaybe)
+import Data.Maybe (maybe, fromMaybe, listToMaybe, mapMaybe)
 import Data.Either (lefts)
 import Control.Applicative
 import Data.Traversable
@@ -149,22 +149,22 @@ typeofExpr m f (Val p) =
 
 typeofExpr m f@Function { signature = sig, args } e =
   case e of
-    Ident name ->
-      maybeSignature name
-      <&> Right
-       &  fromMaybe (Left $ NotFunction name)
+    Ident name -> maybe (Left $ NotFunction name) Right (lookupSigFromArgs name)
+               <> maybe (Left $ NotFunction name) Right (lookupSigFromFuncMap name)
     Call name exprs ->
-      maybeSignature name
+      (lookupSigFromArgs name) <|> (lookupSigFromFuncMap name) -- TODO 2nd case
       <&> check exprs
        &  fromMaybe (Left $ NotFunction name)
     UnOp unop expr1 -> check [expr1] (typeofUnOp unop)
     BinOp bop expr1 expr2 -> check [expr1, expr2] (typeofBop bop)
     TernOp top expr1 expr2 expr3 -> check [expr1, expr2, expr3] (typeofTop top)
   where
-    maybeSignature :: String -> Maybe TypeExpr
-    maybeSignature name = argToMaybeSig name args sig <|> (signature <$> Map.lookup name m)
+    lookupSigFromArgs :: String -> Maybe TypeExpr
+    lookupSigFromArgs name = argToMaybeSig name args sig -- <|> (signature <$> Map.lookup name m)
+    lookupSigFromFuncMap :: String -> Maybe TypeExpr
+    lookupSigFromFuncMap name = signature <$> Map.lookup name m
     check :: [Expr] -> TypeExpr -> Either TypeError TypeExpr
-    check es sig = mapM (typeofExpr m f) es -- rewrite with mapM
+    check es sig = mapM (typeofExpr m f) es
       >>= foldl' (\ms t -> ms >>= \(m, s) -> typecheckExpr m t s) (Right (Map.empty, sig))
       <&> snd
 
