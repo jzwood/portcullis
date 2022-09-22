@@ -42,7 +42,7 @@ instance Show TypeExpr where
   show NumType = "Num"
   show CharType = "Char"
   show AtomType = "Atom"
-  show (Unspecified t) = extractExt t
+  show (Unspecified t) = t
   show (ListType t)
     = show t
     & bracket
