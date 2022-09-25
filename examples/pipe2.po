@@ -15,9 +15,9 @@ sum a b = + a b
 pipe example
 #
 
-&a1 4 Num  # address #
-&b1 4 Num  # address #
-&c1 4 Num  # address #
+&a1 4 Num  # stream #
+&b1 4 Num  # stream #
+&c1 4 Num  # stream #
 
 | sum [&a1 &b1] &c1  # pipe #
 | sum [&a1 &b1] &c1  # pipe #

@@ -58,30 +58,30 @@ export function visualize(elem, pipes) {
   const rand = (dim, border) => border + Math.random() * (dim - 2 * border);
   svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
 
-  const addresses = dedupe(
-    pipes.flatMap(([_, inAddresses, addressName]) =>
-      inAddresses.map(([address, _]) => address).concat(addressName)
+  const streams = dedupe(
+    pipes.flatMap(([_, inStreams, streamName]) =>
+      inStreams.map(([stream, _]) => stream).concat(streamName)
     ),
   );
   const border = 5;
-  addresses.forEach((addressName) => {
-    const addressNode = document.createElementNS(svgns, "text");
-    const addressLabel = addressName;
-    const label = document.createTextNode(addressLabel);
-    addressNode.setAttribute("x", rand(width, border));
-    addressNode.setAttribute("dx", 2);
-    addressNode.setAttribute("y", rand(height, border));
-    addressNode.id = addressLabel;
-    addressNode.style.fontFamily = "Courier New";
-    addressNode.style.fontSize = "5px";
-    addressNode.style.dominantBaseline = "central";
-    addressNode.appendChild(label);
-    svg.appendChild(addressNode);
+  streams.forEach((streamName) => {
+    const streamNode = document.createElementNS(svgns, "text");
+    const streamLabel = streamName;
+    const label = document.createTextNode(streamLabel);
+    streamNode.setAttribute("x", rand(width, border));
+    streamNode.setAttribute("dx", 2);
+    streamNode.setAttribute("y", rand(height, border));
+    streamNode.id = streamLabel;
+    streamNode.style.fontFamily = "Courier New";
+    streamNode.style.fontSize = "5px";
+    streamNode.style.dominantBaseline = "central";
+    streamNode.appendChild(label);
+    svg.appendChild(streamNode);
   });
-  pipes.forEach(([fxn, inAddresses, outAddressName]) => {
+  pipes.forEach(([fxn, inStreams, outStreamName]) => {
     const functionNode = document.createElementNS(svgns, "text");
     const functionLabel = "λ." + fxn.name;
-    const outAddressLabel = outAddressName;
+    const outStreamLabel = outStreamName;
     const label = document.createTextNode(functionLabel);
     functionNode.setAttribute("x", rand(width, border));
     functionNode.setAttribute("dx", 2);
@@ -95,18 +95,18 @@ export function visualize(elem, pipes) {
 
     const line = document.createElementNS(svgns, "line");
     line.dataset.src = functionLabel;
-    line.dataset.target = outAddressLabel;
+    line.dataset.target = outStreamLabel;
     svg.appendChild(line);
     line.setAttribute("stroke", "black");
     line.setAttribute("stroke-width", "0.25");
     line.setAttribute("marker-end", "url(#arrow)");
 
-    inAddresses.map(([inAddressName, _]) => {
+    inStreams.map(([inStreamName, _]) => {
       const line = document.createElementNS(svgns, "line");
       line.setAttribute("stroke", "black");
       line.setAttribute("stroke-width", "0.25");
       line.setAttribute("marker-end", "url(#arrow)");
-      line.dataset.src = inAddressName;
+      line.dataset.src = inStreamName;
       line.dataset.target = functionLabel;
       svg.appendChild(line);
     });

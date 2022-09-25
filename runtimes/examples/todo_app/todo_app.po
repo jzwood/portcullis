@@ -1,4 +1,4 @@
-# addresses #
+# streams #
 &todo [[Char]]
 &update {Atom [Char]}
 &append [Char]

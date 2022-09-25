@@ -18,14 +18,14 @@ import qualified Data.Map as Map
 
 data TypeError
   = NotFunction Name
-  | AddressNotFound Name
+  | StreamNotFound Name
   | DuplicateFunction
   | TypeMismatch { expected :: TypeExpr, actual :: TypeExpr, typeMap :: Map Name TypeExpr }
   | ArityMismatch
   | RecursiveType [(Name, TypeExpr)]
   deriving (Show, Ord, Eq)
 
-data TypecheckError = FunctionError Function TypeError | PipeError Pipe TypeError | DuplicateAddressError Address
+data TypecheckError = FunctionError Function TypeError | PipeError Pipe TypeError | DuplicateStreamError Stream
   deriving (Eq, Ord)
 
 instance Show TypecheckError where
@@ -33,14 +33,14 @@ instance Show TypecheckError where
      = unwords [ show typeError, "in function", name ]
   show (PipeError pipe typeError)
      = unwords [ show typeError, "in", show pipe ]
-  show (DuplicateAddressError Address { addressName })
-     = unwords [ "DuplicateAddress", addressName ]
+  show (DuplicateStreamError Stream { streamName })
+     = unwords [ "DuplicateStream", streamName ]
 
 typecheckModule :: Module -> Either [TypecheckError] Module
-typecheckModule mod@Module { functions, functionMap, addresses, addressMap, pipes }
+typecheckModule mod@Module { functions, functionMap, streams, streamMap, pipes }
   | (not . null) typeErrors = Left typeErrors
   | (not . null) duplicateFuncs = Left $ duplicateFuncs <&> (`FunctionError` DuplicateFunction)
-  | (not . null) duplicateAddresses = Left $ duplicateAddresses <&> DuplicateAddressError
+  | (not . null) duplicateStreams = Left $ duplicateStreams <&> DuplicateStreamError
   | (not . null) pipeErrors = Left pipeErrors
   | otherwise = Right mod
     where
@@ -51,30 +51,30 @@ typecheckModule mod@Module { functions, functionMap, addresses, addressMap, pipe
         &  lefts
       duplicateFuncs :: [Function]
       duplicateFuncs = dupesOn name functions
-      duplicateAddresses :: [Address]
-      duplicateAddresses = dupesOn addressName addresses
+      duplicateStreams :: [Stream]
+      duplicateStreams = dupesOn streamName streams
       pipeErrors :: [TypecheckError]
       pipeErrors =  pipes
-                <&> typecheckPipe addressMap functionMap
+                <&> typecheckPipe streamMap functionMap
                  &  lefts
 
 toPipeError :: Pipe -> TypecheckError -> TypecheckError
 toPipeError pipe (FunctionError _ te) = PipeError pipe te
 toPipeError _ tce = tce
 
-typecheckPipe :: Map Name Address -> Map Name Function -> Pipe -> Either TypecheckError TypeExpr
-typecheckPipe addressMap funcMap pipe@Pipe { funcName, inAddresses, outAddressName }
+typecheckPipe :: Map Name Stream -> Map Name Function -> Pipe -> Either TypecheckError TypeExpr
+typecheckPipe streamMap funcMap pipe@Pipe { funcName, inStreams, outStreamName }
   =   pipeFunction
   >>= typecheckFunc funcMap
   & mapLeft (toPipeError pipe)
   where
-    inAddressNames = fmap fst inAddresses
-    addresses :: Either TypecheckError [Address]
-    addresses = traverse (lookup' addressMap (PipeError pipe . AddressNotFound)) (inAddressNames ++ [outAddressName])
+    inStreamNames = fmap fst inStreams
+    streams :: Either TypecheckError [Stream]
+    streams = traverse (lookup' streamMap (PipeError pipe . StreamNotFound)) (inStreamNames ++ [outStreamName])
     expectedTypeExpr :: Either TypecheckError TypeExpr
-    expectedTypeExpr = addresses >>= mapLeft (PipeError pipe) . typeExprFromList . fmap addressSig
+    expectedTypeExpr = streams >>= mapLeft (PipeError pipe) . typeExprFromList . fmap streamSig
     pipeFunction :: Either TypecheckError Function
-    pipeFunction = Function funcName <$> expectedTypeExpr <*> pure inAddressNames <*> pure (Call funcName (Ident <$> inAddressNames))
+    pipeFunction = Function funcName <$> expectedTypeExpr <*> pure inStreamNames <*> pure (Call funcName (Ident <$> inStreamNames))
 
 typecheckFunc :: Map Name Function -> Function -> Either TypecheckError TypeExpr
 typecheckFunc funcMap func@Function { body, args, signature } = do

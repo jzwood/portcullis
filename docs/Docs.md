@@ -84,15 +84,15 @@ quadruple -> Num Num
 quadruple x = (double (double x))
 ```
 
-## Addresses
+## Streams
 
-Addresses are static, globally namespaced, typed streams.
+Streams are static, globally namespaced, and typed data-streams.
 
 **grammar**
 
 ```
-address = address-identifier type
-address-identifier = "&" alphanum { alphanum }
+stream = stream-identifier type
+stream-identifier = "&" alphanum { alphanum }
 ```
 
 **examples**
@@ -104,13 +104,13 @@ address-identifier = "&" alphanum { alphanum }
 
 ## Pipes
 
-Pipes connect addresses via a function. Pipes all taken together can be used to
-derive the dataflow digram for a Portcullis program.
+Pipes connect streams via a function. Pipes all taken together can be used to
+derive the dataflow diagram for a Portcullis program.
 
 **grammar**
 
 ```
-pipe = "|" function-name "[" { address-identifier natural } "]" address-identifier
+pipe = "|" function-name "[" { stream-identifier natural } "]" stream-identifier
 ```
 
 **examples**
@@ -172,7 +172,7 @@ add3(3)(5)(1);
 // 9
 ```
 
-### Higher-Order Functions (HOF)
+### Higher-Order Functions
 
 Portcullis
 

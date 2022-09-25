@@ -15,12 +15,12 @@ import Data.Map (Map, (!))
 import qualified Data.Map as Map
 
 instance Show Module where
-  show Module { functions, comments, addressMap, pipes }
+  show Module { functions, comments, streamMap, pipes }
     = unlines $ atoms : zeroArityFuncs : (show <$> functions) ++ [topology]
       where
         atoms = unlines $ showAtoms functions
         zeroArityFuncs = unlines $ showZeroArityFunctions functions
-        topology = showTopology addressMap pipes
+        topology = showTopology streamMap pipes
 
 instance Show Function where
   show (Function name tExpr vars expr)
@@ -138,13 +138,13 @@ showZeroArityFunctions funcs
  <&> name
  <&> (\name -> unwords ["export", "const", name, "=", '$' : name ++ "()" ])
 
-showTopology :: Map Name Address -> [Pipe] -> String
+showTopology :: Map Name Stream -> [Pipe] -> String
 showTopology _ [] = "export const pipes = [];"
-showTopology addressMap pipes
+showTopology streamMap pipes
   =  pipes
- <&> showPipe addressMap
+ <&> showPipe streamMap
   &  ("export const pipes = " ++) . ("[\n" ++) . (++ "\n]") . indent . intercalate ",\n"
 
-showPipe :: Map Name Address -> Pipe -> String
-showPipe addressMap Pipe { funcName, inAddresses, outAddressName } =
-  showList [funcName, showList (fmap (\(name, buffer) -> showList [show name, show buffer]) inAddresses), show outAddressName]
+showPipe :: Map Name Stream -> Pipe -> String
+showPipe streamMap Pipe { funcName, inStreams, outStreamName } =
+  showList [funcName, showList (fmap (\(name, buffer) -> showList [show name, show buffer]) inStreams), show outStreamName]

@@ -6,8 +6,8 @@ add1 n = + n 1
 |> add1
 
 <!--data Stack = Stack Name Buffer TypeExpr-->
-data Address = Address Name Buffer TypeExpr
-data Pipe = Pipe Func [Address] Address
+data Stream = Stream Name Buffer TypeExpr
+data Pipe = Pipe Func [Stream] Stream
 
 &num1 4 Num
 &num2 4 Num
@@ -20,8 +20,8 @@ export function main() {
     const num1 = new BroadcastChannel('num1');
     const num2 = new BroadcastChannel('num2');
     const result = new BroadcastChannel('result');
-    const num1Address = [];
-    const num2Address = [];
+    const num1Stream = [];
+    const num2Stream = [];
     const num1Buffer = 3;
     const num2Buffer = 3;
     num1.onmessage = (data) => {
@@ -49,17 +49,17 @@ function apply(fxn, [head, ...tail]) {
   return apply(fxn(head), tail)
 }
 
-function(fxn, inAddressNames, outAddressName) {
-  const addressMap = inAddressNames.reduce((acc, addressName) => ({...acc, [addressName]: {address: new BroadcastChannel(addressName), buffer: []}), {})
-  const outAddress = new BroadcastChannel(outAddressName)
-  inAddressNames.forEach(addressName => {
-    const {address, buffer} = addressMap[addressName]
-    address.onmessage = (data) => {
+function(fxn, inStreamNames, outStreamName) {
+  const streamMap = inStreamNames.reduce((acc, streamName) => ({...acc, [streamName]: {stream: new BroadcastChannel(streamName), buffer: []}), {})
+  const outStream = new BroadcastChannel(outStreamName)
+  inStreamNames.forEach(streamName => {
+    const {stream, buffer} = streamMap[streamName]
+    stream.onmessage = (data) => {
       buffer.push(data)
       if (buffers.every(buff => buff.length > 0)) {
         const args = buffers.map(buff => buff.shift())
         const result = apply(fxn, args)
-        outAddress.postMessage(result)
+        outStream.postMessage(result)
       }
     }
   })
@@ -68,8 +68,8 @@ function(fxn, inAddressNames, outAddressName) {
     const num1 = new BroadcastChannel('num1');
     const num2 = new BroadcastChannel('num2');
     const result = new BroadcastChannel('result');
-    const num1Address = [];
-    const num2Address = [];
+    const num1Stream = [];
+    const num2Stream = [];
     const num1Buffer = 3;
     const num2Buffer = 3;
     num1.onmessage = (data) => {

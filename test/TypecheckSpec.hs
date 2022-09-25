@@ -41,8 +41,8 @@ unsafeFunc program = head . functions $ unsafeCompile program
 unsafePipe :: String -> Pipe
 unsafePipe program = head . pipes $ unsafeCompile program
 
-unsafeAddress :: String -> Address
-unsafeAddress program = head . addresses $ unsafeCompile program
+unsafeStream :: String -> Stream
+unsafeStream program = head . streams $ unsafeCompile program
 
 spec :: Spec
 spec = do
@@ -89,14 +89,14 @@ spec = do
       errorOf bad0 `shouldBe` PipeError (unsafePipe bad0) (NotFunction "sum")
       compile good `shouldSatisfy` isRight
 
-    it "expect DuplicateAddress pipe errors" $ do
+    it "expect DuplicateStream pipe errors" $ do
       let bad0 = "&a1 Num \
                  \&a1 Char"
-      errorOf bad0 `shouldBe` DuplicateAddressError (unsafeAddress bad0)
+      errorOf bad0 `shouldBe` DuplicateStreamError (unsafeStream bad0)
 
-    it "expect AddressNotFound pipe errors" $ do
+    it "expect StreamNotFound pipe errors" $ do
       let good0 = "id -> z z \n\
                   \id z = z"
           bad0 = unlines [good0, "| id [&a 1] &b"]
       compile good0 `shouldSatisfy` isRight
-      errorOf bad0 `shouldBe` PipeError (unsafePipe bad0) (AddressNotFound "&a")
+      errorOf bad0 `shouldBe` PipeError (unsafePipe bad0) (StreamNotFound "&a")
