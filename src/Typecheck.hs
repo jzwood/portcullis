@@ -1,4 +1,4 @@
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE NamedFieldPuns, TupleSections #-}
 
 module Typecheck where
 
@@ -6,7 +6,7 @@ import Data.Function
 import Data.Functor
 import Data.List (elemIndex, foldl', drop)
 import Data.Map (Map)
-import Data.Maybe (fromMaybe, listToMaybe, mapMaybe)
+import Data.Maybe (maybe, fromMaybe, listToMaybe, mapMaybe)
 import Data.Either (lefts)
 import Control.Applicative
 import Data.Traversable
@@ -20,7 +20,7 @@ data TypeError
   = NotFunction Name
   | AddressNotFound Name
   | DuplicateFunction
-  | TypeMismatch { expected :: TypeExpr, actual :: TypeExpr }
+  | TypeMismatch { expected :: TypeExpr, actual :: TypeExpr, typeMap :: Map Name TypeExpr }
   | ArityMismatch
   | RecursiveType [(Name, TypeExpr)]
   deriving (Show, Ord, Eq)
@@ -78,18 +78,23 @@ typecheckPipe addressMap funcMap pipe@Pipe { funcName, inAddresses, outAddressNa
 
 typecheckFunc :: Map Name Function -> Function -> Either TypecheckError TypeExpr
 typecheckFunc funcMap func@Function { body, args, signature } = do
-  typeofBody <- typeofExpr funcMap func body
+  (typeMap, typeofBody) <- typeofExpr funcMap func body
   expectedTypeOfBody <- typeExprToList signature
                       & drop (length args)
                       & typeExprFromList
-  typeEqual expectedTypeOfBody typeofBody
+  typeEqual typeMap expectedTypeOfBody typeofBody
   & mapLeft (FunctionError func)
 
-typeEqual :: TypeExpr -> TypeExpr -> Either TypeError TypeExpr
---typeEqual te1@(Unspecified a) (Unspecified b) = Right te1  -- TODO what is up with this?????
-typeEqual (ListType te1) (ListType te2) = ListType <$> typeEqual te1 te2
-typeEqual (TupType te1 te2) (TupType te3 te4) = liftA2 TupType (typeEqual te1 te3) (typeEqual te2 te4)
-typeEqual te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2
+typeEqual :: Map Name TypeExpr -> TypeExpr -> TypeExpr -> Either TypeError TypeExpr
+typeEqual m te1@(Unspecified a) te2@(Unspecified b) =
+  if te1 == te2 then Right te1 else
+  case Map.lookup a m of
+    Nothing -> Left $ TypeMismatch te1 te2 m
+    Just t -> typeEqual m t te2
+  -- Right te1  -- TODO what is up with this?????
+typeEqual m (ListType te1) (ListType te2) = ListType <$> typeEqual m te1 te2
+typeEqual m (TupType te1 te2) (TupType te3 te4) = liftA2 TupType (typeEqual m te1 te3) (typeEqual m te2 te4)
+typeEqual m te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 m
 
 typecheckExpr :: Map Name TypeExpr -> TypeExpr -> TypeExpr -> Either TypeError (Map Name TypeExpr, TypeExpr)
 typecheckExpr m t (Arrow tl tr)
@@ -115,13 +120,13 @@ typecheck t1 t2@(Unspecified n) m =
   if t1 == t2 then Right m else
   case Map.lookup n m of
     Nothing -> Right $ Map.insert n t1 m
-    Just t' -> if t1 == t' then Right m else Left $ TypeMismatch t1 t'
+    Just t' -> if t1 == t' then Right m else Left $ TypeMismatch t1 t' m
 typecheck (Arrow t0 t1) (Arrow t2 t3) m = typecheck t0 t2 m >>= typecheck t1 t3
 typecheck (TupType te0 te1) (TupType te2 te3) m = typecheck te0 te2 m >>= typecheck te1 te3
 typecheck (ListType te0) (ListType te1) m = typecheck te0 te1 m
 typecheck t1 t2 m =
   if t1 == t2 then Right m
-              else Left $ TypeMismatch t1 t2
+              else Left $ TypeMismatch t1 t2 m
 
 typeExprToList :: TypeExpr -> [TypeExpr]
 typeExprToList (Arrow t0 t1) = t0 : typeExprToList t1
@@ -137,36 +142,35 @@ argToMaybeSig arg args sig
   =   elemIndex arg args
   >>= (!?) (typeExprToList sig)
 
-typeofExpr :: Map Name Function -> Function -> Expr -> Either TypeError TypeExpr
+typeofExpr :: Map Name Function -> Function -> Expr -> Either TypeError (Map Name TypeExpr, TypeExpr)
 typeofExpr m f (Val p) =
   case p of
-    Number n -> Right NumType
-    Character c -> Right CharType
-    Atom a -> Right AtomType
+    Number n -> Right (Map.empty, NumType)
+    Character c -> Right (Map.empty, CharType)
+    Atom a -> Right (Map.empty, AtomType)
     Tuple expr1 expr2 -> sequence (typeofExpr m f <$> [expr1, expr2])
-      <&> \[e1, e2] -> TupType e1 e2
-    List typeExpr exprs -> Right $ ListType typeExpr
+      <&> \[(m1, e1), (m2, e2)] -> (m1 `Map.union` m2, TupType e1 e2)
+    List typeExpr exprs -> Right (Map.empty, ListType typeExpr)
 
 typeofExpr m f@Function { signature = sig, args } e =
   case e of
     Ident name ->
-      maybeSignature name
-      <&> Right
+      maybeSig name
+      <&> Right . (Map.empty,)
        &  fromMaybe (Left $ NotFunction name)
     Call name exprs ->
-      maybeSignature name
-      <&> check exprs
-       &  fromMaybe (Left $ NotFunction name)
+      maybeSig name
+       <&> check exprs
+        &  fromMaybe (Left $ NotFunction name)
     UnOp unop expr1 -> check [expr1] (typeofUnOp unop)
     BinOp bop expr1 expr2 -> check [expr1, expr2] (typeofBop bop)
     TernOp top expr1 expr2 expr3 -> check [expr1, expr2, expr3] (typeofTop top)
   where
-    maybeSignature :: String -> Maybe TypeExpr
-    maybeSignature name = argToMaybeSig name args sig <|> (signature <$> Map.lookup name m)
-    check :: [Expr] -> TypeExpr -> Either TypeError TypeExpr
-    check es sig = mapM (typeofExpr m f) es -- rewrite with mapM
-      >>= foldl' (\ms t -> ms >>= \(m, s) -> typecheckExpr m t s) (Right (Map.empty, sig))
-      <&> snd
+    maybeSig :: String -> Maybe TypeExpr
+    maybeSig name = argToMaybeSig name args sig  <|> (signature <$> Map.lookup name m)
+    check :: [Expr] -> TypeExpr -> Either TypeError (Map Name TypeExpr, TypeExpr)
+    check es sig = mapM (typeofExpr m f) es
+      >>= foldl' (\ ms t -> ms >>= \ (m, s) -> typecheckExpr m t s) (Right (Map.empty, sig)) . fmap snd
 
 typeofUnOp :: UnOp -> TypeExpr
 typeofUnOp Fst = alphaConversion "fst" $ Arrow (TupType (Unspecified "a") (Unspecified "b")) (Unspecified "a")

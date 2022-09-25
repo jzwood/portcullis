@@ -1,0 +1,6 @@
+id3 -> z -> [z] [z]
+id3 x xs = xs
+
+tail -> [t] [t]
+tail xs =
+  <+ xs xs (id3)

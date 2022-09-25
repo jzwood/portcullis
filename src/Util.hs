@@ -1,6 +1,7 @@
 module Util where
 
 import Data.List
+import Data.Tuple (swap)
 import Data.Map (Map)
 import qualified Data.Map as Map
 
@@ -117,3 +118,6 @@ lookup' m f k =
 -- "foo"
 extractExt :: String -> String
 extractExt = reverse . takeWhile (/= '.') . reverse
+
+invert :: (Ord k, Ord a) => Map k a -> Map a k
+invert = Map.fromList . fmap swap . Map.toList

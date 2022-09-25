@@ -1,5 +1,0 @@
-good -> a a
-good x = x
-
-good1 -> y y
-good1 z = (good z)
