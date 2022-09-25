@@ -86,7 +86,7 @@ quadruple x = (double (double x))
 
 ## Addresses
 
-Addresses are globally namespaced values, analogous to cells in Excel.
+Addresses are static, globally namespaced, typed streams.
 
 **grammar**
 

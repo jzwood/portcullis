@@ -6,6 +6,7 @@ import Data.Functor
 import Data.Either (isLeft, isRight)
 import Data.List
 import Data.Set (Set)
+import qualified Data.Map as Map
 import Syntax
 import qualified Data.Set as Set
 import Typecheck hiding (TypecheckError)
@@ -56,8 +57,8 @@ spec = do
                  \bad0 x = x"
           bad1 = "bad1 -> Num -> Num Num\
                  \bad1 p = p"
-      errorOf bad0 `shouldBe` FunctionError (unsafeFunc bad0) (TypeMismatch {expected = NumType, actual = Unspecified "bad0.z"})
-      errorOf bad1 `shouldBe` FunctionError (unsafeFunc bad1) (TypeMismatch {expected = Arrow NumType NumType, actual = NumType})
+      errorOf bad0 `shouldBe` FunctionError (unsafeFunc bad0) (TypeMismatch {expected = NumType, actual = Unspecified "bad0.z", typeMap = Map.empty})
+      errorOf bad1 `shouldBe` FunctionError (unsafeFunc bad1) (TypeMismatch {expected = Arrow NumType NumType, actual = NumType, typeMap = Map.empty})
 
     it "expect DuplicateFunction" $ do
       let bad0 = "good -> Atom Num \

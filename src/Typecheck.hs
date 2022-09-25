@@ -86,7 +86,12 @@ typecheckFunc funcMap func@Function { body, args, signature } = do
   & mapLeft (FunctionError func)
 
 typeEqual :: Map Name TypeExpr -> TypeExpr -> TypeExpr -> Either TypeError TypeExpr
---typeEqual te1@(Unspecified a) (Unspecified b) = Right te1  -- TODO what is up with this?????
+typeEqual m te1@(Unspecified a) te2@(Unspecified b) =
+  if te1 == te2 then Right te1 else
+  case Map.lookup a m of
+    Nothing -> Left $ TypeMismatch te1 te2 m
+    Just t -> typeEqual m t te2
+  -- Right te1  -- TODO what is up with this?????
 typeEqual m (ListType te1) (ListType te2) = ListType <$> typeEqual m te1 te2
 typeEqual m (TupType te1 te2) (TupType te3 te4) = liftA2 TupType (typeEqual m te1 te3) (typeEqual m te2 te4)
 typeEqual m te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 m
@@ -143,8 +148,8 @@ typeofExpr m f (Val p) =
     Number n -> Right (Map.empty, NumType)
     Character c -> Right (Map.empty, CharType)
     Atom a -> Right (Map.empty, AtomType)
-    --Tuple expr1 expr2 -> sequence (typeofExpr m f <$> [expr1, expr2])
-      -- <&> \[e1, e2] -> TupType e1 e2
+    Tuple expr1 expr2 -> sequence (typeofExpr m f <$> [expr1, expr2])
+      <&> \[(m1, e1), (m2, e2)] -> (m1 `Map.union` m2, TupType e1 e2)
     List typeExpr exprs -> Right (Map.empty, ListType typeExpr)
 
 typeofExpr m f@Function { signature = sig, args } e =
@@ -164,8 +169,8 @@ typeofExpr m f@Function { signature = sig, args } e =
     maybeSig :: String -> Maybe TypeExpr
     maybeSig name = argToMaybeSig name args sig  <|> (signature <$> Map.lookup name m)
     check :: [Expr] -> TypeExpr -> Either TypeError (Map Name TypeExpr, TypeExpr)
-    check es sig = (fmap . fmap) snd (mapM (typeofExpr m f) es)
-       >>= foldl' (\ms t -> ms >>= \(m, s) -> typecheckExpr m t s) (Right (Map.empty, sig))
+    check es sig = mapM (typeofExpr m f) es
+      >>= foldl' (\ ms t -> ms >>= \ (m, s) -> typecheckExpr m t s) (Right (Map.empty, sig)) . fmap snd
 
 typeofUnOp :: UnOp -> TypeExpr
 typeofUnOp Fst = alphaConversion "fst" $ Arrow (TupType (Unspecified "a") (Unspecified "b")) (Unspecified "a")
