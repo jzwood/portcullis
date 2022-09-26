@@ -129,7 +129,7 @@ showAtoms :: [Function] -> [String]
 showAtoms funcs
   =  concatMap (findAtoms . body) funcs
   &  zip [0..] . nub . ("False" :) . ("True" :)
- <&> (\(i, atom) -> unwords ["const", atom, "=", show i])
+ <&> (\(i, atom) -> unwords ["const", atom, "=", show i] ++ ";")
 
 showZeroArityFunctions :: [Function] -> [String]
 showZeroArityFunctions funcs

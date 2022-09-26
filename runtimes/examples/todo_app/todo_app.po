@@ -48,4 +48,3 @@ neq a b = == False == a b
 
 remove -> [Char] -> [[Char]] [[Char]]
 remove todo todos = (filter (neq todo) todos)
-

@@ -1,3 +1,5 @@
+import { force } from "./force.js";
+
 function magnitude(...nums) {
   return Math.sqrt(nums.reduce((mag, num) => mag + num * num, 0));
 }
@@ -37,6 +39,7 @@ export function visualize(elem, pipes) {
   removeAllChildren(elem);
   const svgns = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(svgns, "svg");
+  svg.style.border = "1px solid silver";
   elem.appendChild(svg);
   const defs = document.createElementNS(svgns, "defs");
   svg.appendChild(defs);
@@ -78,6 +81,7 @@ export function visualize(elem, pipes) {
     streamNode.appendChild(label);
     svg.appendChild(streamNode);
   });
+
   pipes.forEach(([fxn, inStreams, outStreamName]) => {
     const functionNode = document.createElementNS(svgns, "text");
     const functionLabel = "λ." + fxn.name;
@@ -112,6 +116,29 @@ export function visualize(elem, pipes) {
     });
   });
 
+  // TRANFORM PIPES AND STREAMS INTO GRAPH
+  const graphNodes = pipes.map(([fxn]) => "λ." + fxn.name).concat(streams);
+  const graphEdges = pipes.flatMap(([fxn, inStreams, outStreamName]) =>
+    inStreams.map(([inStreamName]) => ({
+      source: inStreamName,
+      target: "λ." + fxn.name,
+    })).concat({ source: "λ." + fxn.name, target: outStreamName })
+  );
+  // CALCULATE AND SET FORCE DIRECTED LAYOUT FOR GRAPH
+  const newNodes = force({
+    width,
+    height,
+    nodes: graphNodes,
+    edges: graphEdges,
+    iterations: 120,
+  });
+  newNodes.forEach(({ name, x, y }) => {
+    const node = svg.getElementById(name);
+    node.setAttribute("x", x);
+    node.setAttribute("y", y);
+  });
+
+  // SET LINES BETWEEN NODES
   const lines = svg.getElementsByTagNameNS(svgns, "line");
   Array.from(lines).forEach((line) => {
     const { src, target } = line.dataset;

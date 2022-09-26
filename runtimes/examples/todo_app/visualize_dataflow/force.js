@@ -18,6 +18,7 @@ function xyBinop(op, { x: x1, y: y1 }, { x: x2, y: y2 }) {
 
 const add = (a, b) => a + b;
 const sub = (a, b) => a - b;
+const rand = (dim, border) => border + Math.random() * (dim - 2 * border);
 
 function clamp(lower, higher, value) {
   return Math.min(higher, Math.max(value, lower));
@@ -32,15 +33,16 @@ export function force({ width, height, nodes, edges, iterations = 10 }) {
   const k = Math.sqrt(area / nodes.length);
   const fa = (x) => (x * x) / k;
   const fr = (x) => (k * k) / x;
-  const border = 20;
-  const clampH = (y) => clamp(border, height - 2 * border, y);
-  const clampW = (x) => clamp(border, width - border, x);
+  const wBorder = 0.1 * width;
+  const hBorder = 0.1 * height;
+  const clampH = (y) => clamp(0.05 * height, height - 0.05 * height, y);
+  const clampW = (x) => clamp(0.025 * width, width - 0.15 * width, x);
   const t = 1;
 
-  const attrNodes = nodes.map(({ id, position }) => ({
+  const attrNodes = nodes.map((id) => ({
     id,
     disp: { x: 0, y: 0 },
-    pos: { ...position },
+    pos: { x: rand(width, wBorder), y: rand(height, hBorder) },
   }));
 
   const attrNodeLookup = attrNodes.reduce((acc, val) => {
@@ -104,9 +106,5 @@ export function force({ width, height, nodes, edges, iterations = 10 }) {
       });
     });
 
-  const newNodes = nodes.map((node) => {
-    const { pos } = attrNodeLookup[node.id];
-    return { ...node, position: pos };
-  });
-  return newNodes;
+  return attrNodes.map(({ id, pos: { x, y } }) => ({ name: id, x, y }));
 }

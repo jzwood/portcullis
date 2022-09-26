@@ -26,12 +26,12 @@ export function done(done) {
   return [Done, done];
 }
 
-// signature: ([a] -> (a -> ([a] -> [a])))
+// signature: ([push.a] -> (push.a -> ([push.a] -> [push.a])))
 export function push(ys) {
   return (x) => (xs) => [x, ...concat(xs)(ys)];
 }
 
-// signature: ([a] -> ([a] -> [a]))
+// signature: ([concat.a] -> ([concat.a] -> [concat.a]))
 export function concat(xs) {
   return (ys) => (
     /* if */ equal(xs, [])
@@ -40,7 +40,7 @@ export function concat(xs) {
   );
 }
 
-// signature: ((x -> Atom) -> (x -> ([x] -> [x])))
+// signature: ((_filter.x -> Atom) -> (_filter.x -> ([_filter.x] -> [_filter.x])))
 export function _filter(f) {
   return (x) =>
     (xs) =>
@@ -51,7 +51,7 @@ export function _filter(f) {
       )(filter(f)(xs));
 }
 
-// signature: ((j -> Atom) -> ([j] -> [j]))
+// signature: ((filter.j -> Atom) -> ([filter.j] -> [filter.j]))
 export function filter(f) {
   return (xs) => (
     /* if */ equal(xs, [])
@@ -60,7 +60,7 @@ export function filter(f) {
   );
 }
 
-// signature: (a -> (b -> Atom))
+// signature: (neq.a -> (neq.b -> Atom))
 export function neq(a) {
   return (b) => equal(False, equal(a, b));
 }
