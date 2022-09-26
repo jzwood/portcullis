@@ -62,6 +62,7 @@ Some of these goals include
 - [parametric polymorphism](https://en.wikipedia.org/wiki/Parametric_polymorphism)
 
 ## More
+- [Introduction](./docs/About.md)
 - [Language Guide](./docs/Docs.md)
 - [Developer Guide](./docs/Dev.md)
 - [Vim Syntax Highlighting](https://github.com/jzwood/portcullis-vim)
