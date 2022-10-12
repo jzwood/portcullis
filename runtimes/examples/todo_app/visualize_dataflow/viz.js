@@ -101,13 +101,13 @@ export function visualize(elem, pipes) {
     line.dataset.src = functionLabel;
     line.dataset.target = outStreamLabel;
     svg.appendChild(line);
-    line.setAttribute("stroke", "black");
+    line.setAttribute("stroke", "rgba(0,0,0,0.5)");
     line.setAttribute("stroke-width", "0.25");
     line.setAttribute("marker-end", "url(#arrow)");
 
     inStreams.map(([inStreamName, _]) => {
       const line = document.createElementNS(svgns, "line");
-      line.setAttribute("stroke", "black");
+      line.setAttribute("stroke", "rgba(0,0,0,0.5)");
       line.setAttribute("stroke-width", "0.25");
       line.setAttribute("marker-end", "url(#arrow)");
       line.dataset.src = inStreamName;
