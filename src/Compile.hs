@@ -7,6 +7,7 @@ import Syntax
 import qualified MiniParser as ParseLib
 import MiniParser (runParser, Parser, Cursor)
 import Parser
+import CodeGen.TargetJs
 import qualified Typecheck
 import Typecheck (typecheckModule)
 import Util (mapLeft)
@@ -29,11 +30,10 @@ typecheck mod
   = typecheckModule mod
   & mapLeft TypecheckError
 
-compile :: String -> Either CompileError String
+compile :: String -> Either CompileError Module
 compile program
   =   parse program
   >>= typecheck
-  <&> show
 
 save :: String -> String -> Either CompileError String -> IO ()
 save _ dest (Right js)
@@ -45,5 +45,5 @@ runCompilation :: String -> String -> IO ()
 runCompilation src dest = do
   code <- readFile src <&> compile
   core <- ('\n':) <$> readFile core
-  save src dest $ (++core) <$> code where
+  save src dest $ (++core) <$> (code <&> toJs) where
     core = "src/core.js"

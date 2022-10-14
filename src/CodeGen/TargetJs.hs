@@ -19,7 +19,7 @@ class Js ast where
 
 instance Js Module where
   toJs Module { functions, comments, streamMap, pipes }
-    = unlines $ atoms : zeroArityFuncs : (show <$> functions) ++ [topology]
+    = unlines $ atoms : zeroArityFuncs : (toJs <$> functions) ++ [topology]
       where
         atoms = unlines $ showAtoms functions
         zeroArityFuncs = unlines $ showZeroArityFunctions functions
@@ -34,9 +34,9 @@ instance Js Function where
     , "}"
     ]
       where
-        docstring = comment $ unwords ["signature:", show tExpr]
+        docstring = comment $ unwords ["signature:", toJs tExpr]
         header = concat [ if null vars then "function $" else "export function " , name , (paren . head' "") vars ]
-        body = (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , show expr , ";" ]
+        body = (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , toJs expr , ";" ]
 
 instance Js Comment where
   toJs (Comment c) = comment c
@@ -47,71 +47,71 @@ instance Js TypeExpr where
   toJs AtomType = "Atom"
   toJs (Unspecified t) = t
   toJs (ListType t)
-    = show t
+    = toJs t
     & bracket
   toJs (TupType t1 t2)
     =  [t1, t2]
-   <&> show
+   <&> toJs
     &  bracket . unwords
-  toJs (Arrow tExpr1 tExpr2) = paren (show tExpr1 ++ pad "->" ++ show tExpr2)
+  toJs (Arrow tExpr1 tExpr2) = paren (toJs tExpr1 ++ pad "->" ++ toJs tExpr2)
 
 instance Js Value where
   toJs (Number n) = show n
   toJs (Character c) = ['\'', c, '\'']
   toJs (Atom n) = n
-  toJs (List (Unspecified "") xs) = show xs -- so uncons displays nicely
-  toJs (List t xs) = unwords ["/*", show $ ListType t, "*/", show xs]
+  --toJs (List (Unspecified "") xs) = show xs -- so uncons displays nicely
+  toJs (List t xs) = unwords ["/*", toJs $ ListType t, "*/", showList $ toJs <$> xs]
   toJs (Tuple e1 e2)
-    =  show <$> [e1, e2]
+    =  toJs <$> [e1, e2]
     &  showList
 
 instance Js Expr where
-  toJs (Val p) = show p
+  toJs (Val p) = toJs p
   toJs (Ident name) = name
   toJs (Call name exprs) = name ++
     case exprs of
       [] -> ""  -- functions without arguments are interpreted as values
-      _ -> concatMap (paren . show) exprs
-  toJs (UnOp unop e) = show e ++ show unop
+      _ -> concatMap (paren . toJs) exprs
+  toJs (UnOp unop e) = toJs e ++ toJs unop
   toJs (BinOp Equal e1 e2) = prefixBop Equal e1 e2
-  toJs (BinOp Cons e xs) = bracket $ show e ++ ", ..." ++ show xs
+  toJs (BinOp Cons e xs) = bracket $ toJs e ++ ", ..." ++ toJs xs
   toJs (BinOp bop e1 e2) = infixBop bop e1 e2
   toJs (TernOp If p e1 e2)
     = (paren . ('\n':) . (++"\n") . indent . unlines)
-    [ "/* if */ " ++ show p ++ " ?"
-    , "/* then */ " ++ show e1 ++ " :"
-    , "/* else */ " ++ show e2
+    [ "/* if */ " ++ toJs p ++ " ?"
+    , "/* then */ " ++ toJs e1 ++ " :"
+    , "/* else */ " ++ toJs e2
     ]
-  show (TernOp Uncons xs b fb) =
-    show $ TernOp If (BinOp Equal xs (Val $ List (Unspecified "") [])) b (Call (show fb) [UnOp Head xs, UnOp Tail xs])
+  toJs (TernOp Uncons xs b fb) =
+    toJs $ TernOp If (BinOp Equal xs (Val $ List (Unspecified "") [])) b (Call (toJs fb) [UnOp Head xs, UnOp Tail xs])
 
-instance Show UnOp where
-  show Fst = "[0]"
-  show Snd = "[1]"
-  show Head = ".at(0)"
-  show Tail = ".slice(1)"
+instance Js UnOp where
+  toJs Fst = "[0]"
+  toJs Snd = "[1]"
+  toJs Head = ".at(0)"
+  toJs Tail = ".slice(1)"
 
-instance Show Bop where
-  show Plus = "+"
-  show Minus = "-"
-  show Times = "*"
-  show Divide = "/"
-  show GreaterThan = ">"
-  show GreaterThanOrEqual = ">="
-  show LessThan = "<"
-  show LessThanOrEqual = "<="
-  show Rem = "%"
-  show Equal = "equal"
+instance Js Bop where
+  toJs Plus = "+"
+  toJs Minus = "-"
+  toJs Times = "*"
+  toJs Divide = "/"
+  toJs GreaterThan = ">"
+  toJs GreaterThanOrEqual = ">="
+  toJs LessThan = "<"
+  toJs LessThanOrEqual = "<="
+  toJs Rem = "%"
+  toJs Equal = "equal"
   --show Cons = "+>"  -- not used for code gen
 
 prefixOp :: String -> [String] -> String
 prefixOp op = (op ++) . paren . intercalate ", "
 
 prefixBop :: Bop -> Expr -> Expr -> String
-prefixBop bop e1 e2 = prefixOp (show bop) (show <$> [e1, e2])
+prefixBop bop e1 e2 = prefixOp (toJs bop) (toJs <$> [e1, e2])
 
 infixBop :: Bop -> Expr -> Expr -> String
-infixBop bop e1 e2 = paren . intercalate (pad . show $ bop) $ show <$> [e1, e2]
+infixBop bop e1 e2 = paren . intercalate (pad . toJs $ bop) $ toJs <$> [e1, e2]
 
 flatFindAtoms :: [Expr] -> [String]
 flatFindAtoms = concatMap findAtoms
