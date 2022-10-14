@@ -1,6 +1,6 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
-module CodeGen where
+module CodeGen.TargetJs where
 
 import Prelude hiding (showList)
 import Syntax
@@ -14,16 +14,19 @@ import Util
 import Data.Map (Map, (!))
 import qualified Data.Map as Map
 
-instance Show Module where
-  show Module { functions, comments, streamMap, pipes }
+class Js ast where
+  toJs :: ast -> String
+
+instance Js Module where
+  toJs Module { functions, comments, streamMap, pipes }
     = unlines $ atoms : zeroArityFuncs : (show <$> functions) ++ [topology]
       where
         atoms = unlines $ showAtoms functions
         zeroArityFuncs = unlines $ showZeroArityFunctions functions
         topology = showTopology streamMap pipes
 
-instance Show Function where
-  show (Function name tExpr vars expr)
+instance Js Function where
+  toJs (Function name tExpr vars expr)
     = unlines
     [ docstring
     , unwords [header, "{"]
@@ -35,45 +38,45 @@ instance Show Function where
         header = concat [ if null vars then "function $" else "export function " , name , (paren . head' "") vars ]
         body = (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , show expr , ";" ]
 
-instance Show Comment where
-  show (Comment c) = comment c
+instance Js Comment where
+  toJs (Comment c) = comment c
 
-instance Show TypeExpr where
-  show NumType = "Num"
-  show CharType = "Char"
-  show AtomType = "Atom"
-  show (Unspecified t) = t
-  show (ListType t)
+instance Js TypeExpr where
+  toJs NumType = "Num"
+  toJs CharType = "Char"
+  toJs AtomType = "Atom"
+  toJs (Unspecified t) = t
+  toJs (ListType t)
     = show t
     & bracket
-  show (TupType t1 t2)
+  toJs (TupType t1 t2)
     =  [t1, t2]
    <&> show
     &  bracket . unwords
-  show (Arrow tExpr1 tExpr2) = paren (show tExpr1 ++ pad "->" ++ show tExpr2)
+  toJs (Arrow tExpr1 tExpr2) = paren (show tExpr1 ++ pad "->" ++ show tExpr2)
 
-instance Show Value where
-  show (Number n) = show n
-  show (Character c) = ['\'', c, '\'']
-  show (Atom n) = n
-  show (List (Unspecified "") xs) = show xs -- so uncons displays nicely
-  show (List t xs) = unwords ["/*", show $ ListType t, "*/", show xs]
-  show (Tuple e1 e2)
+instance Js Value where
+  toJs (Number n) = show n
+  toJs (Character c) = ['\'', c, '\'']
+  toJs (Atom n) = n
+  toJs (List (Unspecified "") xs) = show xs -- so uncons displays nicely
+  toJs (List t xs) = unwords ["/*", show $ ListType t, "*/", show xs]
+  toJs (Tuple e1 e2)
     =  show <$> [e1, e2]
     &  showList
 
-instance Show Expr where
-  show (Val p) = show p
-  show (Ident name) = name
-  show (Call name exprs) = name ++
+instance Js Expr where
+  toJs (Val p) = show p
+  toJs (Ident name) = name
+  toJs (Call name exprs) = name ++
     case exprs of
       [] -> ""  -- functions without arguments are interpreted as values
       _ -> concatMap (paren . show) exprs
-  show (UnOp unop e) = show e ++ show unop
-  show (BinOp Equal e1 e2) = prefixBop Equal e1 e2
-  show (BinOp Cons e xs) = bracket $ show e ++ ", ..." ++ show xs
-  show (BinOp bop e1 e2) = infixBop bop e1 e2
-  show (TernOp If p e1 e2)
+  toJs (UnOp unop e) = show e ++ show unop
+  toJs (BinOp Equal e1 e2) = prefixBop Equal e1 e2
+  toJs (BinOp Cons e xs) = bracket $ show e ++ ", ..." ++ show xs
+  toJs (BinOp bop e1 e2) = infixBop bop e1 e2
+  toJs (TernOp If p e1 e2)
     = (paren . ('\n':) . (++"\n") . indent . unlines)
     [ "/* if */ " ++ show p ++ " ?"
     , "/* then */ " ++ show e1 ++ " :"

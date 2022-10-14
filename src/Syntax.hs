@@ -11,23 +11,23 @@ import Util
 
 type Name = String
 
-data Module = Module { functions :: [Function], functionMap :: Map Name Function, comments :: [Comment], streams :: [Stream], streamMap :: Map Name Stream, pipes :: [Pipe] }
+data Module = Module { functions :: [Function], functionMap :: Map Name Function, comments :: [Comment], streams :: [Stream], streamMap :: Map Name Stream, pipes :: [Pipe] } deriving (Eq, Ord, Show)
 
 data Stream = Stream { streamName :: Name, streamSig :: TypeExpr }
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Show)
 data Pipe = Pipe { funcName :: Name, inStreams :: [(Name, Integer)], outStreamName :: Name }
   deriving (Eq, Ord, Show)
 newtype Comment = Comment String
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Show)
 
 data Function = Function
   { name :: Name
   , signature :: TypeExpr
   , args :: [Name]
   , body :: Expr
-  } deriving (Eq, Ord)
+  } deriving (Eq, Ord, Show)
 
-data Stmt = F Function | S Stream | P Pipe | C Comment deriving (Eq)
+data Stmt = F Function | S Stream | P Pipe | C Comment deriving (Eq, Show)
 
 data TypeExpr
   = NumType
@@ -37,7 +37,7 @@ data TypeExpr
   | TupType TypeExpr TypeExpr
   | ListType TypeExpr
   | Arrow TypeExpr TypeExpr
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Show)
 
 applyTypeExpr :: (TypeExpr -> TypeExpr) -> TypeExpr -> TypeExpr
 applyTypeExpr f (TupType t1 t2) = TupType (f t1) (f t2)
@@ -51,7 +51,7 @@ data Value
   | Atom Name -- Apple
   | Tuple Expr Expr --- [1 'a']
   | List TypeExpr [Expr] --- num [1, 2, 3]
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Show)
 
 data Expr
   = Val Value
@@ -60,14 +60,14 @@ data Expr
   | UnOp UnOp Expr
   | BinOp Bop Expr Expr  -- + 2 3
   | TernOp Top Expr Expr Expr
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Show)
 
 data UnOp
   = Fst
   | Snd
   | Head -- INTERNAL ONLY
   | Tail  -- INTERNAL ONLY
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Show)
 
 data Bop
   = Plus
@@ -81,9 +81,9 @@ data Bop
   | Equal
   | Rem
   | Cons
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Show)
 
 data Top
   = Uncons
   | If
-  deriving (Show, Eq, Ord)
+  deriving (Eq, Ord, Show)

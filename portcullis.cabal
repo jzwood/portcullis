@@ -24,7 +24,7 @@ source-repository head
 
 library
   exposed-modules:
-      CodeGen
+      CodeGen.TargetJs
       Compile
       MiniParser
       Parser

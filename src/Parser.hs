@@ -4,7 +4,7 @@ module Parser where
 
 import MiniParser
 import Syntax
-import CodeGen
+--import CodeGen.TargetJs
 import Data.Functor
 import Control.Applicative
 import Data.Char

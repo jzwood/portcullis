@@ -12,7 +12,6 @@ import Control.Applicative
 import Data.Traversable
 import Syntax
 import Parser
-import CodeGen
 import Util
 import qualified Data.Map as Map
 
