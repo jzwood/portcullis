@@ -3,11 +3,13 @@ module Compile where
 import Data.Functor
 import Data.Function
 import Control.Applicative
+import System.FilePath (takeExtension)
 import Syntax
 import qualified MiniParser as ParseLib
 import MiniParser (runParser, Parser, Cursor)
 import Parser
 import CodeGen.TargetJs
+import CodeGen.TargetPy
 import qualified Typecheck
 import Typecheck (typecheckModule)
 import Util (mapLeft)
@@ -44,6 +46,9 @@ save src _ (Left err) = putStrLn ("!\t" ++ src ++ " " ++ show err)
 runCompilation :: String -> String -> IO ()
 runCompilation src dest = do
   code <- readFile src <&> compile
-  core <- ('\n':) <$> readFile core
-  save src dest $ (++core) <$> (code <&> toJs) where
-    core = "src/core.js"
+  case takeExtension dest of
+    ".js" -> do
+      core <- ('\n':) <$> readFile "src/core.js"
+      save src dest $ (++core) <$> (code <&> toJs)
+    ".py" -> save src dest (code <&> toPy)
+    ext -> putStrLn $ unwords [ "Unrecognized extension:", ext ]
