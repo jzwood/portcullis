@@ -34,8 +34,8 @@ instance Py Function where
     , "}"
     ]
       where
-        docstring = comment $ unwords ["signature:", toPy tExpr]
-        header = concat [ if null vars then "function $" else "export function " , name , (paren . head' "") vars ]
+        docstring = '#' : unwords ["signature:", toPy tExpr]
+        header = concat [ if null vars then "def __" else "def " , name , (paren . head' "") vars ]
         body = (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , toPy expr , ";" ]
 
 instance Py Comment where
@@ -88,8 +88,8 @@ instance Py Expr where
 instance Py UnOp where
   toPy Fst = "[0]"
   toPy Snd = "[1]"
-  toPy Head = ".at(0)"
-  toPy Tail = ".slice(1)"
+  toPy Head = "[0]"
+  toPy Tail = "[1:]"
 
 instance Py Bop where
   toPy Plus = "+"
@@ -101,7 +101,7 @@ instance Py Bop where
   toPy LessThan = "<"
   toPy LessThanOrEqual = "<="
   toPy Rem = "%"
-  toPy Equal = "equal"
+  toPy Equal = "=="
   --show Cons = "+>"  -- not used for code gen
 
 prefixOp :: String -> [String] -> String
@@ -131,15 +131,15 @@ findAtoms _ = []
 showAtoms :: [Function] -> [String]
 showAtoms funcs
   =  concatMap (findAtoms . body) funcs
-  &  zip [0..] . nub . ("False" :) . ("True" :)
- <&> (\(i, atom) -> unwords ["const", atom, "=", show i] ++ ";")
+  &  zip [0..] . nub . ("false" :) . ("true" :)
+ <&> (\(i, atom) -> unwords [atom, "=", show i] ++ ";")
 
 showZeroArityFunctions :: [Function] -> [String]
 showZeroArityFunctions funcs
   =  funcs
   &  filter (null . args)
  <&> name
- <&> (\name -> unwords ["export", "const", name, "=", '$' : name ++ "()" ])
+ <&> (\name -> unwords [name, "=", "__" ++ name ++ "()" ])
 
 showTopology :: Map Name Stream -> [Pipe] -> String
 showTopology _ [] = "export const pipes = [];"
