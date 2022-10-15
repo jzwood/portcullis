@@ -59,7 +59,7 @@ instance Js Value where
   toJs (Number n) = show n
   toJs (Character c) = ['\'', c, '\'']
   toJs (Atom n) = n
-  --toJs (List (Unspecified "") xs) = show xs -- so uncons displays nicely
+  toJs (List (Unspecified "") xs) = showList $ toJs <$> xs -- so uncons displays nicely
   toJs (List t xs) = unwords ["/*", toJs $ ListType t, "*/", showList $ toJs <$> xs]
   toJs (Tuple e1 e2)
     =  toJs <$> [e1, e2]

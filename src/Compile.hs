@@ -1,9 +1,13 @@
+{-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
+
 module Compile where
 
 import Data.Functor
 import Data.Function
 import Control.Applicative
 import System.FilePath (takeExtension)
+import qualified Data.ByteString.UTF8 as BSU
+import Data.FileEmbed (embedFile)
 import Syntax
 import qualified MiniParser as ParseLib
 import MiniParser (runParser, Parser, Cursor)
@@ -43,12 +47,13 @@ save _ dest (Right js)
   >> putStrLn ("✓\t" ++ dest ++ " Successfully Compiled")
 save src _ (Left err) = putStrLn ("!\t" ++ src ++ " " ++ show err)
 
+jsCore :: String
+jsCore = BSU.toString $(embedFile "src/core.js")
+
 runCompilation :: String -> String -> IO ()
 runCompilation src dest = do
   code <- readFile src <&> compile
   case takeExtension dest of
-    ".js" -> do
-      core <- ('\n':) <$> readFile "src/core.js"
-      save src dest $ (++core) <$> (code <&> toJs)
-    ".py" -> save src dest (code <&> toPy)
+    ".js" -> save src dest $ (++jsCore) . toJs <$> code
+    ".py" -> save src dest $ toPy <$> code
     ext -> putStrLn $ unwords [ "Unrecognized extension:", ext ]

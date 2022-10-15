@@ -35,7 +35,7 @@ export function push(ys) {
 // signature: ([concat.a] -> ([concat.a] -> [concat.a]))
 export function concat(xs) {
   return (ys) => (
-    /* if */ equal(xs, []) ?
+    /* if */ equal(xs, /* [] */ []) ?
     /* then */ ys :
     /* else */ push(ys)(xs.at(0))(xs.slice(1))
   );
@@ -53,7 +53,7 @@ export function _filter(f) {
 // signature: ((filter.j -> Atom) -> ([filter.j] -> [filter.j]))
 export function filter(f) {
   return (xs) => (
-    /* if */ equal(xs, []) ?
+    /* if */ equal(xs, /* [] */ []) ?
     /* then */ xs :
     /* else */ _filter(f)(xs.at(0))(xs.slice(1))
   );
