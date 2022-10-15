@@ -10,14 +10,14 @@ compile src dest file = runCompilation (src </> file) (dest </> replaceExtension
 compileDir :: FilePath -> IO ()
 compileDir dirPath
   = listDirectory dirPath
-  >>= mapM_ (compile dirPath "test/deno/compiled") . filter ("po" `isExtensionOf`)
+  >>= mapM_ (compile dirPath "test/codegen/compiled") . filter ("po" `isExtensionOf`)
 
 main :: IO ()
 main = do
-  removePathForcibly "test/deno/compiled"
-  createDirectory "test/deno/compiled"
-  runCompilation "test/deno/math.po" "test/deno/compiled/math.js"
-  runCompilation "test/deno/hof.po" "test/deno/compiled/hof.js"
+  removePathForcibly "test/codegen/compiled"
+  createDirectory "test/codegen/compiled"
+  runCompilation "test/codegen/math.po" "test/codegen/compiled/math.js"
+  runCompilation "test/codegen/hof.po" "test/codegen/compiled/hof.js"
   -- all example portcullis programs should compile
-  compileDir "test/deno/coverage"
-  compileDir "test/deno/examples"
+  compileDir "test/codegen/coverage"
+  compileDir "test/codegen/examples"

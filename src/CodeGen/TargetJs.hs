@@ -19,7 +19,7 @@ class Js ast where
 
 instance Js Module where
   toJs Module { functions, comments, streamMap, pipes }
-    = unlines $ atoms : zeroArityFuncs : (toJs <$> functions) ++ [topology]
+    = unlines $ (toJs <$> functions) ++ [atoms, zeroArityFuncs, topology]
       where
         atoms = unlines $ showAtoms functions
         zeroArityFuncs = unlines $ showZeroArityFunctions functions
@@ -78,9 +78,9 @@ instance Js Expr where
   toJs (BinOp bop e1 e2) = infixBop bop e1 e2
   toJs (TernOp If p e1 e2)
     = (paren . ('\n':) . (++"\n") . indent . unlines)
-    [ "/* if */ " ++ toJs p ++ " ?"
-    , "/* then */ " ++ toJs e1 ++ " :"
-    , "/* else */ " ++ toJs e2
+    [ toJs p ++ " ?"
+    , toJs e1 ++ " :"
+    , toJs e2
     ]
   toJs (TernOp Uncons xs b fb) =
     toJs $ TernOp If (BinOp Equal xs (Val $ List (Unspecified "") [])) b (Call (toJs fb) [UnOp Head xs, UnOp Tail xs])

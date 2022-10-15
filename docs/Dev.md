@@ -41,12 +41,12 @@
   - `deno test`
 
 - add tests
-  - write po file in `test/deno/<name>.po`
-  - update `test/deno/CompileTests.hs` to include new program
-  - run compilation `stack runhaskell test/deno/CompileTests`
-    - `test/deno/<name>.js` should now exist
-  - write js test file, `test/deno/<name>.test.js`, that imports functions from
-    `test/deno/<name>.js`
+  - write po file in `test/codegen/<name>.po`
+  - update `test/codegen/CompileTests.hs` to include new program
+  - run compilation `stack runhaskell test/codegen/CompileTests`
+    - `test/codegen/<name>.js` should now exist
+  - write js test file, `test/codegen/<name>.test.js`, that imports functions from
+    `test/codegen/<name>.js`
   - you can now call `deno test`
 
 ### REPL

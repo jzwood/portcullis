@@ -2,7 +2,7 @@
 
 stack install && \
 stack test && \
-stack runhaskell test/deno/CompileTests && \
+stack runhaskell test/codegen/CompileTests && \
 deno test && \
 echo "ALL TESTS PASS"
 

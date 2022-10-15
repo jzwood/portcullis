@@ -19,7 +19,7 @@ class Py ast where
 
 instance Py Module where
   toPy Module { functions, comments, streamMap, pipes }
-    = unlines $ atoms : zeroArityFuncs : (toPy <$> functions) ++ [topology]
+    = unlines $ (toPy <$> functions) ++ [atoms, zeroArityFuncs, topology]
       where
         atoms = unlines $ showAtoms functions
         zeroArityFuncs = unlines $ showZeroArityFunctions functions
@@ -57,7 +57,7 @@ instance Py Value where
   toPy (List t xs) = showList $ toPy <$> xs
   toPy (Tuple e1 e2)
     =  toPy <$> [e1, e2]
-    &  showList
+    &  showTuple
 
 instance Py Expr where
   toPy (Val p) = toPy p
@@ -116,8 +116,8 @@ findAtoms _ = []
 showAtoms :: [Function] -> [String]
 showAtoms funcs
   =  concatMap (findAtoms . body) funcs
-  &  zip [0..] . nub . ("false" :) . ("true" :)
- <&> (\(i, atom) -> unwords [atom, "=", show i] ++ ";")
+  &  zip [0..] . nub . ("False" :) . ("True" :)
+ <&> (\(i, atom) -> unwords [toUpper <$> atom, "=", show i] ++ ";")
 
 showZeroArityFunctions :: [Function] -> [String]
 showZeroArityFunctions funcs
@@ -135,4 +135,7 @@ showTopology streamMap pipes
 
 showPipe :: Map Name Stream -> Pipe -> String
 showPipe streamMap Pipe { funcName, inStreams, outStreamName } =
-  showList [funcName, showList (fmap (\(name, buffer) -> showList [show name, show buffer]) inStreams), show outStreamName]
+  showTuple [funcName, showList (fmap (\(name, buffer) -> showTuple [show name, show buffer]) inStreams), show outStreamName]
+
+showTuple :: [String] -> String
+showTuple = paren . intercalate ", "
