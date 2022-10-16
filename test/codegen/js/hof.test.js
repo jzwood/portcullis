@@ -6,7 +6,7 @@ import {
 import {
   compose,
   double,
-  id,
+  id1,
   id2,
   one1,
   one2,
@@ -38,7 +38,7 @@ Deno.test("quadruple", () => {
 Deno.test("id/2", () => {
   const nums = generateNumArray();
   nums.forEach((n) => {
-    assertEquals(id(n), n);
+    assertEquals(id1(n), n);
     assertEquals(id2(n), n);
   });
 });
