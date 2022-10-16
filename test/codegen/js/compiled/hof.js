@@ -1,5 +1,5 @@
-// signature: (id.x -> id.x)
-export function id(x) {
+// signature: (id1.x -> id1.x)
+export function id1(x) {
   return x;
 }
 
@@ -20,7 +20,7 @@ export function quadruple(n) {
 
 // signature: (id2.x -> id2.x)
 export function id2(x) {
-  return compose(id)(id)(x);
+  return compose(id1)(id1)(x);
 }
 
 // signature: Num
@@ -30,7 +30,7 @@ function $one1() {
 
 // signature: Num
 function $one2() {
-  return compose(id)(id)(one1);
+  return compose(id1)(id1)(one1);
 }
 
 // signature: (id3.z -> ([id3.z] -> [id3.z]))

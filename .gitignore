@@ -1,4 +1,5 @@
-.stack-work/*
+.stack-work/
 .DS_Store
-dest/*
-test/deno/compiled/*
+__pycache__/
+dest/
+compiled/

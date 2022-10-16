@@ -1,5 +1,5 @@
-id -> x x
-id x = x
+id1 -> x x
+id1 x = x
 
 #
 filter ...
@@ -15,13 +15,13 @@ quadruple -> Num Num
 quadruple n = (compose double double n)
 
 id2 -> x x
-id2 x = (compose id id x)
+id2 x = (compose id1 id1 x)
 
 one1 Num
 one1 = 1
 
 one2 Num
-one2 = (compose id id (one1))
+one2 = (compose id1 id1 (one1))
 
 id3 -> z -> [z] [z]
 id3 x xs = xs

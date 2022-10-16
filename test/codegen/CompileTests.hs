@@ -2,6 +2,7 @@ module CompileTests where
 
 import Compile (runCompilation)
 import Data.List (intercalate)
+import Data.Char (toUpper)
 import System.Directory (createDirectory, listDirectory, removePathForcibly)
 import System.FilePath ((</>), (<.>), replaceExtension, isExtensionOf)
 
@@ -20,6 +21,7 @@ testCodeGen :: String -> IO ()
 testCodeGen ext = do
   removePathForcibly $ pathify ["test", "codegen", ext, "compiled"]
   createDirectory $ pathify ["test", "codegen", ext, "compiled"]
+  putStrLn $ unwords ["\tCOMPILING", toUpper <$> ext ]
   runCompilation "test/codegen/math.po" $ pathify ["test", "codegen", ext, "compiled", "math." ++ ext]
   runCompilation "test/codegen/hof.po" $ pathify ["test", "codegen", ext, "compiled", "hof." ++ ext]
   -- all example portcullis programs should compile

@@ -1,5 +1,5 @@
-# signature: ((not.a -> (not.a -> Atom)) -> (not.a -> (not.a -> Atom)))
-def not(f):
+# signature: ((_not.a -> (_not.a -> Atom)) -> (_not.a -> (_not.a -> Atom)))
+def _not(f):
   return lambda a: lambda b: True if (False == f(a)(b)) else False
 
 # signature: (_length.a -> ([_length.a] -> Num))

@@ -1,7 +1,7 @@
 # UNSTANDARD LIB #
 
-not -> -> a -> a Atom -> a -> a Atom
-not f a b =
+_not -> -> a -> a Atom -> a -> a Atom
+_not f a b =
   ? == False (f a b) True False
 
 _length -> a -> [a] Num

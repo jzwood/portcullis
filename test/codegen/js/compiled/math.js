@@ -1,5 +1,5 @@
-// signature: ((not.a -> (not.a -> Atom)) -> (not.a -> (not.a -> Atom)))
-export function not(f) {
+// signature: ((_not.a -> (_not.a -> Atom)) -> (_not.a -> (_not.a -> Atom)))
+export function _not(f) {
   return (a) => (b) => (
     equal(False, f(a)(b)) ?
     True :

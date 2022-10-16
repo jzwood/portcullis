@@ -44,9 +44,9 @@
   - write po file in `test/codegen/<name>.po`
   - update `test/codegen/CompileTests.hs` to include new program
   - run compilation `stack runhaskell test/codegen/CompileTests`
-    - `test/codegen/<name>.js` should now exist
+    - `test/codegen/js/compiled/<name>.js` should now exist
   - write js test file, `test/codegen/<name>.test.js`, that imports functions from
-    `test/codegen/<name>.js`
+    `test/codegen/js/compiled/<name>.js`
   - you can now call `deno test`
 
 ### REPL

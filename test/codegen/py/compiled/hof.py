@@ -1,5 +1,5 @@
-# signature: (id.x -> id.x)
-def id(x):
+# signature: (id1.x -> id1.x)
+def id1(x):
   return x
 
 # signature: ((compose.b -> compose.c) -> ((compose.a -> compose.b) -> (compose.a -> compose.c)))
@@ -16,7 +16,7 @@ def quadruple(n):
 
 # signature: (id2.x -> id2.x)
 def id2(x):
-  return compose(id)(id)(x)
+  return compose(id1)(id1)(x)
 
 # signature: Num
 def __one1():
@@ -24,7 +24,7 @@ def __one1():
 
 # signature: Num
 def __one2():
-  return compose(id)(id)(one1)
+  return compose(id1)(id1)(one1)
 
 # signature: (id3.z -> ([id3.z] -> [id3.z]))
 def id3(x):
