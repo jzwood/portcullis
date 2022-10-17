@@ -4,11 +4,11 @@ def update(tup):
 
 # signature: ([Char] -> [Atom [Char]])
 def append(todo):
-  return [Append, todo]
+  return (Append, todo)
 
 # signature: ([Char] -> [Atom [Char]])
 def done(done):
-  return [Done, done]
+  return (Done, done)
 
 # signature: ([push.a] -> (push.a -> ([push.a] -> [push.a])))
 def push(ys):
@@ -41,7 +41,7 @@ DONE = 3;
 
 
 pipes = [
-  [update, [["&update", 100], ["&todo", 1]], "&todo"],
-  [append, [["&append", 50]], "&update"],
-  [done, [["&done", 50]], "&update"]
+  (update, [("&update", 100), ("&todo", 1)], "&todo"),
+  (append, [("&append", 50)], "&update"),
+  (done, [("&done", 50)], "&update")
 ]

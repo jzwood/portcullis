@@ -157,20 +157,20 @@ export function avg(a) {
 
 // signature: ([Num] -> Num)
 export function mean(xs) {
-  return (sum(xs) / length(xs));
+  return (total(xs) / length(xs));
 }
 
 // signature: (Num -> ([Num] -> Num))
-export function sum2(x) {
-  return (xs) => (x + sum(xs));
+export function _total(x) {
+  return (xs) => (x + total(xs));
 }
 
 // signature: ([Num] -> Num)
-export function sum(xs) {
+export function total(xs) {
   return (
     equal(xs, []) ?
     0.0 :
-    sum2(xs.at(0))(xs.slice(1))
+    _total(xs.at(0))(xs.slice(1))
   );
 }
 

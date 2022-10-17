@@ -87,14 +87,14 @@ avg -> Num -> Num Num
 avg a b = * 0.5 + a b
 
 mean -> [Num] Num
-mean xs = / (sum xs) (length xs)
+mean xs = / (total xs) (length xs)
 
-sum2 -> Num -> [Num] Num
-sum2 x xs = + x (sum xs)
+_total -> Num -> [Num] Num
+_total x xs = + x (total xs)
 
-sum -> [Num] Num
-sum xs =
-  <+ xs 0 sum2
+total -> [Num] Num
+total xs =
+  <+ xs 0 _total
 
 compose -> -> b c -> -> a b -> a c
 compose f g x = (f (g x))

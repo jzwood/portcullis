@@ -84,15 +84,15 @@ def avg(a):
 
 # signature: ([Num] -> Num)
 def mean(xs):
-  return (sum(xs) / length(xs))
+  return (total(xs) / length(xs))
 
 # signature: (Num -> ([Num] -> Num))
-def sum2(x):
-  return lambda xs: (x + sum(xs))
+def _total(x):
+  return lambda xs: (x + total(xs))
 
 # signature: ([Num] -> Num)
-def sum(xs):
-  return 0.0 if (xs == []) else sum2(xs[0])(xs[1:])
+def total(xs):
+  return 0.0 if (xs == []) else _total(xs[0])(xs[1:])
 
 # signature: ((compose.b -> compose.c) -> ((compose.a -> compose.b) -> (compose.a -> compose.c)))
 def compose(f):

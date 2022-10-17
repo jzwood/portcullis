@@ -25,13 +25,13 @@ export function range(n0) {
 export function _fizzbuzz(n) {
   return (
     equal(0.0, (n % 15.0)) ?
-    (0.0 - 3.0) :
+    (0.0 - 35.0) :
     (
       equal(0.0, (n % 5.0)) ?
-      (0.0 - 2.0) :
+      (0.0 - 5.0) :
       (
         equal(0.0, (n % 3.0)) ?
-        (0.0 - 1.0) :
+        (0.0 - 3.0) :
         n
       )
     )

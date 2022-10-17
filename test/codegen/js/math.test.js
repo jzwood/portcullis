@@ -10,7 +10,7 @@ import {
   msort,
   neg,
   qsort,
-  sum,
+  total,
   tail,
 } from "./compiled/math.js";
 
@@ -62,12 +62,12 @@ Deno.test("sort", () => {
   assertEquals(qsort([]), []);
 });
 
-Deno.test("sum", () => {
+Deno.test("total", () => {
   for (let i = 0; i < 20; i++) {
     const arr = generateNumArray();
-    assertEquals(round(sum(arr)), round(_.sum(arr)));
+    assertEquals(round(total(arr)), round(_.sum(arr)));
   }
-  assertEquals(sum([]), _.sum([]));
+  assertEquals(total([]), _.sum([]));
 });
 
 Deno.test("mean", () => {

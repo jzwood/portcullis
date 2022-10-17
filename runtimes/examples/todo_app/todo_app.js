@@ -1,18 +1,12 @@
-const False = 0;
-const True = 1;
-const Append = 2;
-const Done = 3;
-
-
 // signature: ([Atom [Char]] -> ([[Char]] -> [[Char]]))
 export function update(tup) {
   return (todos) => (
-    /* if */ equal(Append, tup[0]) ?
-    /* then */ [tup[1], ...todos] :
-    /* else */ (
-      /* if */ equal(Done, tup[0]) ?
-      /* then */ remove(tup[1])(todos) :
-      /* else */ todos
+    equal(Append, tup[0]) ?
+    [tup[1], ...todos] :
+    (
+      equal(Done, tup[0]) ?
+      remove(tup[1])(todos) :
+      todos
     )
   );
 }
@@ -35,27 +29,27 @@ export function push(ys) {
 // signature: ([concat.a] -> ([concat.a] -> [concat.a]))
 export function concat(xs) {
   return (ys) => (
-    /* if */ equal(xs, /* [] */ []) ?
-    /* then */ ys :
-    /* else */ push(ys)(xs.at(0))(xs.slice(1))
+    equal(xs, []) ?
+    ys :
+    push(ys)(xs.at(0))(xs.slice(1))
   );
 }
 
 // signature: ((_filter.x -> Atom) -> (_filter.x -> ([_filter.x] -> [_filter.x])))
 export function _filter(f) {
   return (x) => (xs) => concat((
-    /* if */ f(x) ?
-    /* then */ /* [x] */ [x] :
-    /* else */ /* [x] */ []
+    f(x) ?
+    /* [x] */ [x] :
+    /* [x] */ []
   ))(filter(f)(xs));
 }
 
 // signature: ((filter.j -> Atom) -> ([filter.j] -> [filter.j]))
 export function filter(f) {
   return (xs) => (
-    /* if */ equal(xs, /* [] */ []) ?
-    /* then */ xs :
-    /* else */ _filter(f)(xs.at(0))(xs.slice(1))
+    equal(xs, []) ?
+    xs :
+    _filter(f)(xs.at(0))(xs.slice(1))
   );
 }
 
@@ -69,12 +63,17 @@ export function remove(todo) {
   return (todos) => filter(neq(todo))(todos);
 }
 
+const False = 0;
+const True = 1;
+const Append = 2;
+const Done = 3;
+
+
 export const pipes = [
   [update, [["&update", 100], ["&todo", 1]], "&todo"],
   [append, [["&append", 50]], "&update"],
   [done, [["&done", 50]], "&update"]
 ]
-
 // INTERNAL
 function equal(a, b) {
   if (a === b) {

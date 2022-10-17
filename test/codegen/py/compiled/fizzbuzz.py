@@ -12,7 +12,7 @@ def range(n0):
 
 # signature: (Num -> Num)
 def _fizzbuzz(n):
-  return (0.0 - 3.0) if (0.0 == (n % 15.0)) else (0.0 - 2.0) if (0.0 == (n % 5.0)) else (0.0 - 1.0) if (0.0 == (n % 3.0)) else n
+  return (0.0 - 35.0) if (0.0 == (n % 15.0)) else (0.0 - 5.0) if (0.0 == (n % 5.0)) else (0.0 - 3.0) if (0.0 == (n % 3.0)) else n
 
 # signature: (Num -> [Num])
 def fizzbuzz(n):
