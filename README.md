@@ -19,14 +19,20 @@ fib.po
 compiles to fib.js
 
 ```js
-// function "fib" has type (Num -> Num)
+// signature: (Num -> Num)
 export function fib(n) {
   return (
-    /* if */ (n <= 1.0) ?
-    /* then */ 1.0 :
-    /* else */ (fib((n - 1.0)) + fib((n - 2.0)))
+    (n <= 1.0) ? 1.0 : (fib((n - 1.0)) + fib((n - 2.0)))
   );
 }
+```
+
+compiles to fib.py
+
+```py
+# signature: (Num -> Num)
+def fib(n):
+  return 1.0 if (n <= 1.0) else (fib((n - 1.0)) + fib((n - 2.0)))
 ```
 
 <hr>

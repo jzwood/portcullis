@@ -77,7 +77,7 @@ instance Js Expr where
   toJs (BinOp Cons e xs) = bracket $ toJs e ++ ", ..." ++ toJs xs
   toJs (BinOp bop e1 e2) = infixBop bop e1 e2
   toJs (TernOp If p e1 e2)
-    = (paren . ('\n':) . (++"\n") . indent . unlines)
+    = (paren . ('\n':) . (++"\n") . indent . unwords)
     [ toJs p ++ " ?"
     , toJs e1 ++ " :"
     , toJs e2
