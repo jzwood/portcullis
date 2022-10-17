@@ -4,9 +4,8 @@
 
 <p align="center">
 	<h1 align="center">Portcullis</h1>
-  <h4 align="center">A minimalist programming language.</h4>
+  <h4 align="center">A minimalist / functional / dataflow programming language.</h4>
 </p>
-
 
 fib.po
 
