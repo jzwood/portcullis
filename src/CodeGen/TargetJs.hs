@@ -34,12 +34,9 @@ instance Js Function where
     , "}"
     ]
       where
-        docstring = comment $ unwords ["signature:", toJs tExpr]
+        docstring = unwords ["// signature:", toJs tExpr]
         header = concat [ if null vars then "function $" else "export function " , name , (paren . head' "") vars ]
         body = (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , toJs expr , ";" ]
-
-instance Js Comment where
-  toJs (Comment c) = comment c
 
 instance Js TypeExpr where
   toJs NumType = "Num"

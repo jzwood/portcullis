@@ -47,11 +47,11 @@ unlines' xs = init . unlines $ xs
 indent :: String -> String
 indent = unlines' . fmap ("  "++) . lines
 
-comment :: String -> String
-comment = unlines' . map ("// " ++) . lines
+--comment :: String -> String
+--comment = unlines' . map ("// " ++) . lines
 
-multComment :: String -> String
-multComment str = concat ["/*\n", unlines . map (" *  " ++) . lines $ str, " */"]
+--multComment :: String -> String
+--multComment str = concat ["/*\n", unlines . map (" *  " ++) . lines $ str, " */"]
 
 --divider :: String
 --divider =  concat $ "// " : replicate 60 "#"

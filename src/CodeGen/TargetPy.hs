@@ -33,9 +33,6 @@ instance Py Function where
         header = concat [ if null vars then "def __" else "def " , name, (paren . head' "") vars, ":" ]
         body = (indent . concat) [ "return " , concatMap (("lambda " ++) . (++ ": ")) (tail' vars) , toPy expr]
 
-instance Py Comment where
-  toPy (Comment c) = ""  -- python doesn't have inline comments
-
 instance Py TypeExpr where
   toPy NumType = "Num"
   toPy CharType = "Char"
