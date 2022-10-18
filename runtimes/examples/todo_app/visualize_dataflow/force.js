@@ -24,6 +24,17 @@ function clamp(lower, higher, value) {
   return Math.min(higher, Math.max(value, lower));
 }
 
+function clampEllipse(width, height, pos) {
+  const { x: x0, y: y0 } = pos
+  const sign = (n) => (n >= 0 ? 1 : -1)
+  const f =
+    (width * height) /
+    Math.sqrt(width * width * y0 * y0 + height * height * x0 * x0)
+  const x = sign(x0) * Math.abs(f * x0)
+  const y = sign(y0) * Math.abs(f * y0)
+  return magnitude(pos) < magnitude({ x, y }) ? pos : { x, y }
+}
+
 export function force({ width, height, nodes, edges, iterations = 10 }) {
   if (edges.length === 0) {
     return nodes; // seems to go wonky when there are is only 1 node and no edges
@@ -35,6 +46,15 @@ export function force({ width, height, nodes, edges, iterations = 10 }) {
   const fr = (x) => (k * k) / x;
   const wBorder = 0.1 * width;
   const hBorder = 0.1 * height;
+  const clampE = ({ x: x0, y: y0 }) => {
+    const half_width = 0.5 * width
+    const half_height = 0.5 * height
+    const { x, y } = clampEllipse(half_width, half_height, {
+      x: x0 - half_width,
+      y: half_height - y0
+    })
+    return { x: x + half_width, y: -1 * (y - half_height) }
+  }
   const clampH = (y) => clamp(0.05 * height, height - 0.05 * height, y);
   const clampW = (x) => clamp(0.025 * width, width - 0.15 * width, x);
   const t = 1;
@@ -101,6 +121,7 @@ export function force({ width, height, nodes, edges, iterations = 10 }) {
         const term = fxy(min, normal);
         const pos = xyBinop(add, node.pos, term);
         node.pos = pos;
+        Object.assign(node.pos, clampE(node.pos))
         node.pos.x = clampW(node.pos.x);
         node.pos.y = clampH(node.pos.y);
       });
