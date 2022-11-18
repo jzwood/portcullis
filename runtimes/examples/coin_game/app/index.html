@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Coin Toss</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <script type="module">
+      import { pipes } from "../coin.js";
+      import { makeGrah } from "./event_runtime.js";
+
+      function sendEvent(address, payload) {
+        const event = new CustomEvent(address, { detail: payload})
+        document.dispatchEvent(event);
+      }
+
+      makeGrah(pipes)
+
+      const coinElem = document.getElementById('coin')
+      const scoreElem = document.getElementById('score')
+      const winElem = document.getElementById('win')
+
+      document.addEventListener('&newCoin', () => {
+        sendEvent('&coin', Math.random() > 0.5 ? 'H' : 'T')
+      })
+
+      document.addEventListener('&coin', ({detail: value}) => {
+        coinElem.textContent = value
+      })
+
+      document.addEventListener('&win', ({detail: won}) => {
+        winElem.textContent = won ? 'you won' : 'you lost'
+        winElem.classList.toggle('winner', won)
+      })
+
+      document.addEventListener('&score', ({detail: score }) => {
+        scoreElem.textContent = `${score} points`
+      })
+
+      document.getElementById('heads').addEventListener('click', () => {
+        sendEvent('&guess', 'H')
+      })
+
+      document.getElementById('tails').addEventListener('click', () => {
+        sendEvent('&guess', 'T')
+      })
+
+      sendEvent('&score', 0)
+    </script>
+    <main class="flex-column">
+      <h1>Coin Toss:
+        <output id="score">Score</output>
+      </h1>
+      <div id="coin"></div>
+      <div id="win"></div>
+      <div>
+        <button id="heads">HEADS</button>
+        <button id="tails">TAILS</button>
+      </div>
+    </main>
+  </body>
+</html>

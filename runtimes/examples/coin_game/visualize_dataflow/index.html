@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>VIZ DATAFLOW</title>
+  </head>
+  <body>
+    <script type="module">
+      import { visualize } from "./viz.js";
+      import { pipes } from "../coin.js";
+      const viz = document.getElementById("viz");
+      visualize(viz, pipes);
+    </script>
+    <body style="font-family: Courier New;">
+      <h2 style="font-weight: lighter; margin: 0;">Todo Data-Flow Visualization</h2>
+      <main id="viz" style="flex-grow: 1;"></main>
+    </body>
+</html>

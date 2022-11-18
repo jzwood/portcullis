@@ -1,0 +1,20 @@
+# streams #
+&score Num
+&coin Char
+&guess Char
+&win Atom
+&newCoin Char
+
+# pipes #
+| id   [ &guess 99 ] &newCoin
+| cmp  [ &guess 99 &coin 99 ] &win
+| incr [ &win 99 &score 99 ] &score
+
+id -> a a
+id x = x
+
+cmp -> x -> x Atom
+cmp a b = == a b
+
+incr -> Atom -> Num Num
+incr won score = + score ? won 1 - 0 1

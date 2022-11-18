@@ -43,8 +43,11 @@ filter -> -> j Atom -> [j] [j]
 filter f xs =
   <+ xs xs (_filter f)
 
-neq -> a -> b Atom
-neq a b = == False == a b
+neg -> a -> b Atom
+neg a b = == False == a b
 
 remove -> [Char] -> [[Char]] [[Char]]
-remove todo todos = (filter (neq todo) todos)
+remove todo todos = (filter (neg todo) todos)
+
+
+

@@ -1,0 +1,25 @@
+body {
+  font-family: verdana;
+}
+
+h1 {
+  margin: 0;
+}
+
+#coin {
+  font-size: 50pt;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.5rem;
+}
+
+#win {
+  color: red;
+}
+
+#win.winner {
+  color: green;
+}
