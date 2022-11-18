@@ -2,9 +2,13 @@
 def id(x):
   return x
 
-# signature: (Char -> (Char -> (Num -> Num)))
-def incr(guess):
-  return lambda actual: lambda score: (score + 1.0 if (guess == actual) else 0.0)
+# signature: (cmp.x -> (cmp.x -> Atom))
+def cmp(a):
+  return lambda b: (a == b)
+
+# signature: (Atom -> (Num -> Num))
+def incr(won):
+  return lambda score: (score + (1.0 if won else (0.0 - 1.0)))
 
 FALSE = 0;
 TRUE = 1;
@@ -12,5 +16,6 @@ TRUE = 1;
 
 pipes = [
   (id, [("&guess", 99)], "&newCoin"),
-  (incr, [("&guess", 99), ("&coin", 99), ("&score", 99)], "&score")
+  (cmp, [("&guess", 99), ("&coin", 99)], "&win"),
+  (incr, [("&win", 99), ("&score", 99)], "&score")
 ]

@@ -9,7 +9,8 @@
       import { visualize } from "./viz.js";
       import { pipes } from "../coin.js";
       const viz = document.getElementById("viz");
-      visualize(viz, pipes);
+      const ghostPipe = [{name: 'randomCoin'}, [['&newCoin', 0]], '&coin']
+      visualize(viz, pipes.concat([ghostPipe]))
     </script>
     <body style="font-family: Courier New;">
       <h2 style="font-weight: lighter; margin: 0;">Todo Data-Flow Visualization</h2>

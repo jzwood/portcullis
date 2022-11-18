@@ -66,7 +66,7 @@ instance Py Expr where
   toPy (UnOp unop e) = toPy e ++ toPy unop
   toPy (BinOp Cons e xs) = unwords [ bracket $ toPy e, "+", toPy xs]
   toPy (BinOp bop e1 e2) = infixBop bop e1 e2
-  toPy (TernOp If p e1 e2) = unwords [ toPy e1, "if", toPy p, "else", toPy e2]
+  toPy (TernOp If p e1 e2) = (paren . unwords) [ toPy e1, "if", toPy p, "else", toPy e2]
   toPy (TernOp Uncons xs b fb) =
     toPy $ TernOp If (BinOp Equal xs (Val $ List (Unspecified "") [])) b (Call (toPy fb) [UnOp Head xs, UnOp Tail xs])
 

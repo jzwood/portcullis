@@ -38,13 +38,8 @@
         scoreElem.textContent = `${score} points`
       })
 
-      document.getElementById('heads').addEventListener('click', () => {
-        sendEvent('&guess', 'H')
-      })
-
-      document.getElementById('tails').addEventListener('click', () => {
-        sendEvent('&guess', 'T')
-      })
+      document.getElementById('heads').addEventListener('click', sendEvent.bind(null, '&guess', 'H'))
+      document.getElementById('tails').addEventListener('click', sendEvent.bind(null, '&guess', 'T'))
 
       sendEvent('&score', 0)
     </script>
