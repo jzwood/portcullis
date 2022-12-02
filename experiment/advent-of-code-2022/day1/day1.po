@@ -1,0 +1,77 @@
+#
+parseList list =  lines list
+              <&> (\str -> if str == "" then 0 else read str :: Integer)
+               &  groupBy (\a b -> a > 0 && b > 0)
+               &  filter (/=[0])
+              <&> sum
+
+#
+
+list [[Char]]
+list = [Char] [ Char ['1' '2' '3'] Char ['4' '4'] ]
+
+# CHAR UTILS #
+
+charToNum -> Char -> Num Num
+charToNum char fallback =
+  ? == char '0' 0
+  ? == char '1' 1
+  ? == char '2' 2
+  ? == char '3' 3
+  ? == char '4' 4
+  ? == char '5' 5
+  ? == char '6' 6
+  ? == char '7' 7
+  ? == char '8' 8
+  ? == char '9' 9
+  fallback
+
+_parseInt -> Char -> [Num] [Num]
+_parseInt char nums = +> * (exp 10 (length nums)) (charToNum char 0) nums
+
+parseInt -> [Char] Num
+parseInt chars = (sum (foldr _parseInt Num [] (reverse chars)))
+
+# MATH UTILS #
+
+# https://en.wikipedia.org/wiki/Exponentiation_by_squaring #
+exp -> Num -> Num Num
+exp x n =
+  ? < n 0 (exp / 1 x - 0 1)
+  ? == n 0 1
+  ? == % n 2 0 (exp * x x / n 2)
+  * x (exp * x x / - n 1 2)
+
+# LIST UTILS #
+
+_foldr -> (-> j -> k k) -> k -> j -> [j] k
+_foldr alg acc x xs = (foldr alg (alg x acc) xs)
+
+foldr -> (-> a -> b b) -> b -> [a] b
+foldr alg acc xs =
+  <+ xs acc (_foldr alg acc)
+
+_len -> a -> Num Num
+_len x len = + 1 len
+
+length -> [a] Num
+length xs = (foldr _len 0 xs)
+
+_rev -> a -> [a] [a]
+_rev x xs = +> x xs
+
+reverse -> [a] [a]
+reverse xs = (foldr _rev a [] xs)
+
+add -> Num -> Num Num
+add a b = + a b
+
+sum -> [Num] Num
+sum ns = (foldr add 0 ns)
+
+#
+_lines +++++ TODO
+
+lines -> [Char] [[Char]]
+lines str = (foldr _lines [] str)
+#
