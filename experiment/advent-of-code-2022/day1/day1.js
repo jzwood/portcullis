@@ -108,16 +108,33 @@ export function not(a) {
   return (b) => equal(False, equal(a, b));
 }
 
-// signature: (_splitOn.z -> (_splitOn.z -> ([[_splitOn.z] [[_splitOn.z]]] -> [[_splitOn.z] [[_splitOn.z]]])))
-export function _splitOn(on) {
-  return (x) => (acc) => (
-    not(x)(on) ? [[x, ...acc[0]], acc[1]] : [/* [z] */ [], [acc[0], ...acc[1]]]
+// signature: ([push.h] -> (push.h -> ([push.h] -> [push.h])))
+export function push(ys) {
+  return (x) => (xs) => [x, ...concat(xs)(ys)];
+}
+
+// signature: ([concat.a] -> ([concat.a] -> [concat.a]))
+export function concat(xs) {
+  return (ys) => (
+    equal(xs, []) ? ys : push(ys)(xs.at(0))(xs.slice(1))
   );
 }
 
-// signature: (splitOn.a -> ([splitOn.a] -> [[splitOn.a] [[splitOn.a]]]))
+// signature: ([[curryCons.a] [[curryCons.a]]] -> [[curryCons.a]])
+export function curryCons(tup) {
+  return [tup[0], ...tup[1]];
+}
+
+// signature: (_splitOn.z -> (_splitOn.z -> ([[_splitOn.z] [[_splitOn.z]]] -> [[_splitOn.z] [[_splitOn.z]]])))
+export function _splitOn(on) {
+  return (x) => (acc) => (
+    not(x)(on) ? [[x, ...acc[0]], acc[1]] : [/* [z] */ [], curryCons(acc)]
+  );
+}
+
+// signature: (splitOn.a -> ([splitOn.a] -> [[splitOn.a]]))
 export function splitOn(on) {
-  return (xs) => foldl(_splitOn(on))([/* [a] */ [], /* [[a]] */ []])(xs);
+  return (xs) => curryCons(foldl(_splitOn(on))([/* [a] */ [], /* [[a]] */ []])(xs));
 }
 
 const False = 0;

@@ -79,10 +79,20 @@ sum ns = (foldr add 0 ns)
 not -> x -> x Atom
 not a b = == False == a b
 
+push -> [h] -> h -> [h] [h]
+push ys x xs = +> x (concat xs ys)
+
+concat -> [a] -> [a] [a]
+concat xs ys =
+  <+ xs ys (push ys)
+
+curryCons -> {[a] [[a]]} [[a]]
+curryCons tup = +> @1 tup @2 tup
+
 _splitOn -> z -> z -> {[z] [[z]]} {[z] [[z]]}
 _splitOn on x acc =
   ? (not x on) {+> x @1 acc @2 acc}
-  {z:[] +> @1 acc @2 acc}
+  {z:[] (curryCons acc)}
 
-splitOn -> a -> [a] {[a] [[a]]}
-splitOn on xs = (foldl (_splitOn on) {a:[] [a]:[]} xs)
+splitOn -> a -> [a] [[a]]
+splitOn on xs = (curryCons (foldl (_splitOn on) {a:[] [a]:[]} xs))
