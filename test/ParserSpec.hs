@@ -49,3 +49,8 @@ spec = do
       let result = runp parseFunc "divide ->   -> Num Num   Num   \n divide   num den   = /   num den  "
           expected = Function "divide" (Arrow (Arrow NumType NumType) NumType) ["num","den"] (BinOp Divide (Ident "num") (Ident "den"))
       success result `shouldBe` Just (expected, "")
+
+    it "parse Call with identfier followed by complex list type" $ do
+      let result = runp parseCall "(fn x [Num]:[])"
+          expected = Call "fn" [Ident "x", Val (List (ListType NumType) [])]
+      success result `shouldBe` Just (expected, "")

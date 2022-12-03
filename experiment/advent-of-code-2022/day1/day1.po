@@ -8,7 +8,7 @@ parseList list =  lines list
 #
 
 list [[Char]]
-list = [Char] [ Char ['1' '2' '3'] Char ['4' '4'] ]
+list = [Char]:[ Char:['1' '2' '3'] Char:['4' '4'] ]
 
 # CHAR UTILS #
 
@@ -26,11 +26,11 @@ charToNum char fallback =
   ? == char '9' 9
   fallback
 
-_parseInt -> Char -> [Num] [Num]
-_parseInt char nums = +> * (exp 10 (length nums)) (charToNum char 0) nums
+_read -> Char -> [Num] [Num]
+_read char nums = +> * (exp 10 (length nums)) (charToNum char 0) nums
 
-parseInt -> [Char] Num
-parseInt chars = (sum (foldr _parseInt Num [] (reverse chars)))
+read -> [Char] Num
+read chars = (sum (foldr _read Num:[] (reverse chars)))
 
 # MATH UTILS #
 
@@ -43,6 +43,13 @@ exp x n =
   * x (exp * x x / - n 1 2)
 
 # LIST UTILS #
+
+_foldl -> -> j -> k k -> k -> j -> [j] k
+_foldl alg acc x xs = (alg x (foldl alg acc xs))
+
+foldl -> -> a -> b b -> b -> [a] b
+foldl alg acc xs =
+  <+ xs acc (_foldl alg acc)
 
 _foldr -> (-> j -> k k) -> k -> j -> [j] k
 _foldr alg acc x xs = (foldr alg (alg x acc) xs)
@@ -61,7 +68,7 @@ _rev -> a -> [a] [a]
 _rev x xs = +> x xs
 
 reverse -> [a] [a]
-reverse xs = (foldr _rev a [] xs)
+reverse xs = (foldr _rev a:[] xs)
 
 add -> Num -> Num Num
 add a b = + a b
@@ -69,9 +76,13 @@ add a b = + a b
 sum -> [Num] Num
 sum ns = (foldr add 0 ns)
 
-#
-_lines +++++ TODO
+not -> x -> x Atom
+not a b = == False == a b
 
-lines -> [Char] [[Char]]
-lines str = (foldr _lines [] str)
-#
+_splitOn -> z -> z -> {[z] [[z]]} {[z] [[z]]}
+_splitOn on x acc =
+  ? (not x on) {+> x @1 acc @2 acc}
+  {z:[] +> @1 acc @2 acc}
+
+splitOn -> a -> [a] {[a] [[a]]}
+splitOn on xs = (foldl (_splitOn on) {a:[] [a]:[]} xs)

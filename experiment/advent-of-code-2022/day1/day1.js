@@ -29,13 +29,13 @@ export function charToNum(char) {
 }
 
 // signature: (Char -> ([Num] -> [Num]))
-export function _parseInt(char) {
+export function _read(char) {
   return (nums) => [(exp(10.0)(length(nums)) * charToNum(char)(0.0)), ...nums];
 }
 
 // signature: ([Char] -> Num)
-export function parseInt(chars) {
-  return sum(foldr(_parseInt)(/* [Num] */ [])(reverse(chars)));
+export function read(chars) {
+  return sum(foldr(_read)(/* [Num] */ [])(reverse(chars)));
 }
 
 // signature: (Num -> (Num -> Num))
@@ -46,6 +46,18 @@ export function exp(x) {
         equal((n % 2.0), 0.0) ? exp((x * x))((n / 2.0)) : (x * exp((x * x))(((n - 1.0) / 2.0)))
       )
     )
+  );
+}
+
+// signature: ((_foldl.j -> (_foldl.k -> _foldl.k)) -> (_foldl.k -> (_foldl.j -> ([_foldl.j] -> _foldl.k))))
+export function _foldl(alg) {
+  return (acc) => (x) => (xs) => alg(x)(foldl(alg)(acc)(xs));
+}
+
+// signature: ((foldl.a -> (foldl.b -> foldl.b)) -> (foldl.b -> ([foldl.a] -> foldl.b)))
+export function foldl(alg) {
+  return (acc) => (xs) => (
+    equal(xs, []) ? acc : _foldl(alg)(acc)(xs.at(0))(xs.slice(1))
   );
 }
 
@@ -89,6 +101,23 @@ export function add(a) {
 // signature: ([Num] -> Num)
 export function sum(ns) {
   return foldr(add)(0.0)(ns);
+}
+
+// signature: (not.x -> (not.x -> Atom))
+export function not(a) {
+  return (b) => equal(False, equal(a, b));
+}
+
+// signature: (_splitOn.z -> (_splitOn.z -> ([[_splitOn.z] [[_splitOn.z]]] -> [[_splitOn.z] [[_splitOn.z]]])))
+export function _splitOn(on) {
+  return (x) => (acc) => (
+    not(x)(on) ? [[x, ...acc[0]], acc[1]] : [/* [z] */ [], [acc[0], ...acc[1]]]
+  );
+}
+
+// signature: (splitOn.a -> ([splitOn.a] -> [[splitOn.a] [[splitOn.a]]]))
+export function splitOn(on) {
+  return (xs) => foldl(_splitOn(on))([/* [a] */ [], /* [[a]] */ []])(xs);
 }
 
 const False = 0;

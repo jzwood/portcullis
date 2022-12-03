@@ -64,7 +64,7 @@ spec = do
       let bad0 = "good -> Atom Num \
                  \good a = 3 \
                  \good [Num] \
-                 \good = Num [3]"
+                 \good = Num : [3]"
       errorOf bad0 `shouldBe` FunctionError (unsafeFunc bad0) DuplicateFunction
 
     it "expect ArityMismatch" $ do

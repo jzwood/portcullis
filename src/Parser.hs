@@ -117,7 +117,7 @@ parseChar :: Parser Char
 parseChar = wrap '\'' '\'' anyChar
 
 parseList :: Parser Value
-parseList =  List <$> parseTypeExpr <*> trimLeft (brack $ trim $ zeroOrMore parseExpr)
+parseList =  List <$> parseTypeExpr <*> (trim (char ':') *> (brack . trim $ zeroOrMore parseExpr))
 
 parseTuple :: Parser Value
 parseTuple = liftA2 Tuple (char '{' *> parseExpr) (parseExpr <* spaces <* char '}')

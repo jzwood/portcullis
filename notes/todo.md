@@ -7,6 +7,7 @@
 - add to README to explain programming model (perhaps a FAQ doc?)
 
 
+- fix Equal in python to return 0/1 instead of True/False
 
 ## Done
 - update vim theme for latest syntax (done but not pushed)
