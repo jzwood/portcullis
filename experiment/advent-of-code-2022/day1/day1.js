@@ -1,8 +1,3 @@
-// signature: [[Char]]
-function $list() {
-  return /* [[Char]] */ [/* [Char] */ ['1', '2', '3'], /* [Char] */ ['4', '4']];
-}
-
 // signature: (Char -> (Num -> Num))
 export function charToNum(char) {
   return (fallback) => (
@@ -73,6 +68,18 @@ export function foldr(alg) {
   );
 }
 
+// signature: ((_map.q -> _map.t) -> (_map.q -> ([_map.q] -> [_map.t])))
+export function _map(f) {
+  return (x) => (xs) => [f(x), ...map(f)(xs)];
+}
+
+// signature: ((map.t -> map.g) -> ([map.t] -> [map.g]))
+export function map(f) {
+  return (xs) => (
+    equal(xs, []) ? /* [g] */ [] : _map(f)(xs.at(0))(xs.slice(1))
+  );
+}
+
 // signature: (_len.a -> (Num -> Num))
 export function _len(x) {
   return (len) => (1.0 + len);
@@ -108,16 +115,16 @@ export function not(a) {
   return (b) => equal(False, equal(a, b));
 }
 
-// signature: ([push.h] -> (push.h -> ([push.h] -> [push.h])))
-export function push(ys) {
-  return (x) => (xs) => [x, ...concat(xs)(ys)];
+// signature: (Num -> (Num -> Num))
+export function _max(num) {
+  return (max) => (
+    (num > max) ? num : max
+  );
 }
 
-// signature: ([concat.a] -> ([concat.a] -> [concat.a]))
-export function concat(xs) {
-  return (ys) => (
-    equal(xs, []) ? ys : push(ys)(xs.at(0))(xs.slice(1))
-  );
+// signature: ([Num] -> Num)
+export function max(nums) {
+  return foldr(_max)(0.0)(nums);
 }
 
 // signature: ([[curryCons.a] [[curryCons.a]]] -> [[curryCons.a]])
@@ -137,10 +144,14 @@ export function splitOn(on) {
   return (xs) => curryCons(foldl(_splitOn(on))([/* [a] */ [], /* [[a]] */ []])(xs));
 }
 
+// signature: ([Char] -> Num)
+export function day1(rawStr) {
+  return max(map(sum)(splitOn(0.0)(map(read)(splitOn('/')(rawStr)))));
+}
+
 const False = 0;
 const True = 1;
 
-export const list = $list()
 
 export const pipes = [];
 // INTERNAL

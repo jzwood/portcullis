@@ -1,15 +1,3 @@
-#
-parseList list =  lines list
-              <&> (\str -> if str == "" then 0 else read str :: Integer)
-               &  groupBy (\a b -> a > 0 && b > 0)
-               &  filter (/=[0])
-              <&> sum
-
-#
-
-list [[Char]]
-list = [Char]:[ Char:['1' '2' '3'] Char:['4' '4'] ]
-
 # CHAR UTILS #
 
 charToNum -> Char -> Num Num
@@ -58,6 +46,13 @@ foldr -> (-> a -> b b) -> b -> [a] b
 foldr alg acc xs =
   <+ xs acc (_foldr alg acc)
 
+_map -> -> q t -> q -> [q] [t]
+_map f x xs = +> (f x) (map f xs)
+
+map -> -> t g -> [t] [g]
+map f xs =
+  <+ xs g:[] (_map f)
+
 _len -> a -> Num Num
 _len x len = + 1 len
 
@@ -79,12 +74,13 @@ sum ns = (foldr add 0 ns)
 not -> x -> x Atom
 not a b = == False == a b
 
-push -> [h] -> h -> [h] [h]
-push ys x xs = +> x (concat xs ys)
+_max -> Num -> Num Num
+_max num max = ? > num max num max
 
-concat -> [a] -> [a] [a]
-concat xs ys =
-  <+ xs ys (push ys)
+max -> [Num] Num
+max nums = (foldr _max 0 nums)
+
+# ADVENT OF CODE DAY 1 #
 
 curryCons -> {[a] [[a]]} [[a]]
 curryCons tup = +> @1 tup @2 tup
@@ -96,3 +92,6 @@ _splitOn on x acc =
 
 splitOn -> a -> [a] [[a]]
 splitOn on xs = (curryCons (foldl (_splitOn on) {a:[] [a]:[]} xs))
+
+day1 -> [Char] Num
+day1 rawStr = (max (map sum (splitOn 0 (map read (splitOn '/' rawStr)))))
