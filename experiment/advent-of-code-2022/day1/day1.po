@@ -1,24 +1,23 @@
 # CHAR UTILS #
 
-charToNum -> Char -> Num Num
-charToNum char fallback =
-  ? == char '0' 0
-  ? == char '1' 1
-  ? == char '2' 2
-  ? == char '3' 3
-  ? == char '4' 4
-  ? == char '5' 5
-  ? == char '6' 6
-  ? == char '7' 7
-  ? == char '8' 8
-  ? == char '9' 9
-  fallback
+asciiDecToChar -> Num Num
+asciiDecToChar dec =
+  ? == dec 48 0
+  ? == dec 49 1
+  ? == dec 50 2
+  ? == dec 51 3
+  ? == dec 52 4
+  ? == dec 53 5
+  ? == dec 54 6
+  ? == dec 55 7
+  ? == dec 56 8
+  ? == dec 57 9 0
 
-_read -> Char -> [Num] [Num]
-_read char nums = +> * (exp 10 (length nums)) (charToNum char 0) nums
+_read -> Num -> [Num] [Num]
+_read dec nums = +> * (exp 10 (length nums)) (asciiDecToChar dec) nums
 
-read -> [Char] Num
-read chars = (sum (foldr _read Num:[] (reverse chars)))
+read -> [Num] Num
+read decimals = (sum (foldl _read Num:[] decimals))
 
 # MATH UTILS #
 
@@ -57,7 +56,7 @@ _len -> a -> Num Num
 _len x len = + 1 len
 
 length -> [a] Num
-length xs = (foldr _len 0 xs)
+length xs = (foldl _len 0 xs)
 
 _rev -> a -> [a] [a]
 _rev x xs = +> x xs
@@ -69,16 +68,16 @@ add -> Num -> Num Num
 add a b = + a b
 
 sum -> [Num] Num
-sum ns = (foldr add 0 ns)
+sum ns = (foldl add 0 ns)
 
-not -> x -> x Atom
-not a b = == False == a b
+_not -> x -> x Atom
+_not a b = == False == a b
 
 _max -> Num -> Num Num
 _max num max = ? > num max num max
 
 max -> [Num] Num
-max nums = (foldr _max 0 nums)
+max nums = (foldl _max 0 nums)
 
 # ADVENT OF CODE DAY 1 #
 
@@ -87,11 +86,11 @@ curryCons tup = +> @1 tup @2 tup
 
 _splitOn -> z -> z -> {[z] [[z]]} {[z] [[z]]}
 _splitOn on x acc =
-  ? (not x on) {+> x @1 acc @2 acc}
+  ? (_not x on) {+> x @1 acc @2 acc}
   {z:[] (curryCons acc)}
 
 splitOn -> a -> [a] [[a]]
 splitOn on xs = (curryCons (foldl (_splitOn on) {a:[] [a]:[]} xs))
 
-day1 -> [Char] Num
-day1 rawStr = (max (map sum (splitOn 0 (map read (splitOn '/' rawStr)))))
+day1a -> [Num] Num
+day1a buffer = (max (map sum (splitOn 0 (map read (splitOn 10 buffer)))))  # 10 is newline #

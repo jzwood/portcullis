@@ -1,16 +1,16 @@
-// signature: (Char -> (Num -> Num))
-export function charToNum(char) {
-  return (fallback) => (
-    equal(char, '0') ? 0.0 : (
-      equal(char, '1') ? 1.0 : (
-        equal(char, '2') ? 2.0 : (
-          equal(char, '3') ? 3.0 : (
-            equal(char, '4') ? 4.0 : (
-              equal(char, '5') ? 5.0 : (
-                equal(char, '6') ? 6.0 : (
-                  equal(char, '7') ? 7.0 : (
-                    equal(char, '8') ? 8.0 : (
-                      equal(char, '9') ? 9.0 : fallback
+// signature: (Num -> Num)
+export function asciiDecToChar(dec) {
+  return (
+    equal(dec, 48.0) ? 0.0 : (
+      equal(dec, 49.0) ? 1.0 : (
+        equal(dec, 50.0) ? 2.0 : (
+          equal(dec, 51.0) ? 3.0 : (
+            equal(dec, 52.0) ? 4.0 : (
+              equal(dec, 53.0) ? 5.0 : (
+                equal(dec, 54.0) ? 6.0 : (
+                  equal(dec, 55.0) ? 7.0 : (
+                    equal(dec, 56.0) ? 8.0 : (
+                      equal(dec, 57.0) ? 9.0 : 0.0
                     )
                   )
                 )
@@ -23,22 +23,24 @@ export function charToNum(char) {
   );
 }
 
-// signature: (Char -> ([Num] -> [Num]))
-export function _read(char) {
-  return (nums) => [(exp(10.0)(length(nums)) * charToNum(char)(0.0)), ...nums];
+// signature: (Num -> ([Num] -> [Num]))
+export function _read(dec) {
+  return (nums) => [exp(10.0)(length(nums)) * asciiDecToChar(dec), ...nums];
 }
 
-// signature: ([Char] -> Num)
-export function read(chars) {
-  return sum(foldr(_read)(/* [Num] */ [])(reverse(chars)));
+// signature: ([Num] -> Num)
+export function read(decimals) {
+  return sum(foldl(_read)(/* [Num] */ [])(decimals));
 }
 
 // signature: (Num -> (Num -> Num))
 export function exp(x) {
   return (n) => (
-    (n < 0.0) ? exp((1.0 / x))((0.0 - 1.0)) : (
+    (n < 0.0) ? exp(1.0 / x)(0.0 - 1.0) : (
       equal(n, 0.0) ? 1.0 : (
-        equal((n % 2.0), 0.0) ? exp((x * x))((n / 2.0)) : (x * exp((x * x))(((n - 1.0) / 2.0)))
+        equal(n % 2.0, 0.0)
+          ? exp(x * x)(n / 2.0)
+          : (x * exp(x * x)((n - 1.0) / 2.0))
       )
     )
   );
@@ -87,7 +89,7 @@ export function _len(x) {
 
 // signature: ([length.a] -> Num)
 export function length(xs) {
-  return foldr(_len)(0.0)(xs);
+  return foldl(_len)(0.0)(xs);
 }
 
 // signature: (_rev.a -> ([_rev.a] -> [_rev.a]))
@@ -107,7 +109,7 @@ export function add(a) {
 
 // signature: ([Num] -> Num)
 export function sum(ns) {
-  return foldr(add)(0.0)(ns);
+  return foldl(add)(0.0)(ns);
 }
 
 // signature: (not.x -> (not.x -> Atom))
@@ -124,7 +126,7 @@ export function _max(num) {
 
 // signature: ([Num] -> Num)
 export function max(nums) {
-  return foldr(_max)(0.0)(nums);
+  return foldl(_max)(0.0)(nums);
 }
 
 // signature: ([[curryCons.a] [[curryCons.a]]] -> [[curryCons.a]])
@@ -141,17 +143,17 @@ export function _splitOn(on) {
 
 // signature: (splitOn.a -> ([splitOn.a] -> [[splitOn.a]]))
 export function splitOn(on) {
-  return (xs) => curryCons(foldl(_splitOn(on))([/* [a] */ [], /* [[a]] */ []])(xs));
+  return (xs) =>
+    curryCons(foldl(_splitOn(on))([/* [a] */ [], /* [[a]] */ []])(xs));
 }
 
-// signature: ([Char] -> Num)
-export function day1(rawStr) {
-  return max(map(sum)(splitOn(0.0)(map(read)(splitOn('/')(rawStr)))));
+// signature: ([Num] -> Num)
+export function day1a(buffer) {
+  return max(map(sum)(splitOn(0.0)(map(read)(splitOn(10.0)(buffer)))));
 }
 
 const False = 0;
 const True = 1;
-
 
 export const pipes = [];
 // INTERNAL
@@ -159,7 +161,7 @@ function equal(a, b) {
   if (a === b) {
     return +true;
   }
-  if (Array.isArray(a) && Array.isArray(b)) {
+  if (typeof a === "object" && typeof b === "object") {
     if (a.length === 0 && b.length === 0) return +true;
     if (a.length !== b.length) return +false;
     return equal(a.at(0), b.at(0)) && equal(a.slice(1), b.slice(1));
