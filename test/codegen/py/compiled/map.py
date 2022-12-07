@@ -4,7 +4,7 @@ def _map(f):
 
 # signature: ((map.t -> map.g) -> ([map.t] -> [map.g]))
 def map(f):
-  return lambda xs: ([] if (xs == []) else _map(f)(xs[0])(xs[1:]))
+  return lambda xs: ([] if int(xs == []) else _map(f)(xs[0])(xs[1:]))
 
 # signature: (Num -> Num)
 def add1(x):
@@ -20,7 +20,7 @@ def _foldr(alg):
 
 # signature: ((foldr.a -> (foldr.b -> foldr.b)) -> (foldr.b -> ([foldr.a] -> foldr.b)))
 def foldr(alg):
-  return lambda acc: lambda xs: (acc if (xs == []) else _foldr(alg)(acc)(xs[0])(xs[1:]))
+  return lambda acc: lambda xs: (acc if int(xs == []) else _foldr(alg)(acc)(xs[0])(xs[1:]))
 
 # signature: ((_foldl.j -> (_foldl.k -> _foldl.k)) -> (_foldl.k -> (_foldl.j -> ([_foldl.j] -> _foldl.k))))
 def _foldl(alg):
@@ -28,7 +28,7 @@ def _foldl(alg):
 
 # signature: ((foldl.a -> (foldl.b -> foldl.b)) -> (foldl.b -> ([foldl.a] -> foldl.b)))
 def foldl(alg):
-  return lambda acc: lambda xs: (acc if (xs == []) else _foldl(alg)(acc)(xs[0])(xs[1:]))
+  return lambda acc: lambda xs: (acc if int(xs == []) else _foldl(alg)(acc)(xs[0])(xs[1:]))
 
 # signature: (Num -> (Num -> Num))
 def add(a):

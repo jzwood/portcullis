@@ -50,7 +50,7 @@ instance Py TypeExpr where
 instance Py Value where
   toPy (Number n) = show n
   toPy (Character c) = ['\'', c, '\'']
-  toPy (Atom n) = n
+  toPy (Atom n) = toUpper <$> n
   toPy (List t xs) = showList $ toPy <$> xs
   toPy (Tuple e1 e2)
     =  toPy <$> [e1, e2]
@@ -64,6 +64,7 @@ instance Py Expr where
       [] -> ""  -- functions without arguments are interpreted as values
       _ -> concatMap (paren . toPy) exprs
   toPy (UnOp unop e) = toPy e ++ toPy unop
+  toPy (BinOp Equal e1 e2) = "int" ++ infixBop Equal e1 e2
   toPy (BinOp Cons e xs) = unwords [ bracket $ toPy e, "+", toPy xs]
   toPy (BinOp bop e1 e2) = infixBop bop e1 e2
   toPy (TernOp If p e1 e2) = (paren . unwords) [ toPy e1, "if", toPy p, "else", toPy e2]

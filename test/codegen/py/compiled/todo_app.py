@@ -1,14 +1,14 @@
 # signature: ([Atom [Char]] -> ([[Char]] -> [[Char]]))
 def update(tup):
-  return lambda todos: ([tup[1]] + todos if (Append == tup[0]) else (remove(tup[1])(todos) if (Done == tup[0]) else todos))
+  return lambda todos: ([tup[1]] + todos if int(APPEND == tup[0]) else (remove(tup[1])(todos) if int(DONE == tup[0]) else todos))
 
 # signature: ([Char] -> [Atom [Char]])
 def append(todo):
-  return (Append, todo)
+  return (APPEND, todo)
 
 # signature: ([Char] -> [Atom [Char]])
 def done(done):
-  return (Done, done)
+  return (DONE, done)
 
 # signature: ([push.a] -> (push.a -> ([push.a] -> [push.a])))
 def push(ys):
@@ -16,7 +16,7 @@ def push(ys):
 
 # signature: ([concat.a] -> ([concat.a] -> [concat.a]))
 def concat(xs):
-  return lambda ys: (ys if (xs == []) else push(ys)(xs[0])(xs[1:]))
+  return lambda ys: (ys if int(xs == []) else push(ys)(xs[0])(xs[1:]))
 
 # signature: ((_filter.x -> Atom) -> (_filter.x -> ([_filter.x] -> [_filter.x])))
 def _filter(f):
@@ -24,11 +24,11 @@ def _filter(f):
 
 # signature: ((filter.j -> Atom) -> ([filter.j] -> [filter.j]))
 def filter(f):
-  return lambda xs: (xs if (xs == []) else _filter(f)(xs[0])(xs[1:]))
+  return lambda xs: (xs if int(xs == []) else _filter(f)(xs[0])(xs[1:]))
 
 # signature: (neq.a -> (neq.b -> Atom))
 def neq(a):
-  return lambda b: (False == (a == b))
+  return lambda b: int(FALSE == int(a == b))
 
 # signature: ([Char] -> ([[Char]] -> [[Char]]))
 def remove(todo):

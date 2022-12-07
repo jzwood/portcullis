@@ -16,15 +16,15 @@ def calc1(num):
 
 # signature: (Num -> Atom)
 def choose0(num):
-  return (Cool if (num > 0.0) else (Hmm if (num == 0.0) else Bad))
+  return (COOL if (num > 0.0) else (HMM if int(num == 0.0) else BAD))
 
 # signature: (Num -> Atom)
 def choose1(num):
-  return (Cool if (num <= 0.0) else (Hmm if (num < 100.0) else Bad))
+  return (COOL if (num <= 0.0) else (HMM if (num < 100.0) else BAD))
 
 # signature: (Num -> Atom)
 def isEven(num):
-  return ((num % 2.0) == 0.0)
+  return int((num % 2.0) == 0.0)
 
 # signature: (append3.a -> ([append3.a] -> [append3.a]))
 def append3(x):

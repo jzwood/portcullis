@@ -32,7 +32,7 @@ def id3(x):
 
 # signature: ([tail.t] -> [tail.t])
 def tail(xs):
-  return (xs if (xs == []) else id3(xs[0])(xs[1:]))
+  return (xs if int(xs == []) else id3(xs[0])(xs[1:]))
 
 # signature: ((a.h -> a.h) -> (a.h -> a.h))
 def a(fx):
@@ -52,7 +52,7 @@ def push(ys):
 
 # signature: ([concat.a] -> ([concat.a] -> [concat.a]))
 def concat(xs):
-  return lambda ys: (ys if (xs == []) else push(ys)(xs[0])(xs[1:]))
+  return lambda ys: (ys if int(xs == []) else push(ys)(xs[0])(xs[1:]))
 
 # signature: ((filter2.x -> Atom) -> (filter2.x -> ([filter2.x] -> [filter2.x])))
 def filter2(g):
@@ -60,11 +60,11 @@ def filter2(g):
 
 # signature: ((filter.j -> Atom) -> ([filter.j] -> [filter.j]))
 def filter(f):
-  return lambda xs: (xs if (xs == []) else filter2(f)(xs[0])(xs[1:]))
+  return lambda xs: (xs if int(xs == []) else filter2(f)(xs[0])(xs[1:]))
 
 # signature: (eq.a -> (eq.a -> Atom))
 def eq(x):
-  return lambda y: (x == y)
+  return lambda y: int(x == y)
 
 # signature: ([Num] -> [Num])
 def seven(xs):

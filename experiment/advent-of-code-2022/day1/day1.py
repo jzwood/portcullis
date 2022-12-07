@@ -1,6 +1,6 @@
 # signature: (Num -> Num)
 def asciiDecToChar(dec):
-  return (0.0 if (dec == 48.0) else (1.0 if (dec == 49.0) else (2.0 if (dec == 50.0) else (3.0 if (dec == 51.0) else (4.0 if (dec == 52.0) else (5.0 if (dec == 53.0) else (6.0 if (dec == 54.0) else (7.0 if (dec == 55.0) else (8.0 if (dec == 56.0) else (9.0 if (dec == 57.0) else 0.0))))))))))
+  return (0.0 if int(dec == 48.0) else (1.0 if int(dec == 49.0) else (2.0 if int(dec == 50.0) else (3.0 if int(dec == 51.0) else (4.0 if int(dec == 52.0) else (5.0 if int(dec == 53.0) else (6.0 if int(dec == 54.0) else (7.0 if int(dec == 55.0) else (8.0 if int(dec == 56.0) else (9.0 if int(dec == 57.0) else 0.0))))))))))
 
 # signature: (Num -> ([Num] -> [Num]))
 def _read(dec):
@@ -12,7 +12,7 @@ def read(decimals):
 
 # signature: (Num -> (Num -> Num))
 def exp(x):
-  return lambda n: (exp((1.0 / x))((0.0 - 1.0)) if (n < 0.0) else (1.0 if (n == 0.0) else (exp((x * x))((n / 2.0)) if ((n % 2.0) == 0.0) else (x * exp((x * x))(((n - 1.0) / 2.0))))))
+  return lambda n: (exp((1.0 / x))((0.0 - 1.0)) if (n < 0.0) else (1.0 if int(n == 0.0) else (exp((x * x))((n / 2.0)) if int((n % 2.0) == 0.0) else (x * exp((x * x))(((n - 1.0) / 2.0))))))
 
 # signature: ((_foldl.j -> (_foldl.k -> _foldl.k)) -> (_foldl.k -> (_foldl.j -> ([_foldl.j] -> _foldl.k))))
 def _foldl(alg):
@@ -20,7 +20,7 @@ def _foldl(alg):
 
 # signature: ((foldl.a -> (foldl.b -> foldl.b)) -> (foldl.b -> ([foldl.a] -> foldl.b)))
 def foldl(alg):
-  return lambda acc: lambda xs: (acc if (xs == []) else _foldl(alg)(acc)(xs[0])(xs[1:]))
+  return lambda acc: lambda xs: (acc if int(xs == []) else _foldl(alg)(acc)(xs[0])(xs[1:]))
 
 # signature: ((_map.q -> _map.t) -> (_map.q -> ([_map.q] -> [_map.t])))
 def _map(f):
@@ -28,7 +28,7 @@ def _map(f):
 
 # signature: ((map.t -> map.g) -> ([map.t] -> [map.g]))
 def map(f):
-  return lambda xs: ([] if (xs == []) else _map(f)(xs[0])(xs[1:]))
+  return lambda xs: ([] if int(xs == []) else _map(f)(xs[0])(xs[1:]))
 
 # signature: (_len.a -> (Num -> Num))
 def _len(x):
@@ -48,7 +48,7 @@ def sum(ns):
 
 # signature: (_not.x -> (_not.x -> Atom))
 def _not(a):
-  return lambda b: (False == (a == b))
+  return lambda b: int(FALSE == int(a == b))
 
 # signature: (Num -> (Num -> Num))
 def _max(num):

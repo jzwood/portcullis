@@ -4,7 +4,7 @@ def _map(f):
 
 # signature: ((map.a -> map.b) -> ([map.a] -> [map.b]))
 def map(f):
-  return lambda xs: ([] if (xs == []) else _map(f)(xs[0])(xs[1:]))
+  return lambda xs: ([] if int(xs == []) else _map(f)(xs[0])(xs[1:]))
 
 # signature: (Num -> (Num -> [Num]))
 def range(n0):
@@ -12,7 +12,7 @@ def range(n0):
 
 # signature: (Num -> Num)
 def _fizzbuzz(n):
-  return ((0.0 - 35.0) if (0.0 == (n % 15.0)) else ((0.0 - 5.0) if (0.0 == (n % 5.0)) else ((0.0 - 3.0) if (0.0 == (n % 3.0)) else n)))
+  return ((0.0 - 35.0) if int(0.0 == (n % 15.0)) else ((0.0 - 5.0) if int(0.0 == (n % 5.0)) else ((0.0 - 3.0) if int(0.0 == (n % 3.0)) else n)))
 
 # signature: (Num -> [Num])
 def fizzbuzz(n):
