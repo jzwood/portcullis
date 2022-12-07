@@ -70,9 +70,13 @@ def _splitOn(on):
 def splitOn(on):
   return lambda xs: curryCons(foldl(_splitOn(on))(([], []))(xs))
 
+# signature: ([Num] -> [Num])
+def parse(buffer):
+  return map(sum)(splitOn(0.0)(map(read)(splitOn(10.0)(buffer))))
+
 # signature: ([Num] -> Num)
 def day1a(buffer):
-  return max(map(sum)(splitOn(0.0)(map(read)(splitOn(10.0)(buffer)))))
+  return max(parse(buffer))
 
 FALSE = 0;
 TRUE = 1;

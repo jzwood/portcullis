@@ -122,9 +122,14 @@ export function splitOn(on) {
   return (xs) => curryCons(foldl(_splitOn(on))([/* [a] */ [], /* [[a]] */ []])(xs));
 }
 
+// signature: ([Num] -> [Num])
+export function parse(buffer) {
+  return map(sum)(splitOn(0.0)(map(read)(splitOn(10.0)(buffer))));
+}
+
 // signature: ([Num] -> Num)
 export function day1a(buffer) {
-  return max(map(sum)(splitOn(0.0)(map(read)(splitOn(10.0)(buffer)))));
+  return max(parse(buffer));
 }
 
 const False = 0;
@@ -137,7 +142,7 @@ function equal(a, b) {
   if (a === b) {
     return +true;
   }
-  if (typeof a === 'object' && typeof b === 'object') {
+  if (typeof a === "object" && typeof b === "object") {
     if (a.length === 0 && b.length === 0) return +true;
     if (a.length !== b.length) return +false;
     return equal(a.at(0), b.at(0)) && equal(a.slice(1), b.slice(1));
