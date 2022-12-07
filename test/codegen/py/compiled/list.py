@@ -20,7 +20,7 @@ def _length(x):
 
 # signature: ([length.a] -> Num)
 def length(xs):
-  return 0.0 if (xs == []) else _length(xs[0])(xs[1:])
+  return (0.0 if (xs == []) else _length(xs[0])(xs[1:]))
 
 # signature: ([push.a] -> (push.a -> ([push.a] -> [push.a])))
 def push(ys):
@@ -28,7 +28,7 @@ def push(ys):
 
 # signature: ([concat.a] -> ([concat.a] -> [concat.a]))
 def concat(xs):
-  return lambda ys: ys if (xs == []) else push(ys)(xs[0])(xs[1:])
+  return lambda ys: (ys if (xs == []) else push(ys)(xs[0])(xs[1:]))
 
 FALSE = 0;
 TRUE = 1;

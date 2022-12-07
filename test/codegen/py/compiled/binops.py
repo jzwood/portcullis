@@ -16,11 +16,11 @@ def calc1(num):
 
 # signature: (Num -> Atom)
 def choose0(num):
-  return Cool if (num > 0.0) else Hmm if (num == 0.0) else Bad
+  return (Cool if (num > 0.0) else (Hmm if (num == 0.0) else Bad))
 
 # signature: (Num -> Atom)
 def choose1(num):
-  return Cool if (num <= 0.0) else Hmm if (num < 100.0) else Bad
+  return (Cool if (num <= 0.0) else (Hmm if (num < 100.0) else Bad))
 
 # signature: (Num -> Atom)
 def isEven(num):

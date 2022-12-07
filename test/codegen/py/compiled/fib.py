@@ -1,6 +1,6 @@
 # signature: (Num -> Num)
 def fib(n):
-  return 1.0 if (n <= 1.0) else (fib((n - 1.0)) + fib((n - 2.0)))
+  return (1.0 if (n <= 1.0) else (fib((n - 1.0)) + fib((n - 2.0))))
 
 # signature: (Num -> Num)
 def neg(x):

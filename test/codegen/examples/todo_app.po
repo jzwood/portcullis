@@ -35,8 +35,8 @@ _filter -> -> x Atom -> x -> [x] [x]
 _filter f x xs =
   (concat
     ? (f x)
-      x [x]
-      x []
+      x:[x]
+      x:[]
     (filter f xs))
 
 filter -> -> j Atom -> [j] [j]

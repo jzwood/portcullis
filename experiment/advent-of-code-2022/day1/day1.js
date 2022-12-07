@@ -25,7 +25,7 @@ export function asciiDecToChar(dec) {
 
 // signature: (Num -> ([Num] -> [Num]))
 export function _read(dec) {
-  return (nums) => [exp(10.0)(length(nums)) * asciiDecToChar(dec), ...nums];
+  return (nums) => [(exp(10.0)(length(nums)) * asciiDecToChar(dec)), ...nums];
 }
 
 // signature: ([Num] -> Num)
@@ -36,11 +36,9 @@ export function read(decimals) {
 // signature: (Num -> (Num -> Num))
 export function exp(x) {
   return (n) => (
-    (n < 0.0) ? exp(1.0 / x)(0.0 - 1.0) : (
+    (n < 0.0) ? exp((1.0 / x))((0.0 - 1.0)) : (
       equal(n, 0.0) ? 1.0 : (
-        equal(n % 2.0, 0.0)
-          ? exp(x * x)(n / 2.0)
-          : (x * exp(x * x)((n - 1.0) / 2.0))
+        equal((n % 2.0), 0.0) ? exp((x * x))((n / 2.0)) : (x * exp((x * x))(((n - 1.0) / 2.0)))
       )
     )
   );
@@ -55,18 +53,6 @@ export function _foldl(alg) {
 export function foldl(alg) {
   return (acc) => (xs) => (
     equal(xs, []) ? acc : _foldl(alg)(acc)(xs.at(0))(xs.slice(1))
-  );
-}
-
-// signature: ((_foldr.j -> (_foldr.k -> _foldr.k)) -> (_foldr.k -> (_foldr.j -> ([_foldr.j] -> _foldr.k))))
-export function _foldr(alg) {
-  return (acc) => (x) => (xs) => foldr(alg)(alg(x)(acc))(xs);
-}
-
-// signature: ((foldr.a -> (foldr.b -> foldr.b)) -> (foldr.b -> ([foldr.a] -> foldr.b)))
-export function foldr(alg) {
-  return (acc) => (xs) => (
-    equal(xs, []) ? acc : _foldr(alg)(acc)(xs.at(0))(xs.slice(1))
   );
 }
 
@@ -92,16 +78,6 @@ export function length(xs) {
   return foldl(_len)(0.0)(xs);
 }
 
-// signature: (_rev.a -> ([_rev.a] -> [_rev.a]))
-export function _rev(x) {
-  return (xs) => [x, ...xs];
-}
-
-// signature: ([reverse.a] -> [reverse.a])
-export function reverse(xs) {
-  return foldr(_rev)(/* [a] */ [])(xs);
-}
-
 // signature: (Num -> (Num -> Num))
 export function add(a) {
   return (b) => (a + b);
@@ -112,8 +88,8 @@ export function sum(ns) {
   return foldl(add)(0.0)(ns);
 }
 
-// signature: (not.x -> (not.x -> Atom))
-export function not(a) {
+// signature: (_not.x -> (_not.x -> Atom))
+export function _not(a) {
   return (b) => equal(False, equal(a, b));
 }
 
@@ -137,14 +113,13 @@ export function curryCons(tup) {
 // signature: (_splitOn.z -> (_splitOn.z -> ([[_splitOn.z] [[_splitOn.z]]] -> [[_splitOn.z] [[_splitOn.z]]])))
 export function _splitOn(on) {
   return (x) => (acc) => (
-    not(x)(on) ? [[x, ...acc[0]], acc[1]] : [/* [z] */ [], curryCons(acc)]
+    _not(x)(on) ? [[x, ...acc[0]], acc[1]] : [/* [z] */ [], curryCons(acc)]
   );
 }
 
 // signature: (splitOn.a -> ([splitOn.a] -> [[splitOn.a]]))
 export function splitOn(on) {
-  return (xs) =>
-    curryCons(foldl(_splitOn(on))([/* [a] */ [], /* [[a]] */ []])(xs));
+  return (xs) => curryCons(foldl(_splitOn(on))([/* [a] */ [], /* [[a]] */ []])(xs));
 }
 
 // signature: ([Num] -> Num)
@@ -155,13 +130,14 @@ export function day1a(buffer) {
 const False = 0;
 const True = 1;
 
+
 export const pipes = [];
 // INTERNAL
 function equal(a, b) {
   if (a === b) {
     return +true;
   }
-  if (typeof a === "object" && typeof b === "object") {
+  if (typeof a === 'object' && typeof b === 'object') {
     if (a.length === 0 && b.length === 0) return +true;
     if (a.length !== b.length) return +false;
     return equal(a.at(0), b.at(0)) && equal(a.slice(1), b.slice(1));

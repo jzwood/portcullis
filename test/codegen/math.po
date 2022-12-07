@@ -32,12 +32,12 @@ drop xs n =
 
 _take -> Num -> f -> [f] [f]
 _take n x xs =
-  ? <= n 0 f []
+  ? <= n 0 f:[]
   +> x (take xs - n 1)
 
 take -> [k] -> Num [k]
 take xs n =
-  <+ xs k [] (_take n)
+  <+ xs k:[] (_take n)
 
 slice -> [q] -> Num -> Num [q]
 slice xs i j = (take (drop xs i) - j i)
@@ -46,8 +46,8 @@ filter2 -> -> x Atom -> x -> [x] [x]
 filter2 g w ws =
   (concat
     ? (g w)
-      x [w]
-      x []
+      x:[w]
+      x:[]
     (filter g ws))
 
 filter -> -> j Atom -> [j] [j]
@@ -60,7 +60,7 @@ neg -> Num Num
 neg x = - 0 x
 
 empty [Num]
-empty = Num []
+empty = Num:[]
 
 msort -> [Num] [Num]
 msort ns = (msort2 (length ns) ns)

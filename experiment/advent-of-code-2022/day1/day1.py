@@ -22,14 +22,6 @@ def _foldl(alg):
 def foldl(alg):
   return lambda acc: lambda xs: (acc if (xs == []) else _foldl(alg)(acc)(xs[0])(xs[1:]))
 
-# signature: ((_foldr.j -> (_foldr.k -> _foldr.k)) -> (_foldr.k -> (_foldr.j -> ([_foldr.j] -> _foldr.k))))
-def _foldr(alg):
-  return lambda acc: lambda x: lambda xs: foldr(alg)(alg(x)(acc))(xs)
-
-# signature: ((foldr.a -> (foldr.b -> foldr.b)) -> (foldr.b -> ([foldr.a] -> foldr.b)))
-def foldr(alg):
-  return lambda acc: lambda xs: (acc if (xs == []) else _foldr(alg)(acc)(xs[0])(xs[1:]))
-
 # signature: ((_map.q -> _map.t) -> (_map.q -> ([_map.q] -> [_map.t])))
 def _map(f):
   return lambda x: lambda xs: [f(x)] + map(f)(xs)
@@ -45,14 +37,6 @@ def _len(x):
 # signature: ([length.a] -> Num)
 def length(xs):
   return foldl(_len)(0.0)(xs)
-
-# signature: (_rev.a -> ([_rev.a] -> [_rev.a]))
-def _rev(x):
-  return lambda xs: [x] + xs
-
-# signature: ([reverse.a] -> [reverse.a])
-def reverse(xs):
-  return foldr(_rev)([])(xs)
 
 # signature: (Num -> (Num -> Num))
 def add(a):

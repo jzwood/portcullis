@@ -50,8 +50,8 @@ filter2 -> -> x Atom -> x -> [x] [x]
 filter2 g w ws =
   (concat
     ? (g w)
-      x [w]
-      x []
+      x:[w]
+      x:[]
     (filter g ws))
 
 filter -> -> j Atom -> [j] [j]

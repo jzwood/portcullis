@@ -1,5 +1,4 @@
 # CHAR UTILS #
-
 asciiDecToChar -> Num Num
 asciiDecToChar dec =
   ? == dec 48 0
@@ -20,7 +19,6 @@ read -> [Num] Num
 read decimals = (sum (foldl _read Num:[] decimals))
 
 # MATH UTILS #
-
 # https://en.wikipedia.org/wiki/Exponentiation_by_squaring #
 exp -> Num -> Num Num
 exp x n =
@@ -30,20 +28,12 @@ exp x n =
   * x (exp * x x / - n 1 2)
 
 # LIST UTILS #
-
 _foldl -> -> j -> k k -> k -> j -> [j] k
 _foldl alg acc x xs = (alg x (foldl alg acc xs))
 
 foldl -> -> a -> b b -> b -> [a] b
 foldl alg acc xs =
   <+ xs acc (_foldl alg acc)
-
-_foldr -> (-> j -> k k) -> k -> j -> [j] k
-_foldr alg acc x xs = (foldr alg (alg x acc) xs)
-
-foldr -> (-> a -> b b) -> b -> [a] b
-foldr alg acc xs =
-  <+ xs acc (_foldr alg acc)
 
 _map -> -> q t -> q -> [q] [t]
 _map f x xs = +> (f x) (map f xs)
@@ -57,12 +47,6 @@ _len x len = + 1 len
 
 length -> [a] Num
 length xs = (foldl _len 0 xs)
-
-_rev -> a -> [a] [a]
-_rev x xs = +> x xs
-
-reverse -> [a] [a]
-reverse xs = (foldr _rev a:[] xs)
 
 add -> Num -> Num Num
 add a b = + a b
@@ -79,8 +63,6 @@ _max num max = ? > num max num max
 max -> [Num] Num
 max nums = (foldl _max 0 nums)
 
-# ADVENT OF CODE DAY 1 #
-
 curryCons -> {[a] [[a]]} [[a]]
 curryCons tup = +> @1 tup @2 tup
 
@@ -92,5 +74,12 @@ _splitOn on x acc =
 splitOn -> a -> [a] [[a]]
 splitOn on xs = (curryCons (foldl (_splitOn on) {a:[] [a]:[]} xs))
 
+# ADVENT OF CODE DAY 1 #
+parse -> [Num] [Num]
+parse buffer = (map sum (splitOn 0 (map read (splitOn 10 buffer)))) # 10 is newline #
+
 day1a -> [Num] Num
-day1a buffer = (max (map sum (splitOn 0 (map read (splitOn 10 buffer)))))  # 10 is newline #
+day1a buffer = (max (parse buffer))
+
+day1b -> [Num] Num
+day1b buffer = (sum (take 3 (reverse (sort (parse buffer)))))
