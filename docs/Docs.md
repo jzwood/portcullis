@@ -20,7 +20,7 @@
 | Character | char                            | `'c'`                                     |
 | Atom      | pascal-word                     | `One`, `True`                             |
 | 2-Tuple   | `"{" expression expression "}"` | `{'A' True}`                              |
-| Array     | `type "[" { expression } "]"`   | `Num [1 2 3 4]`, `Char ['j' 'a' 'k' 'e']` |
+| Array     | `type ":" "[" { expression } "]"`   | `Num:[1 2 3 4]`, `Char:['j' 'a' 'k' 'e']` |
 
 ## Operators
 
@@ -34,8 +34,8 @@ _All operators are prefix (ie not infix)_
 | `%`               | rem    | 2     | `-> Num -> Num Num`              | `% 7 2`  →  `1`                    |
 | `>` `<` `>=` `<=` |        | 2     | `-> Num -> Num Atom`             | `> 1 4`  →  `False`                |
 | `==`              |        | 2     | `-> a -> a Atom`                 | `== 7 7`  →  `True`                |
-| `+>`              | Cons   | 2     | `-> a -> [a] [a]`                | `+> 1 Num [2 3]`  →  `Num [1 2 3]` |
-| `<+`              | Uncons | 3     | `-> [a] -> b -> -> a -> [a] b b` | `<+ Num [1 2 3] 0 sum`  →  `6`     |
+| `+>`              | Cons   | 2     | `-> a -> [a] [a]`                | `+> 1 Num:[2 3]`  →  `Num:[1 2 3]` |
+| `<+`              | Uncons | 3     | `-> [a] -> b -> -> a -> [a] b b` | `<+ Num:[1 2 3] 0 sum`  →  `6`     |
 | `?`               | If     | 3     | `-> Atom -> a -> a a`            | `? True Cat Dog`  →  `Cat`         |
 
 ## Expressions
@@ -210,13 +210,13 @@ _map f x xs = +> (f x) (map f xs)
 
 map -> -> t g -> [t] [g]
 map f xs =
-  <+ xs g [] (_map f)
+  <+ xs g:[] (_map f)
 
 add1 -> Num Num
 add1 x = + x 1
 
 list [Num]
-list = (map add1 Num [1 2 3 4])
+list = (map add1 Num:[1 2 3 4])
 ```
 
 ```
