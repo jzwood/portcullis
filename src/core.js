@@ -6,7 +6,10 @@ function equal(a, b) {
   if (typeof a === "object" && typeof b === "object") {
     if (a.length === 0 && b.length === 0) return +true;
     if (a.length !== b.length) return +false;
-    return equal(a.at(0), b.at(0)) && equal(a.slice(1), b.slice(1));
+    for (let i = 0; i < a.length; i++) {
+      if (!equal(a.at(i), b.at(i))) return +false;
+    }
+    return +true;
   }
   return +false;
 }
