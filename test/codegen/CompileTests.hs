@@ -32,3 +32,4 @@ main :: IO ()
 main = do
   testCodeGen "js"
   testCodeGen "py"
+  testCodeGen "lua"

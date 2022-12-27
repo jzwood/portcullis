@@ -14,6 +14,7 @@ import MiniParser (runParser, Parser, Cursor)
 import Parser
 import CodeGen.TargetJs
 import CodeGen.TargetPy
+import CodeGen.TargetLua
 import qualified Typecheck
 import Typecheck (typecheckModule)
 import Util (mapLeft)
@@ -56,4 +57,5 @@ runCompilation src dest = do
   case takeExtension dest of
     ".js" -> save src dest $ (++jsCore) . toJs <$> code
     ".py" -> save src dest $ toPy <$> code
+    ".lua" -> save src dest $ toLua <$> code
     ext -> putStrLn $ unwords [ "Unrecognized extension:", ext ]
