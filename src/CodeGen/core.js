@@ -1,5 +1,5 @@
 // INTERNAL
-function equal(a, b) {
+export function _eq_(a, b) {
   if (a === b) {
     return +true;
   }
@@ -13,6 +13,3 @@ function equal(a, b) {
   }
   return +false;
 }
-
-// for testing
-export const _equal = equal;

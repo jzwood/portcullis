@@ -10,7 +10,7 @@ import Data.Function
 import Control.Applicative
 import Data.Char
 import Data.List (intercalate, intersperse, nub)
-import Util
+import Util hiding (showList)
 import Data.Map (Map, (!))
 import qualified Data.Map as Map
 
@@ -34,7 +34,7 @@ instance Lua Function where
         toLambda :: [String] -> Expr -> String
         toLambda [] expr = indent $ "return " ++ toLua expr
         toLambda (var:vars) expr = (indent . unlines) ["return function " ++ paren var, toLambda vars expr, "end" ]
-        body = toLambda vars expr
+        body = toLambda (tail' vars) expr
         foot = "end"
 
 instance Lua TypeExpr where
@@ -44,11 +44,11 @@ instance Lua TypeExpr where
   toLua (Unspecified t) = t
   toLua (ListType t)
     = toLua t
-    & bracket
+    & curly
   toLua (TupType t1 t2)
     =  [t1, t2]
    <&> toLua
-    &  bracket . unwords
+    &  curly . unwords
   toLua (Arrow tExpr1 tExpr2) = paren (toLua tExpr1 ++ pad "->" ++ toLua tExpr2)
 
 instance Lua Value where
@@ -68,18 +68,18 @@ instance Lua Expr where
       [] -> ""  -- functions without arguments are interpreted as values
       _ -> concatMap (paren . toLua) exprs
   toLua (UnOp unop e) = toLua e ++ toLua unop
-  toLua (BinOp Equal e1 e2) = "int" ++ infixBop Equal e1 e2
-  toLua (BinOp Cons e xs) = unwords [ bracket $ toLua e, "+", toLua xs]
+  toLua (BinOp Equal e1 e2) = prefixBop Equal e1 e2
+  toLua (BinOp Cons e es) = (paren . curly . concat) ["head =", toLua e, ", tail = ", toLua es]
   toLua (BinOp bop e1 e2) = infixBop bop e1 e2
-  toLua (TernOp If p e1 e2) = (paren . unwords) [ toLua e1, "if", toLua p, "else", toLua e2]
+  toLua (TernOp If p e1 e2) = (paren . unwords) [toLua p, "and", toLua e1, "or", toLua e2] --  unwords [p, e1, e2]
   toLua (TernOp Uncons xs b fb) =
     toLua $ TernOp If (BinOp Equal xs (Val $ List (Unspecified "") [])) b (Call (toLua fb) [UnOp Head xs, UnOp Tail xs])
 
 instance Lua UnOp where
   toLua Fst = "[1]"
   toLua Snd = "[2]"
-  toLua Head = ".head"  -- not a Lua thing. this is a Portcullis convention
-  toLua Tail = ".tail"  -- ditto above
+  toLua Head = ".head"
+  toLua Tail = ".tail"
 
 instance Lua Bop where
   toLua Plus = "+"
@@ -91,8 +91,11 @@ instance Lua Bop where
   toLua LessThan = "<"
   toLua LessThanOrEqual = "<="
   toLua Rem = "%"
-  toLua Equal = "=="
-  --show Cons = "+>"  -- not used for code gen
+  toLua Equal = "_eq_"
+  toLua Cons = error "Cons intentionally has no toLua"
+
+prefixBop :: Bop -> Expr -> Expr -> String
+prefixBop bop e1 e2 = prefixOp (toLua bop) $ toLua <$> [e1, e2]
 
 prefixOp :: String -> [String] -> String
 prefixOp op = (op ++) . paren . intercalate ", "
@@ -129,15 +132,18 @@ showZeroArityFunctions funcs
  <&> (\name -> unwords [name, "=", "__" ++ name ++ "()" ])
 
 showTopology :: Map Name Stream -> [Pipe] -> String
-showTopology _ [] = "pipes = [];"
+showTopology _ [] = "pipes = {}"
 showTopology streamMap pipes
   =  pipes
  <&> showPipe streamMap
-  &  ("pipes = " ++) . ("[\n" ++) . (++ "\n]") . indent . intercalate ",\n"
+  &  ("pipes = " ++) . ("{\n" ++) . (++ "\n}") . indent . intercalate ",\n"
 
 showPipe :: Map Name Stream -> Pipe -> String
 showPipe streamMap Pipe { funcName, inStreams, outStreamName } =
   showTuple [funcName, showList (fmap (\(name, buffer) -> showTuple [show name, show buffer]) inStreams), show outStreamName]
 
 showTuple :: [String] -> String
-showTuple = paren . intercalate ", "
+showTuple = curly . intercalate ", "
+
+showList :: [String] -> String
+showList = curly . intercalate ", "

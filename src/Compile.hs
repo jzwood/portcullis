@@ -49,13 +49,16 @@ save _ dest (Right js)
 save src _ (Left err) = putStrLn ("!\t" ++ src ++ " " ++ show err)
 
 jsCore :: String
-jsCore = BSU.toString $(embedFile "src/core.js")
+jsCore = BSU.toString $(embedFile "src/CodeGen/core.js")
+
+luaCore :: String
+luaCore = BSU.toString $(embedFile "src/CodeGen/core.lua")
 
 runCompilation :: String -> String -> IO ()
 runCompilation src dest = do
   code <- readFile src <&> compile
   case takeExtension dest of
     ".js" -> save src dest $ (++jsCore) . toJs <$> code
+    ".lua" -> save src dest $ (++luaCore) . toLua <$> code
     ".py" -> save src dest $ toPy <$> code
-    ".lua" -> save src dest $ toLua <$> code
     ext -> putStrLn $ unwords [ "Unrecognized extension:", ext ]

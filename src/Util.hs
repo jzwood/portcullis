@@ -30,7 +30,7 @@ bracket :: String -> String
 bracket a = "[" ++ a ++ "]"
 
 curly :: String -> String
-curly a = "{\n" ++ a ++ "\n}"
+curly a = "{" ++ a ++ "}"
 
 pad :: String -> String
 pad a = " " ++ a ++ " "
