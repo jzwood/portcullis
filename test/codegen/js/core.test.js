@@ -3,7 +3,7 @@ import {
   assert,
   assertEquals,
 } from "https://deno.land/std@0.119.0/testing/asserts.ts";
-import { _eq_ as equal } from "../../../src/core.js";
+import { _eq_ as equal } from "../../../src/CodeGen/core.js";
 
 Deno.test("equals", () => {
   const uniqThings = [
@@ -16,9 +16,9 @@ Deno.test("equals", () => {
   uniqThings.forEach((x, i) => {
     uniqThings.forEach((y, j) => {
       if (i === j) {
-        assert(equal(x, y));
+        assert(equal(x)(y) === 1);
       } else {
-        assert(!equal(x, y));
+        assert(equal(x)(y) === 0);
       }
     });
   });

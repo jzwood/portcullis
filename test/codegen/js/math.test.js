@@ -10,8 +10,8 @@ import {
   msort,
   neg,
   qsort,
-  total,
   tail,
+  total,
 } from "./compiled/math.js";
 
 const generateNumArray = () =>

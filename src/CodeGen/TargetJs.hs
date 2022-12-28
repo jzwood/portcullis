@@ -70,9 +70,7 @@ instance Js Expr where
       [] -> ""  -- functions without arguments are interpreted as values
       _ -> concatMap (paren . toJs) exprs
   toJs (UnOp unop e) = toJs e ++ toJs unop
-  toJs (BinOp Equal e1 e2) = prefixBop Equal e1 e2
-  toJs (BinOp Cons e xs) = bracket $ toJs e ++ ", ..." ++ toJs xs
-  toJs (BinOp bop e1 e2) = infixBop bop e1 e2
+  toJs (BinOp bop e1 e2) = toJs $ Call (toJs bop) [e1, e2]
   toJs (TernOp If p e1 e2)
     = (paren . ('\n':) . (++"\n") . indent . unwords)
     [ toJs p ++ " ?"
@@ -89,17 +87,17 @@ instance Js UnOp where
   toJs Tail = ".slice(1)"
 
 instance Js Bop where
-  toJs Plus = "+"
-  toJs Minus = "-"
-  toJs Times = "*"
-  toJs Divide = "/"
-  toJs GreaterThan = ">"
-  toJs GreaterThanOrEqual = ">="
-  toJs LessThan = "<"
-  toJs LessThanOrEqual = "<="
-  toJs Rem = "%"
-  toJs Equal = "equal"
-  --show Cons = "+>"  -- not used for code gen
+  toJs Plus = "_plus_"
+  toJs Minus = "_minus_"
+  toJs Times = "_mult_"
+  toJs Divide = "_div_"
+  toJs GreaterThan = "_gt_"
+  toJs GreaterThanOrEqual = "_gte_"
+  toJs LessThan = "_lt_"
+  toJs LessThanOrEqual = "_lte_"
+  toJs Rem = "_rem_"
+  toJs Equal = "_eq_"
+  toJs Cons = "_cons_"
 
 prefixOp :: String -> [String] -> String
 prefixOp op = (op ++) . paren . intercalate ", "
