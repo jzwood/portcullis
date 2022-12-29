@@ -1,4 +1,3 @@
--- INTERNAL
 function _plus_(a)
   return function (b)
     return a + b

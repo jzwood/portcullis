@@ -1,4 +1,3 @@
-// INTERNAL
 function _plus_(a) {
   return (b) => a + b;
 }
