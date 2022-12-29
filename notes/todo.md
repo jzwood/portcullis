@@ -1,4 +1,7 @@
 ## TODO
+- test day1 for lua
+- add unit tests for lua codegen
+- double check runtime examples didn't break after all that mucking
 
 - write typechecking unit tests for tuples
 - disallow stream signatures that contain either unspecified types or arrows
