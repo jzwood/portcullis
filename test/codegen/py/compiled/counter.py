@@ -14,6 +14,7 @@ pipes = [
   (add, [("&counter", 1), ("&add", 100)], "&counter"),
   (sub, [("&counter", 1), ("&sub", 100)], "&counter")
 ]
+
 # INTERNAL
 def _plus_(a):
     return lambda b: a + b
@@ -44,4 +45,5 @@ def _eq_(a):
 
 def _cons_(a):
     return lambda b: [a] + b
+
 

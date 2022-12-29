@@ -1,6 +1,6 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
-module CodeGen.TargetPy where
+module CodeGen.Py.TargetPy where
 
 import Prelude hiding (showList)
 import Syntax
@@ -90,9 +90,6 @@ instance Py Bop where
 
 prefixOp :: String -> [String] -> String
 prefixOp op = (op ++) . paren . intercalate ", "
-
-infixBop :: Bop -> Expr -> Expr -> String
-infixBop bop e1 e2 = paren . intercalate (pad . toPy $ bop) $ toPy <$> [e1, e2]
 
 flatFindAtoms :: [Expr] -> [String]
 flatFindAtoms = concatMap findAtoms

@@ -8,7 +8,6 @@ import Data.List
 import Data.Set (Set)
 import qualified Data.Map as Map
 import Syntax
-import CodeGen.TargetJs (toJs)
 import qualified Data.Set as Set
 import Typecheck hiding (TypecheckError)
 import qualified Typecheck as T
@@ -16,8 +15,7 @@ import qualified Compile as C
 import Util
 
 compile :: String -> Either String String
-compile program = mapLeft show (C.compile program <&> toJs)
-
+compile program = mapLeft show (C.compile program <&> show)  -- we don't actually care about actual output codegen for these tests
 errorOf :: String -> T.TypecheckError
 errorOf program = case C.compile program of
   Left (C.TypecheckError [typecheckError]) -> typecheckError

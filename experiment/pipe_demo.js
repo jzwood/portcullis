@@ -1,4 +1,4 @@
-import { _makePipe as makePipe } from "./src/CodeGen/core.js";
+import { _makePipe as makePipe } from "./src/CodeGen/Js/core.js";
 // deno repl --unstable --eval-file=src/examples/pipe_demo.js
 
 makePipe("", (a) => (b) => a + b, [["a", 3], ["b", 2]], "c");

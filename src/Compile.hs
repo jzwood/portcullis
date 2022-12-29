@@ -12,9 +12,9 @@ import Syntax
 import qualified MiniParser as ParseLib
 import MiniParser (runParser, Parser, Cursor)
 import Parser
-import CodeGen.TargetJs
-import CodeGen.TargetPy
-import CodeGen.TargetLua
+import CodeGen.Js.TargetJs
+import CodeGen.Py.TargetPy
+import CodeGen.Lua.TargetLua
 import qualified Typecheck
 import Typecheck (typecheckModule)
 import Util (mapLeft)
@@ -48,20 +48,20 @@ save _ dest (Right js)
   >> putStrLn ("✓\t" ++ dest ++ " Successfully Compiled")
 save src _ (Left err) = putStrLn ("!\t" ++ src ++ " " ++ show err)
 
-jsCore :: String
-jsCore = BSU.toString $(embedFile "src/CodeGen/core.js")
+toJsFile :: Module -> String
+toJsFile mod = unlines [toJs mod, BSU.toString $(embedFile "src/CodeGen/js/core.js")]
 
-pyCore :: String
-pyCore = BSU.toString $(embedFile "src/CodeGen/core.py")
+toPyFile :: Module -> String
+toPyFile mod = unlines [toPy mod, BSU.toString $(embedFile "src/CodeGen/py/core.py")]
 
-luaCore :: String
-luaCore = BSU.toString $(embedFile "src/CodeGen/core.lua")
+toLuaFile :: Module -> String
+toLuaFile mod = unlines [toLua mod, BSU.toString $(embedFile "src/CodeGen/lua/core.lua")]
 
 runCompilation :: String -> String -> IO ()
 runCompilation src dest = do
   code <- readFile src <&> compile
   case takeExtension dest of
-    ".js" -> save src dest $ (++jsCore) . toJs <$> code
-    ".lua" -> save src dest $ (++luaCore) . toLua <$> code
-    ".py" -> save src dest $ (++pyCore) . toPy <$> code
+    ".js" -> save src dest $ toJsFile <$> code
+    ".lua" -> save src dest $ toLuaFile <$> code
+    ".py" -> save src dest $ toPyFile <$> code
     ext -> putStrLn $ unwords [ "Unrecognized extension:", ext ]

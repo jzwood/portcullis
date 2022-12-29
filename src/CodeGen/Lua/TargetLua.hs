@@ -1,6 +1,6 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
-module CodeGen.TargetLua where
+module CodeGen.Lua.TargetLua where
 
 import Prelude hiding (showList)
 import Syntax
@@ -68,10 +68,8 @@ instance Lua Expr where
       [] -> ""  -- functions without arguments are interpreted as values
       _ -> concatMap (paren . toLua) exprs
   toLua (UnOp unop e) = toLua e ++ toLua unop
-  toLua (BinOp Equal e1 e2) = prefixBop Equal e1 e2
-  toLua (BinOp Cons e es) = (paren . curly . concat) ["head =", toLua e, ", tail = ", toLua es]
-  toLua (BinOp bop e1 e2) = infixBop bop e1 e2
-  toLua (TernOp If p e1 e2) = (paren . unwords) [toLua p, "and", toLua e1, "or", toLua e2] --  unwords [p, e1, e2]
+  toLua (BinOp bop e1 e2) = toLua $ Call (toLua bop) [e1, e2]
+  toLua (TernOp If p e1 e2) = (paren . unwords) [toLua p, "and", toLua e1, "or", toLua e2] -- this works b/c all ints are truthy in lua
   toLua (TernOp Uncons xs b fb) =
     toLua $ TernOp If (BinOp Equal xs (Val $ List (Unspecified "") [])) b (Call (toLua fb) [UnOp Head xs, UnOp Tail xs])
 

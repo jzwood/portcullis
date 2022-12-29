@@ -24,9 +24,9 @@ source-repository head
 
 library
   exposed-modules:
-      CodeGen.TargetJs
-      CodeGen.TargetLua
-      CodeGen.TargetPy
+      CodeGen.Js.TargetJs
+      CodeGen.Lua.TargetLua
+      CodeGen.Py.TargetPy
       Compile
       MiniParser
       Parser

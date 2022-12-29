@@ -28,6 +28,7 @@ TRUE = 1;
 fb = __fb()
 
 pipes = [];
+
 # INTERNAL
 def _plus_(a):
     return lambda b: a + b
@@ -58,4 +59,5 @@ def _eq_(a):
 
 def _cons_(a):
     return lambda b: [a] + b
+
 
