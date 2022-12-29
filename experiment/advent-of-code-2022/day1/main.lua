@@ -4,16 +4,14 @@
 require "day1"
 
 local function read_file(path)
-    local file = io.open(path, "rb") -- r read mode and b binary mode
+    local file = io.open(path, "r") -- r read mode and b binary mode
     if not file then return nil end
     local content = file:read "*a" -- *a or *all reads the whole file
     file:close()
     return content
 end
 
-local food = read_file("food.txt")
-
-function stringToList(str)
+local function stringToList(str)
     if str == "" then
         return {}
     else
@@ -21,6 +19,7 @@ function stringToList(str)
     end
 end
 
-foodList = stringToList(food)
-res = day1a(foodList)
+local food = read_file("food.txt")
+local foodList = stringToList(food)
+local res = day1a(foodList)
 print(res)
