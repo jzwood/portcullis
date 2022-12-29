@@ -27,6 +27,7 @@ library
       CodeGen.Js.TargetJs
       CodeGen.Lua.TargetLua
       CodeGen.Py.TargetPy
+      CodeGen.Util
       Compile
       MiniParser
       Parser

@@ -63,3 +63,6 @@ eq x y = == x y
 
 seven -> [Num] [Num]
 seven xs = (filter (eq 7) xs)
+
+eight Num
+eight = + 3 5

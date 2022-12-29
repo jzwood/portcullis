@@ -4,6 +4,7 @@ module CodeGen.Py.TargetPy where
 
 import Prelude hiding (showList)
 import Syntax
+import CodeGen.Util (findAtoms)
 import Data.Functor
 import Data.Bifunctor
 import Data.Function
@@ -90,21 +91,6 @@ instance Py Bop where
 
 prefixOp :: String -> [String] -> String
 prefixOp op = (op ++) . paren . intercalate ", "
-
-flatFindAtoms :: [Expr] -> [String]
-flatFindAtoms = concatMap findAtoms
-
-findAtoms :: Expr -> [String]
-findAtoms (Val v) =
-  case v of
-    Atom n -> [n]
-    Tuple e1 e2 -> flatFindAtoms [e1, e2]
-    List _ es -> flatFindAtoms es
-    _ -> []
-findAtoms (Call n [es]) = flatFindAtoms [es]
-findAtoms (BinOp _ e1 e2) = flatFindAtoms [e1, e2]
-findAtoms (TernOp _ e1 e2 e3) = flatFindAtoms [e1, e2, e3]
-findAtoms _ = []
 
 showAtoms :: [Function] -> [String]
 showAtoms funcs

@@ -4,6 +4,7 @@ module CodeGen.Js.TargetJs where
 
 import Prelude hiding (showList)
 import Syntax
+import CodeGen.Util (findAtoms)
 import Data.Functor
 import Data.Bifunctor
 import Data.Function
@@ -98,30 +99,6 @@ instance Js Bop where
   toJs Rem = "_rem_"
   toJs Equal = "_eq_"
   toJs Cons = "_cons_"
-
-prefixOp :: String -> [String] -> String
-prefixOp op = (op ++) . paren . intercalate ", "
-
-prefixBop :: Bop -> Expr -> Expr -> String
-prefixBop bop e1 e2 = prefixOp (toJs bop) (toJs <$> [e1, e2])
-
-infixBop :: Bop -> Expr -> Expr -> String
-infixBop bop e1 e2 = paren . intercalate (pad . toJs $ bop) $ toJs <$> [e1, e2]
-
-flatFindAtoms :: [Expr] -> [String]
-flatFindAtoms = concatMap findAtoms
-
-findAtoms :: Expr -> [String]
-findAtoms (Val v) =
-  case v of
-    Atom n -> [n]
-    Tuple e1 e2 -> flatFindAtoms [e1, e2]
-    List _ es -> flatFindAtoms es
-    _ -> []
-findAtoms (Call n [es]) = flatFindAtoms [es]
-findAtoms (BinOp _ e1 e2) = flatFindAtoms [e1, e2]
-findAtoms (TernOp _ e1 e2 e3) = flatFindAtoms [e1, e2, e3]
-findAtoms _ = []
 
 showAtoms :: [Function] -> [String]
 showAtoms funcs

@@ -4,6 +4,7 @@ module CodeGen.Lua.TargetLua where
 
 import Prelude hiding (showList)
 import Syntax
+import CodeGen.Util (findAtoms)
 import Data.Functor
 import Data.Bifunctor
 import Data.Function
@@ -44,7 +45,7 @@ instance Lua TypeExpr where
   toLua (Unspecified t) = t
   toLua (ListType t)
     = toLua t
-    & curly
+    & bracket
   toLua (TupType t1 t2)
     =  [t1, t2]
    <&> toLua
@@ -69,7 +70,7 @@ instance Lua Expr where
       _ -> concatMap (paren . toLua) exprs
   toLua (UnOp unop e) = toLua e ++ toLua unop
   toLua (BinOp bop e1 e2) = toLua $ Call (toLua bop) [e1, e2]
-  toLua (TernOp If p e1 e2) = (paren . unwords) [toLua p, "and", toLua e1, "or", toLua e2] -- this works b/c all ints are truthy in lua
+  toLua (TernOp If p e1 e2) = (paren . unwords) [toLua p, "~= 0 and", toLua e1, "or", toLua e2] -- this works b/c all ints are truthy in lua
   toLua (TernOp Uncons xs b fb) =
     toLua $ TernOp If (BinOp Equal xs (Val $ List (Unspecified "") [])) b (Call (toLua fb) [UnOp Head xs, UnOp Tail xs])
 
@@ -100,21 +101,6 @@ prefixOp op = (op ++) . paren . intercalate ", "
 
 infixBop :: Bop -> Expr -> Expr -> String
 infixBop bop e1 e2 = paren . intercalate (pad . toLua $ bop) $ toLua <$> [e1, e2]
-
-flatFindAtoms :: [Expr] -> [String]
-flatFindAtoms = concatMap findAtoms
-
-findAtoms :: Expr -> [String]
-findAtoms (Val v) =
-  case v of
-    Atom n -> [n]
-    Tuple e1 e2 -> flatFindAtoms [e1, e2]
-    List _ es -> flatFindAtoms es
-    _ -> []
-findAtoms (Call n [es]) = flatFindAtoms [es]
-findAtoms (BinOp _ e1 e2) = flatFindAtoms [e1, e2]
-findAtoms (TernOp _ e1 e2 e3) = flatFindAtoms [e1, e2, e3]
-findAtoms _ = []
 
 showAtoms :: [Function] -> [String]
 showAtoms funcs

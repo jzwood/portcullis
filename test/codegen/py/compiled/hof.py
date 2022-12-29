@@ -70,11 +70,16 @@ def eq(x):
 def seven(xs):
   return filter(eq(7.0))(xs)
 
+# signature: Num
+def __eight():
+  return _plus_(3.0)(5.0)
+
 FALSE = 0;
 TRUE = 1;
 
 one1 = __one1()
 one2 = __one2()
+eight = __eight()
 
 pipes = [];
 
