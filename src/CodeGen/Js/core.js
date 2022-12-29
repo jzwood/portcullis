@@ -14,6 +14,10 @@ function _div_(a) {
   return (b) => a / b;
 }
 
+function _rem_(a) {
+  return (b) => a % b;
+}
+
 function _gt_(a) {
   return (b) => a > b ? 1 : 0;
 }

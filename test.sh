@@ -1,7 +1,9 @@
 #!/bin/bash
 
-stack install && \
-stack test && \
+if [ "$1" = "--all" ]; then
+  stack test
+fi
+
 stack runhaskell test/codegen/CompileTests && \
 echo "JAVASCRIPT UNITTESTS" && \
 deno test test/codegen/js && \

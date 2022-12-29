@@ -89,9 +89,6 @@ instance Py Bop where
   toPy Equal = "_eq_"
   toPy Cons = "_cons_"
 
-prefixOp :: String -> [String] -> String
-prefixOp op = (op ++) . paren . intercalate ", "
-
 showAtoms :: [Function] -> [String]
 showAtoms funcs
   =  concatMap (findAtoms . body) funcs

@@ -22,6 +22,12 @@ function _div_(a)
   end
 end
 
+function _rem_(a)
+  return function (b)
+    return a % b
+  end
+end
+
 function _gt_(a)
   return function (b)
     if a > b then
@@ -67,7 +73,11 @@ function _eq_(a)
     if a == b then
       return 1
     elseif type(a) == 'table' and type(b) == 'table' then
-      return _eq_(a.head)(b.head) == 1 and _eq_(a.tail)(b.tail) == 1
+      if _eq_(a.head)(b.head) == 1 and _eq_(a.tail)(b.tail) == 1 then
+        return 1
+      else
+        return 0
+      end
     else
       return 0
     end

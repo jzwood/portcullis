@@ -10,6 +10,9 @@ def _mult_(a):
 def _div_(a):
     return lambda b: a / b
 
+def _rem_(a):
+    return lambda b: a % b
+
 def _gt_(a):
     return lambda b: 1 if a > b else 0
 

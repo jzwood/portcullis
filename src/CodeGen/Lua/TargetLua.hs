@@ -70,7 +70,7 @@ instance Lua Expr where
       _ -> concatMap (paren . toLua) exprs
   toLua (UnOp unop e) = toLua e ++ toLua unop
   toLua (BinOp bop e1 e2) = toLua $ Call (toLua bop) [e1, e2]
-  toLua (TernOp If p e1 e2) = (paren . unwords) [toLua p, "~= 0 and", toLua e1, "or", toLua e2] -- this works b/c all ints are truthy in lua
+  toLua (TernOp If p e1 e2) = (paren . unwords) [toLua p, "> 0 and", toLua e1, "or", toLua e2] -- this works b/c all ints are truthy in lua
   toLua (TernOp Uncons xs b fb) =
     toLua $ TernOp If (BinOp Equal xs (Val $ List (Unspecified "") [])) b (Call (toLua fb) [UnOp Head xs, UnOp Tail xs])
 
@@ -92,15 +92,6 @@ instance Lua Bop where
   toLua Rem = "_rem_"
   toLua Equal = "_eq_"
   toLua Cons = "_cons_"
-
-prefixBop :: Bop -> Expr -> Expr -> String
-prefixBop bop e1 e2 = prefixOp (toLua bop) $ toLua <$> [e1, e2]
-
-prefixOp :: String -> [String] -> String
-prefixOp op = (op ++) . paren . intercalate ", "
-
-infixBop :: Bop -> Expr -> Expr -> String
-infixBop bop e1 e2 = paren . intercalate (pad . toLua $ bop) $ toLua <$> [e1, e2]
 
 showAtoms :: [Function] -> [String]
 showAtoms funcs
