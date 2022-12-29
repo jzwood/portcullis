@@ -90,11 +90,11 @@ function _cons_(a)
   end
 end
 
-function print_arr(tbl)
+function printList(tbl)
   local head = tbl.head
   if head ~= nil then
     print(head)
-    print_arr(tbl.tail)
+    printList(tbl.tail)
   end
 end
 
