@@ -97,3 +97,9 @@ function print_arr(tbl)
     print_arr(tbl.tail)
   end
 end
+
+FALSE = 0;
+TRUE = 1;
+
+
+pipes = {}

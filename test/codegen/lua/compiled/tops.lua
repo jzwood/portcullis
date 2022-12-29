@@ -97,3 +97,28 @@ function print_arr(tbl)
     print_arr(tbl.tail)
   end
 end
+
+-- signature: (Atom -> Num)
+function hello(what)
+  return (_eq_(what)(WORLD) > 0 and 42.0 or (_eq_(what)(MA) > 0 and 10.0 or _minus_(0.0)(100.0)))
+end
+
+-- signature: (Num -> ([Num] -> Num))
+function _sum(x)
+  return function (xs)
+    return _plus_(x)(sum(xs))
+  end
+end
+
+-- signature: ([Num] -> Num)
+function sum(xs)
+  return (_eq_(xs)({}) > 0 and 0.0 or _sum(xs.head)(xs.tail))
+end
+
+FALSE = 0;
+TRUE = 1;
+WORLD = 2;
+MA = 3;
+
+
+pipes = {}

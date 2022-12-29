@@ -97,3 +97,19 @@ function print_arr(tbl)
     print_arr(tbl.tail)
   end
 end
+
+-- signature: (Num -> Num)
+function fib(n)
+  return (_lte_(n)(1.0) > 0 and 1.0 or _plus_(fib(_minus_(n)(1.0)))(fib(_minus_(n)(2.0))))
+end
+
+-- signature: (Num -> Num)
+function neg(x)
+  return _minus_(0.0)(x)
+end
+
+FALSE = 0;
+TRUE = 1;
+
+
+pipes = {}

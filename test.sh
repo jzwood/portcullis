@@ -2,6 +2,8 @@
 
 if [ "$1" = "--all" ]; then
   stack test
+else
+  stack install
 fi
 
 stack runhaskell test/codegen/CompileTests && \

@@ -97,3 +97,48 @@ function print_arr(tbl)
     print_arr(tbl.tail)
   end
 end
+
+-- signature: ((_map.a -> _map.b) -> (_map.a -> ([_map.a] -> [_map.b])))
+function _map(f)
+  return function (x)
+    return function (xs)
+      return _cons_(f(x))(map(f)(xs))
+    end
+  end
+end
+
+-- signature: ((map.a -> map.b) -> ([map.a] -> [map.b]))
+function map(f)
+  return function (xs)
+    return (_eq_(xs)({}) > 0 and {} or _map(f)(xs.head)(xs.tail))
+  end
+end
+
+-- signature: (Num -> (Num -> [Num]))
+function range(n0)
+  return function (n1)
+    return (_gt_(n0)(n1) > 0 and {} or _cons_(n0)(range(_plus_(n0)(1.0))(n1)))
+  end
+end
+
+-- signature: (Num -> Num)
+function _fizzbuzz(n)
+  return (_eq_(0.0)(_rem_(n)(15.0)) > 0 and _minus_(0.0)(35.0) or (_eq_(0.0)(_rem_(n)(5.0)) > 0 and _minus_(0.0)(5.0) or (_eq_(0.0)(_rem_(n)(3.0)) > 0 and _minus_(0.0)(3.0) or n)))
+end
+
+-- signature: (Num -> [Num])
+function fizzbuzz(n)
+  return map(_fizzbuzz)(range(1.0)(n))
+end
+
+-- signature: [Num]
+function __fb()
+  return fizzbuzz(20.0)
+end
+
+FALSE = 0;
+TRUE = 1;
+
+fb = __fb()
+
+pipes = {}

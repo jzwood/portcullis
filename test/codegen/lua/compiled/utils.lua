@@ -97,3 +97,18 @@ function print_arr(tbl)
     print_arr(tbl.tail)
   end
 end
+
+-- signature: ((not.a -> (not.a -> Atom)) -> (not.a -> (not.a -> Atom)))
+function not(f)
+  return function (a)
+    return function (b)
+      return (_eq_(FALSE)(f(a)(b)) > 0 and TRUE or FALSE)
+    end
+  end
+end
+
+FALSE = 0;
+TRUE = 1;
+
+
+pipes = {}

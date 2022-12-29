@@ -97,3 +97,26 @@ function print_arr(tbl)
     print_arr(tbl.tail)
   end
 end
+
+-- signature: (Num -> (Num -> Num))
+function add(a)
+  return function (b)
+    return _plus_(a)(b)
+  end
+end
+
+-- signature: (Num -> (Num -> Num))
+function sub(a)
+  return function (b)
+    return _minus_(a)(b)
+  end
+end
+
+FALSE = 0;
+TRUE = 1;
+
+
+pipes = {
+  {add, {{"&counter", 1}, {"&add", 100}}, "&counter"},
+  {sub, {{"&counter", 1}, {"&sub", 100}}, "&counter"}
+}

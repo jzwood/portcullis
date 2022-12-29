@@ -97,3 +97,60 @@ function print_arr(tbl)
     print_arr(tbl.tail)
   end
 end
+
+-- signature: (Num -> (Num -> Num))
+function add(a)
+  return function (b)
+    return _plus_(a)(b)
+  end
+end
+
+-- signature: (Num -> (Num -> (Num -> Num)))
+function add3(a)
+  return function (b)
+    return function (c)
+      return _plus_(_plus_(a)(b))(c)
+    end
+  end
+end
+
+-- signature: (Num -> Num)
+function calc0(num)
+  return _plus_(_minus_(0.0)(_mult_(num)(9.0)))(_div_(3.0)(4.0))
+end
+
+-- signature: (Num -> Num)
+function calc1(num)
+  return _plus_(_minus_(0.0)(_mult_(num)(9.0)))(_div_(3.0)(4.0))
+end
+
+-- signature: (Num -> Atom)
+function choose0(num)
+  return (_gt_(num)(0.0) > 0 and COOL or (_eq_(num)(0.0) > 0 and HMM or BAD))
+end
+
+-- signature: (Num -> Atom)
+function choose1(num)
+  return (_lte_(num)(0.0) > 0 and COOL or (_lt_(num)(100.0) > 0 and HMM or BAD))
+end
+
+-- signature: (Num -> Atom)
+function isEven(num)
+  return _eq_(_rem_(num)(2.0))(0.0)
+end
+
+-- signature: (append3.a -> ([append3.a] -> [append3.a]))
+function append3(x)
+  return function (xs)
+    return _cons_(x)(_cons_(x)(_cons_(x)(xs)))
+  end
+end
+
+FALSE = 0;
+TRUE = 1;
+COOL = 2;
+HMM = 3;
+BAD = 4;
+
+
+pipes = {}
