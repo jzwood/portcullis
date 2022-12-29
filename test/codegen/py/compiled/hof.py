@@ -8,7 +8,7 @@ def compose(f):
 
 # signature: (Num -> Num)
 def double(x):
-  return (2.0 * x)
+  return _mult_(2.0)(x)
 
 # signature: (Num -> Num)
 def quadruple(n):
@@ -32,7 +32,7 @@ def id3(x):
 
 # signature: ([tail.t] -> [tail.t])
 def tail(xs):
-  return (xs if int(xs == []) else id3(xs[0])(xs[1:]))
+  return (xs if _eq_(xs)([]) else id3(xs[0])(xs[1:]))
 
 # signature: ((a.h -> a.h) -> (a.h -> a.h))
 def a(fx):
@@ -48,11 +48,11 @@ def c(y):
 
 # signature: ([push.h] -> (push.h -> ([push.h] -> [push.h])))
 def push(ys):
-  return lambda x: lambda xs: [x] + concat(xs)(ys)
+  return lambda x: lambda xs: _cons_(x)(concat(xs)(ys))
 
 # signature: ([concat.a] -> ([concat.a] -> [concat.a]))
 def concat(xs):
-  return lambda ys: (ys if int(xs == []) else push(ys)(xs[0])(xs[1:]))
+  return lambda ys: (ys if _eq_(xs)([]) else push(ys)(xs[0])(xs[1:]))
 
 # signature: ((filter2.x -> Atom) -> (filter2.x -> ([filter2.x] -> [filter2.x])))
 def filter2(g):
@@ -60,11 +60,11 @@ def filter2(g):
 
 # signature: ((filter.j -> Atom) -> ([filter.j] -> [filter.j]))
 def filter(f):
-  return lambda xs: (xs if int(xs == []) else filter2(f)(xs[0])(xs[1:]))
+  return lambda xs: (xs if _eq_(xs)([]) else filter2(f)(xs[0])(xs[1:]))
 
 # signature: (eq.a -> (eq.a -> Atom))
 def eq(x):
-  return lambda y: int(x == y)
+  return lambda y: _eq_(x)(y)
 
 # signature: ([Num] -> [Num])
 def seven(xs):
@@ -77,3 +77,34 @@ one1 = __one1()
 one2 = __one2()
 
 pipes = [];
+# INTERNAL
+def _plus_(a):
+    return lambda b: a + b
+
+def _minus_(a):
+    return lambda b: a - b
+
+def _mult_(a):
+    return lambda b: a * b
+
+def _div_(a):
+    return lambda b: a / b
+
+def _gt_(a):
+    return lambda b: 1 if a > b else 0
+
+def _gte_(a):
+    return lambda b: 1 if a >= b else 0
+
+def _lt_(a):
+    return lambda b: 1 if a < b else 0
+
+def _lte_(a):
+    return lambda b: 1 if a <= b else 0
+
+def _eq_(a):
+    return lambda b: 1 if a == b else 0
+
+def _cons_(a):
+    return lambda b: [a] + b
+

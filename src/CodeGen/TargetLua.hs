@@ -82,17 +82,17 @@ instance Lua UnOp where
   toLua Tail = ".tail"
 
 instance Lua Bop where
-  toLua Plus = "+"
-  toLua Minus = "-"
-  toLua Times = "*"
-  toLua Divide = "/"
-  toLua GreaterThan = ">"
-  toLua GreaterThanOrEqual = ">="
-  toLua LessThan = "<"
-  toLua LessThanOrEqual = "<="
-  toLua Rem = "%"
+  toLua Plus = "_plus_"
+  toLua Minus = "_minus_"
+  toLua Times = "_mult_"
+  toLua Divide = "_div_"
+  toLua GreaterThan = "_gt_"
+  toLua GreaterThanOrEqual = "_gte_"
+  toLua LessThan = "_lt_"
+  toLua LessThanOrEqual = "_lte_"
+  toLua Rem = "_rem_"
   toLua Equal = "_eq_"
-  toLua Cons = error "Cons intentionally has no toLua"
+  toLua Cons = "_cons_"
 
 prefixBop :: Bop -> Expr -> Expr -> String
 prefixBop bop e1 e2 = prefixOp (toLua bop) $ toLua <$> [e1, e2]

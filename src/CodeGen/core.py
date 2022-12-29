@@ -1,8 +1,3 @@
-FALSE = 0;
-TRUE = 1;
-
-
-pipes = [];
 # INTERNAL
 def _plus_(a):
     return lambda b: a + b

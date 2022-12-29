@@ -64,9 +64,7 @@ instance Py Expr where
       [] -> ""  -- functions without arguments are interpreted as values
       _ -> concatMap (paren . toPy) exprs
   toPy (UnOp unop e) = toPy e ++ toPy unop
-  toPy (BinOp Equal e1 e2) = "int" ++ infixBop Equal e1 e2
-  toPy (BinOp Cons e xs) = unwords [ bracket $ toPy e, "+", toPy xs]
-  toPy (BinOp bop e1 e2) = infixBop bop e1 e2
+  toPy (BinOp bop e1 e2) = toPy $ Call (toPy bop) [e1, e2]
   toPy (TernOp If p e1 e2) = (paren . unwords) [ toPy e1, "if", toPy p, "else", toPy e2]
   toPy (TernOp Uncons xs b fb) =
     toPy $ TernOp If (BinOp Equal xs (Val $ List (Unspecified "") [])) b (Call (toPy fb) [UnOp Head xs, UnOp Tail xs])
@@ -78,17 +76,17 @@ instance Py UnOp where
   toPy Tail = "[1:]"
 
 instance Py Bop where
-  toPy Plus = "+"
-  toPy Minus = "-"
-  toPy Times = "*"
-  toPy Divide = "/"
-  toPy GreaterThan = ">"
-  toPy GreaterThanOrEqual = ">="
-  toPy LessThan = "<"
-  toPy LessThanOrEqual = "<="
-  toPy Rem = "%"
-  toPy Equal = "=="
-  --show Cons = "+>"  -- not used for code gen
+  toPy Plus = "_plus_"
+  toPy Minus = "_minus_"
+  toPy Times = "_mult_"
+  toPy Divide = "_div_"
+  toPy GreaterThan = "_gt_"
+  toPy GreaterThanOrEqual = "_gte_"
+  toPy LessThan = "_lt_"
+  toPy LessThanOrEqual = "_lte_"
+  toPy Rem = "_rem_"
+  toPy Equal = "_eq_"
+  toPy Cons = "_cons_"
 
 prefixOp :: String -> [String] -> String
 prefixOp op = (op ++) . paren . intercalate ", "
