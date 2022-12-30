@@ -93,8 +93,12 @@ end
 function printList(tbl)
   local head = tbl.head
   if head ~= nil then
-    print(head)
-    printList(tbl.tail)
+    if tbl.tail.head ~= nil then
+      io.write(head, ', ')
+      printList(tbl.tail)
+    else
+      print(head)
+    end
   end
 end
 

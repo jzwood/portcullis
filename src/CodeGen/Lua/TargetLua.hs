@@ -56,7 +56,7 @@ instance Lua Value where
   toLua (Number n) = show n
   toLua (Character c) = ['\'', c, '\'']
   toLua (Atom n) = toUpper <$> n
-  toLua (List t xs) = showList $ toLua <$> xs
+  toLua (List t xs) = showList $ toLua <$> xs -- SHOW LIST IS WRONG should be { head = val, tail = { ...
   toLua (Tuple e1 e2)
     =  toLua <$> [e1, e2]
     &  showTuple

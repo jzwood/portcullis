@@ -22,7 +22,7 @@ compiles to fib.js
 // signature: (Num -> Num)
 export function fib(n) {
   return (
-    (n <= 1.0) ? 1.0 : (fib((n - 1.0)) + fib((n - 2.0)))
+    _lte_(n)(1.0) ? 1.0 : _plus_(fib(_minus_(n)(1.0)))(fib(_minus_(n)(2.0)))
   );
 }
 ```
@@ -32,7 +32,16 @@ compiles to fib.py
 ```py
 # signature: (Num -> Num)
 def fib(n):
-  return 1.0 if (n <= 1.0) else (fib((n - 1.0)) + fib((n - 2.0)))
+  return (1.0 if _lte_(n)(1.0) else _plus_(fib(_minus_(n)(1.0)))(fib(_minus_(n)(2.0))))
+```
+
+compiles to fib.lua
+
+```
+-- signature: (Num -> Num)
+function fib(n)
+  return (_lte_(n)(1.0) > 0 and 1.0 or _plus_(fib(_minus_(n)(1.0)))(fib(_minus_(n)(2.0))))
+end
 ```
 
 <hr>

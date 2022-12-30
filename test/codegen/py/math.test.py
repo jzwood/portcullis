@@ -16,13 +16,13 @@ class TestMath(unittest.TestCase):
     def test_mean(self):
         self.assertEqual(mean([5, 10, 15]), 10)
 
-    def test_quadruple(self):
+    def test_msort(self):
         self.assertEqual(msort([1,4,2,5,7,8,3,6]), [1,2,3,4,5,6,7,8])
 
     def test_neg(self):
         self.assertEqual(neg(7), -7)
 
-    def test_quadruple(self):
+    def test_qsort(self):
         self.assertEqual(qsort([1,4,2,5,7,8,3,6]), [1,2,3,4,5,6,7,8])
 
     def test_total(self):
