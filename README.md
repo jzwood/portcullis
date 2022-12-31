@@ -37,7 +37,7 @@ def fib(n):
 
 compiles to fib.lua
 
-```
+```lua
 -- signature: (Num -> Num)
 function fib(n)
   return (_lte_(n)(1.0) > 0 and 1.0 or _plus_(fib(_minus_(n)(1.0)))(fib(_minus_(n)(2.0))))
