@@ -152,8 +152,8 @@ export function range(n) {
 const False = 0;
 const True = 1;
 
-export const mapped = $mapped()
-export const total = $total()
-export const dub = $dub()
+export const mapped = $mapped();
+export const total = $total();
+export const dub = $dub();
 
 export const pipes = [];

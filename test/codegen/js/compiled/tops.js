@@ -82,5 +82,4 @@ const True = 1;
 const World = 2;
 const Ma = 3;
 
-
 export const pipes = [];

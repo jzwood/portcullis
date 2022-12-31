@@ -110,5 +110,4 @@ const Cool = 2;
 const Hmm = 3;
 const Bad = 4;
 
-
 export const pipes = [];

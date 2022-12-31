@@ -69,8 +69,7 @@ export function sub(a) {
 const False = 0;
 const True = 1;
 
-
 export const pipes = [
   [add, [["&counter", 1], ["&add", 100]], "&counter"],
-  [sub, [["&counter", 1], ["&sub", 100]], "&counter"]
-]
+  [sub, [["&counter", 1], ["&sub", 100]], "&counter"],
+];

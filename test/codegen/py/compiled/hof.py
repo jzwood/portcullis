@@ -107,11 +107,21 @@ def seven(xs):
 def __eight():
   return _plus_(3.0)(5.0)
 
+# signature: [Atom]
+def __atoms():
+  return [ONE, TWO, THREE, FOUR, FIVE]
+
 FALSE = 0;
 TRUE = 1;
+ONE = 2;
+TWO = 3;
+THREE = 4;
+FOUR = 5;
+FIVE = 6;
 
 one1 = __one1()
 one2 = __one2()
 eight = __eight()
+atoms = __atoms()
 
 pipes = [];

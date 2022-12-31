@@ -71,5 +71,4 @@ export function neg(x) {
 const False = 0;
 const True = 1;
 
-
 export const pipes = [];

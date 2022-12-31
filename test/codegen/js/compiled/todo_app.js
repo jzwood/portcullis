@@ -89,9 +89,8 @@ export function concat(xs) {
 
 // signature: ((_filter.x -> Atom) -> (_filter.x -> ([_filter.x] -> [_filter.x])))
 export function _filter(f) {
-  return (x) => (xs) => concat((
-    f(x) ? /* [x] */ [x] : /* [x] */ []
-  ))(filter(f)(xs));
+  return (x) => (xs) =>
+    concat(f(x) ? /* [x] */ [x] : /* [x] */ [])(filter(f)(xs));
 }
 
 // signature: ((filter.j -> Atom) -> ([filter.j] -> [filter.j]))
@@ -116,9 +115,8 @@ const True = 1;
 const Append = 2;
 const Done = 3;
 
-
 export const pipes = [
   [update, [["&update", 100], ["&todo", 1]], "&todo"],
   [append, [["&append", 50]], "&update"],
-  [done, [["&done", 50]], "&update"]
-]
+  [done, [["&done", 50]], "&update"],
+];

@@ -66,3 +66,6 @@ seven xs = (filter (eq 7) xs)
 
 eight Num
 eight = + 3 5
+
+atoms [Atom]
+atoms = Atom : [One Two Three Four Five]

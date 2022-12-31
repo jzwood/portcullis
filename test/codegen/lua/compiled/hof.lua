@@ -219,11 +219,22 @@ function __eight()
   return _plus_(3.0)(5.0)
 end
 
+-- signature: [Atom]
+function __atoms()
+  return { head = ONE, tail = { head = TWO, tail = { head = THREE, tail = { head = FOUR, tail = { head = FIVE, tail = {} } } } } }
+end
+
 FALSE = 0;
 TRUE = 1;
+ONE = 2;
+TWO = 3;
+THREE = 4;
+FOUR = 5;
+FIVE = 6;
 
 one1 = __one1()
 one2 = __one2()
 eight = __eight()
+atoms = __atoms()
 
 pipes = {}

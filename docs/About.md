@@ -1,8 +1,8 @@
 # Intro to Portcullis
 
 Many languages claim to be simple but few truly are. While Portcullis's compiler
-is arguably simple, clocking in well under 1000 LOC, writing Portcullis programs can
-be a bit of a puzzle. This is mostly the result of its restricted syntax and
+is arguably simple, clocking in well under 1000 LOC, writing Portcullis programs
+can be a bit of a puzzle. This is mostly the result of its restricted syntax and
 minimalist design which include:
 
 - no looping constructs (use recursion)

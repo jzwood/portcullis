@@ -14,13 +14,13 @@
 
 ## Values
 
-| Name      | Grammer                         | Example                                   |
-| --------- | ------------------------------- | ----------------------------------------- |
-| Number    | decimal                         | `2.3`                                     |
-| Character | char                            | `'c'`                                     |
-| Atom      | pascal-word                     | `One`, `True`                             |
-| 2-Tuple   | `"{" expression expression "}"` | `{'A' True}`                              |
-| Array     | `type ":" "[" { expression } "]"`   | `Num:[1 2 3 4]`, `Char:['j' 'a' 'k' 'e']` |
+| Name      | Grammer                           | Example                                   |
+| --------- | --------------------------------- | ----------------------------------------- |
+| Number    | decimal                           | `2.3`                                     |
+| Character | char                              | `'c'`                                     |
+| Atom      | pascal-word                       | `One`, `True`                             |
+| 2-Tuple   | `"{" expression expression "}"`   | `{'A' True}`                              |
+| Array     | `type ":" "[" { expression } "]"` | `Num:[1 2 3 4]`, `Char:['j' 'a' 'k' 'e']` |
 
 ## Operators
 

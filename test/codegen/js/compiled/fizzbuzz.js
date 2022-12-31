@@ -99,6 +99,6 @@ function $fb() {
 const False = 0;
 const True = 1;
 
-export const fb = $fb()
+export const fb = $fb();
 
 export const pipes = [];

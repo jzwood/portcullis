@@ -132,9 +132,8 @@ export function concat(xs) {
 
 // signature: ((filter2.x -> Atom) -> (filter2.x -> ([filter2.x] -> [filter2.x])))
 export function filter2(g) {
-  return (w) => (ws) => concat((
-    g(w) ? /* [x] */ [w] : /* [x] */ []
-  ))(filter(g)(ws));
+  return (w) => (ws) =>
+    concat(g(w) ? /* [x] */ [w] : /* [x] */ [])(filter(g)(ws));
 }
 
 // signature: ((filter.j -> Atom) -> ([filter.j] -> [filter.j]))
@@ -159,11 +158,22 @@ function $eight() {
   return _plus_(3.0)(5.0);
 }
 
+// signature: [Atom]
+function $atoms() {
+  return /* [Atom] */ [One, Two, Three, Four, Five];
+}
+
 const False = 0;
 const True = 1;
+const One = 2;
+const Two = 3;
+const Three = 4;
+const Four = 5;
+const Five = 6;
 
-export const one1 = $one1()
-export const one2 = $one2()
-export const eight = $eight()
+export const one1 = $one1();
+export const one2 = $one2();
+export const eight = $eight();
+export const atoms = $atoms();
 
 export const pipes = [];

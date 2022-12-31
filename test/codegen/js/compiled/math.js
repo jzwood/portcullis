@@ -127,9 +127,8 @@ export function slice(xs) {
 
 // signature: ((filter2.x -> Atom) -> (filter2.x -> ([filter2.x] -> [filter2.x])))
 export function filter2(g) {
-  return (w) => (ws) => concat((
-    g(w) ? /* [x] */ [w] : /* [x] */ []
-  ))(filter(g)(ws));
+  return (w) => (ws) =>
+    concat(g(w) ? /* [x] */ [w] : /* [x] */ [])(filter(g)(ws));
 }
 
 // signature: ((filter.j -> Atom) -> ([filter.j] -> [filter.j]))
@@ -157,14 +156,18 @@ export function msort(ns) {
 // signature: (Num -> ([Num] -> [Num]))
 export function msort2(len) {
   return (ns) => (
-    _lte_(len)(1.0) ? ns : merge(msort(take(ns)(_div_(len)(2.0))))(msort(drop(ns)(_div_(len)(2.0))))
+    _lte_(len)(1.0) ? ns : merge(msort(take(ns)(_div_(len)(2.0))))(
+      msort(drop(ns)(_div_(len)(2.0))),
+    )
   );
 }
 
 // signature: (Num -> ([Num] -> (Num -> ([Num] -> [Num]))))
 export function merge3(x) {
   return (xs) => (y) => (ys) => (
-    _lte_(x)(y) ? _cons_(x)(merge(xs)(_cons_(y)(ys))) : _cons_(y)(merge(_cons_(x)(xs))(ys))
+    _lte_(x)(y)
+      ? _cons_(x)(merge(xs)(_cons_(y)(ys)))
+      : _cons_(y)(merge(_cons_(x)(xs))(ys))
   );
 }
 
@@ -228,7 +231,8 @@ export function gte(x) {
 
 // signature: (Num -> ([Num] -> [Num]))
 export function qsortp(x) {
-  return (xs) => concat(qsort(filter(lt(x))(xs)))(_cons_(x)(qsort(filter(gte(x))(xs))));
+  return (xs) =>
+    concat(qsort(filter(lt(x))(xs)))(_cons_(x)(qsort(filter(gte(x))(xs))));
 }
 
 // signature: ([Num] -> [Num])
@@ -242,6 +246,6 @@ const False = 0;
 const True = 1;
 const Chipmunk = 2;
 
-export const empty = $empty()
+export const empty = $empty();
 
 export const pipes = [];

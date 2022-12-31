@@ -24,6 +24,12 @@
 
 **run all tests**
 
+- `bash test.sh --all`
+
+_**note:** make sure you have deno, python3, and lua installed._
+
+**codegen tests**
+
 - `bash test.sh`
 
 **doctests**
@@ -39,17 +45,21 @@
 - install deno
 - run tests
   - `deno test`
+  - `python3 test/codegen/py/hof.test.py && python3 test/codegen/py/math.test.py`
+  - `lua test/codegen/lua/hof.test.lua && lua test/codegen/lua/math.test.lua`
 
-- add tests
+- add test example
   - write po file in `test/codegen/<name>.po`
   - update `test/codegen/CompileTests.hs` to include new program
   - run compilation `stack runhaskell test/codegen/CompileTests`
     - `test/codegen/js/compiled/<name>.js` should now exist
-  - write js test file, `test/codegen/<name>.test.js`, that imports functions from
-    `test/codegen/js/compiled/<name>.js`
+  - write js test file, `test/codegen/<name>.test.js`, that imports functions
+    from `test/codegen/js/compiled/<name>.js`
   - you can now call `deno test`
 
 ### REPL
+
+#### Deno
 
 [Deno](https://deno.land/manual@v1.22.0) `v1.22.0` or higher is the recommended
 backend runtime for compiled portcullis programs.
@@ -58,3 +68,11 @@ backend runtime for compiled portcullis programs.
 
 &ast; _At the moment the `BroadcastChannel` API requires the `--unstable` flag
 to be exposed._
+
+#### Python
+
+    python3 <path/to/file.py>
+
+#### Lua
+
+    lua -u <path/to/file.lua>
