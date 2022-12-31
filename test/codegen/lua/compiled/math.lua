@@ -187,7 +187,7 @@ end
 function filter2(g)
   return function (w)
     return function (ws)
-      return concat((g(w) > 0 and {w} or {}))(filter(g)(ws))
+      return concat((g(w) > 0 and { head = w, tail = {} } or {}))(filter(g)(ws))
     end
   end
 end

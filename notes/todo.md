@@ -1,5 +1,4 @@
 ## TODO
-- add unit tests for lua codegen
 - double check runtime examples didn't break after all that mucking
 
 - write typechecking unit tests for tuples

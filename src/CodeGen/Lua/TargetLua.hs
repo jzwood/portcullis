@@ -2,7 +2,6 @@
 
 module CodeGen.Lua.TargetLua where
 
-import Prelude hiding (showList)
 import Syntax
 import CodeGen.Util (findAtoms)
 import Data.Functor
@@ -11,7 +10,7 @@ import Data.Function
 import Control.Applicative
 import Data.Char
 import Data.List (intercalate, intersperse, nub)
-import Util hiding (showList)
+import Util
 import Data.Map (Map, (!))
 import qualified Data.Map as Map
 
@@ -56,7 +55,8 @@ instance Lua Value where
   toLua (Number n) = show n
   toLua (Character c) = ['\'', c, '\'']
   toLua (Atom n) = toUpper <$> n
-  toLua (List t xs) = showList $ toLua <$> xs -- SHOW LIST IS WRONG should be { head = val, tail = { ...
+  toLua (List t []) = "{}"
+  toLua (List t (x:xs)) = concat ["{ head = ", toLua x, ", tail = ", toLua (List t xs), " }"]
   toLua (Tuple e1 e2)
     =  toLua <$> [e1, e2]
     &  showTuple
@@ -115,10 +115,7 @@ showTopology streamMap pipes
 
 showPipe :: Map Name Stream -> Pipe -> String
 showPipe streamMap Pipe { funcName, inStreams, outStreamName } =
-  showTuple [funcName, showList (fmap (\(name, buffer) -> showTuple [show name, show buffer]) inStreams), show outStreamName]
+  showTuple [funcName, (curly . intercalate ", ") (fmap (\(name, buffer) -> showTuple [show name, show buffer]) inStreams), show outStreamName]
 
 showTuple :: [String] -> String
 showTuple = curly . intercalate ", "
-
-showList :: [String] -> String
-showList = curly . intercalate ", "

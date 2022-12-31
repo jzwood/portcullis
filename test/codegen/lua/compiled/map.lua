@@ -125,7 +125,7 @@ end
 
 -- signature: [Num]
 function __mapped()
-  return map(add1)({1.0, 2.0, 3.0, 4.0})
+  return map(add1)({ head = 1.0, tail = { head = 2.0, tail = { head = 3.0, tail = { head = 4.0, tail = {} } } } })
 end
 
 -- signature: ((_foldr.j -> (_foldr.k -> _foldr.k)) -> (_foldr.k -> (_foldr.j -> ([_foldr.j] -> _foldr.k))))
@@ -182,7 +182,7 @@ end
 
 -- signature: Num
 function __total()
-  return sum({1.0, 2.0, 3.0})
+  return sum({ head = 1.0, tail = { head = 2.0, tail = { head = 3.0, tail = {} } } })
 end
 
 -- signature: (Num -> ([Num] -> [Num]))
@@ -199,7 +199,7 @@ end
 
 -- signature: [Num]
 function __dub()
-  return mapDouble({1.0, 3.0, 5.0, 7.0})
+  return mapDouble({ head = 1.0, tail = { head = 3.0, tail = { head = 5.0, tail = { head = 7.0, tail = {} } } } })
 end
 
 -- signature: (push.z -> ([push.z] -> [push.z]))

@@ -139,7 +139,7 @@ end
 function _filter(f)
   return function (x)
     return function (xs)
-      return concat((f(x) > 0 and {x} or {}))(filter(f)(xs))
+      return concat((f(x) > 0 and { head = x, tail = {} } or {}))(filter(f)(xs))
     end
   end
 end

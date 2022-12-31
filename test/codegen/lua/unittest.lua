@@ -1,4 +1,4 @@
-require "compiled.math"
+require "test.codegen.lua.compiled.math"
 
 function assertEqual(fxnName, a, b)
     print(fxnName, a, b)

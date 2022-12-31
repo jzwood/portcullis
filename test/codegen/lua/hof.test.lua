@@ -1,7 +1,7 @@
 #!/usr/bin/env lua
 
-require "compiled.hof"
-require "unittest"
+require "test.codegen.lua.compiled.hof"
+require "test.codegen.lua.unittest"
 
 assertEqual("double", double(4), 8)
 assertEqual("id1", id1(2), 2)
