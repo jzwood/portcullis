@@ -1,3 +1,4 @@
+// PORTCULLIS INTERNAL
 function _plus_(a) {
   return (b) => a + b;
 }
@@ -56,6 +57,8 @@ function _cons_(a) {
   return (b) => [a].concat(b);
 }
 
+// USER CODE
+
 // signature: ((_map.a -> _map.b) -> (_map.a -> ([_map.a] -> [_map.b])))
 export function _map(f) {
   return (x) => (xs) => _cons_(f(x))(map(f)(xs));
@@ -99,6 +102,6 @@ function $fb() {
 const False = 0;
 const True = 1;
 
-export const fb = $fb();
+export const fb = $fb()
 
 export const pipes = [];

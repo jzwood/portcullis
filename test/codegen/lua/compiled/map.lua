@@ -1,3 +1,4 @@
+-- PORTCULLIS INTERNAL
 function _plus_(a)
   return function (b)
     return a + b
@@ -101,6 +102,8 @@ function printList(tbl)
     end
   end
 end
+
+-- USER CODE
 
 -- signature: ((_map.q -> _map.t) -> (_map.q -> ([_map.q] -> [_map.t])))
 function _map(f)

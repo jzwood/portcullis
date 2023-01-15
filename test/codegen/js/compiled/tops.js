@@ -1,3 +1,4 @@
+// PORTCULLIS INTERNAL
 function _plus_(a) {
   return (b) => a + b;
 }
@@ -56,6 +57,8 @@ function _cons_(a) {
   return (b) => [a].concat(b);
 }
 
+// USER CODE
+
 // signature: (Atom -> Num)
 export function hello(what) {
   return (
@@ -81,5 +84,6 @@ const False = 0;
 const True = 1;
 const World = 2;
 const Ma = 3;
+
 
 export const pipes = [];

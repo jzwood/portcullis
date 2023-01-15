@@ -1,0 +1,61 @@
+body {
+  background-color: #2d2b57;
+}
+
+menu {
+  margin: 0;
+}
+
+menu.src {
+  padding-left: 0.5rem;
+}
+
+menu.target {
+  padding-left: 1rem;
+}
+
+main {
+  display: grid;
+  grid-template-columns: auto auto;
+  /*display: flex;*/
+  /*flex-wrap: wrap;*/
+}
+
+header {
+  display: flex;
+  color: white;
+  font-family: "Courier New";
+}
+
+header h1 {
+  padding-left: 1rem;
+  margin: 0.5rem;
+}
+
+textarea {
+  padding: 0.5rem 0 0 0.5rem;
+  margin: 0.5rem 0 0 0.5rem;
+}
+
+/*main pre {*/
+  /*flex-grow: 1;*/
+  /*flex-shrink: 1;*/
+/*}*/
+
+pre {
+  margin: 0;
+}
+
+pre code {
+  height: 100%;
+  padding: 0 1rem !important;
+  white-space: pre-wrap;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}

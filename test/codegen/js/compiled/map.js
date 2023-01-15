@@ -1,3 +1,4 @@
+// PORTCULLIS INTERNAL
 function _plus_(a) {
   return (b) => a + b;
 }
@@ -55,6 +56,8 @@ export function _eq_(a) {
 function _cons_(a) {
   return (b) => [a].concat(b);
 }
+
+// USER CODE
 
 // signature: ((_map.q -> _map.t) -> (_map.q -> ([_map.q] -> [_map.t])))
 export function _map(f) {
@@ -152,8 +155,8 @@ export function range(n) {
 const False = 0;
 const True = 1;
 
-export const mapped = $mapped();
-export const total = $total();
-export const dub = $dub();
+export const mapped = $mapped()
+export const total = $total()
+export const dub = $dub()
 
 export const pipes = [];

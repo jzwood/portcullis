@@ -10,6 +10,7 @@ description:    A minimal programming language
 homepage:       https://github.com/git@github.com:jzwood/portcullis.git#readme
 bug-reports:    https://github.com/git@github.com:jzwood/portcullis.git/issues
 author:         Jake Wood
+maintainer:     Jake Wood
 copyright:      2021 Jake Wood
 license:        BSD3
 license-file:   LICENSE

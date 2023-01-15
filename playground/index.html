@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <link rel="stylesheet" href="styles.css">
+  <!--<link rel="stylesheet" href="highlight/styles/rainbow.min.css">-->
+  <link rel="stylesheet" href="highlight/styles/shades-of-purple.min.css">
+  <!--<link rel="stylesheet" href="highlight/styles/pojoaque.min.css">-->
+</head>
+<body>
+  <main>
+    <header>
+      <img src="../assets/logo.svg" alt="portcullis logo" width="42">
+      <h1>Portcullis</h1>
+    </header>
+    <menu class="target">
+      <select name="language" id="language-select">
+        <option value="python">Python</option>
+        <option value="js">JavaScript</option>
+        <option value="lua">Lua</option>
+      </select>
+    </menu>
+      <textarea id="" name="" cols="30" rows="10"></textarea>
+    <pre><code class="language-python">
+# PORTCULLIS INTERNAL
+def _plus_(a):
+    return lambda b: a + b
+
+def _minus_(a):
+    return lambda b: a - b
+
+def _mult_(a):
+    return lambda b: a * b
+
+def _div_(a):
+    return lambda b: a / b
+
+def _rem_(a):
+    return lambda b: a % b
+
+def _gt_(a):
+    return lambda b: 1 if a > b else 0
+
+def _gte_(a):
+    return lambda b: 1 if a >= b else 0
+
+def _lt_(a):
+    return lambda b: 1 if a < b else 0
+
+def _lte_(a):
+    return lambda b: 1 if a <= b else 0
+
+def _eq_(a):
+    return lambda b: 1 if a == b else 0
+
+def _cons_(a):
+    return lambda b: [a] + b
+
+# USER CODE
+
+# signature: (Num -> Num)
+def fib(n):
+  return (1.0 if _lte_(n)(1.0) else _plus_(fib(_minus_(n)(1.0)))(fib(_minus_(n)(2.0))))
+
+# signature: (Num -> Num)
+def neg(x):
+  return _minus_(0.0)(x)
+
+FALSE = 0;
+TRUE = 1;
+
+
+pipes = [];
+    </code></pre>
+  </main>
+
+  <script src="./highlight/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</body>
+</html>

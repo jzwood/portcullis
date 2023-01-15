@@ -1,3 +1,4 @@
+// PORTCULLIS INTERNAL
 function _plus_(a) {
   return (b) => a + b;
 }
@@ -55,3 +56,5 @@ export function _eq_(a) {
 function _cons_(a) {
   return (b) => [a].concat(b);
 }
+
+// USER CODE

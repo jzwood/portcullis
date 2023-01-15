@@ -1,3 +1,4 @@
+// PORTCULLIS INTERNAL
 function _plus_(a) {
   return (b) => a + b;
 }
@@ -56,6 +57,8 @@ function _cons_(a) {
   return (b) => [a].concat(b);
 }
 
+// USER CODE
+
 // signature: ((not.a -> (not.a -> Atom)) -> (not.a -> (not.a -> Atom)))
 export function not(f) {
   return (a) => (b) => (
@@ -65,5 +68,6 @@ export function not(f) {
 
 const False = 0;
 const True = 1;
+
 
 export const pipes = [];

@@ -1,3 +1,4 @@
+// PORTCULLIS INTERNAL
 function _plus_(a) {
   return (b) => a + b;
 }
@@ -55,6 +56,8 @@ export function _eq_(a) {
 function _cons_(a) {
   return (b) => [a].concat(b);
 }
+
+// USER CODE
 
 // signature: (id1.x -> id1.x)
 export function id1(x) {
@@ -132,8 +135,9 @@ export function concat(xs) {
 
 // signature: ((filter2.x -> Atom) -> (filter2.x -> ([filter2.x] -> [filter2.x])))
 export function filter2(g) {
-  return (w) => (ws) =>
-    concat(g(w) ? /* [x] */ [w] : /* [x] */ [])(filter(g)(ws));
+  return (w) => (ws) => concat((
+    g(w) ? /* [x] */ [w] : /* [x] */ []
+  ))(filter(g)(ws));
 }
 
 // signature: ((filter.j -> Atom) -> ([filter.j] -> [filter.j]))
@@ -171,9 +175,9 @@ const Three = 4;
 const Four = 5;
 const Five = 6;
 
-export const one1 = $one1();
-export const one2 = $one2();
-export const eight = $eight();
-export const atoms = $atoms();
+export const one1 = $one1()
+export const one2 = $one2()
+export const eight = $eight()
+export const atoms = $atoms()
 
 export const pipes = [];

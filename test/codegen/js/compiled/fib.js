@@ -1,3 +1,4 @@
+// PORTCULLIS INTERNAL
 function _plus_(a) {
   return (b) => a + b;
 }
@@ -56,6 +57,8 @@ function _cons_(a) {
   return (b) => [a].concat(b);
 }
 
+// USER CODE
+
 // signature: (Num -> Num)
 export function fib(n) {
   return (
@@ -70,5 +73,6 @@ export function neg(x) {
 
 const False = 0;
 const True = 1;
+
 
 export const pipes = [];

@@ -1,3 +1,4 @@
+// PORTCULLIS INTERNAL
 function _plus_(a) {
   return (b) => a + b;
 }
@@ -56,6 +57,8 @@ function _cons_(a) {
   return (b) => [a].concat(b);
 }
 
+// USER CODE
+
 // signature: (Num -> (Num -> Num))
 export function add(a) {
   return (b) => _plus_(a)(b);
@@ -69,7 +72,8 @@ export function sub(a) {
 const False = 0;
 const True = 1;
 
+
 export const pipes = [
   [add, [["&counter", 1], ["&add", 100]], "&counter"],
-  [sub, [["&counter", 1], ["&sub", 100]], "&counter"],
-];
+  [sub, [["&counter", 1], ["&sub", 100]], "&counter"]
+]

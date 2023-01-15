@@ -4,7 +4,7 @@ version: 0.1.0.0
 github: "git@github.com:jzwood/portcullis.git"
 license: BSD3
 author: "Jake Wood"
-maintainer: ""
+maintainer: "Jake Wood"
 copyright: "2021 Jake Wood"
 
 extra-source-files:
