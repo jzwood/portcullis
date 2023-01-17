@@ -3,7 +3,7 @@ import {
   assert,
   assertEquals,
 } from "https://deno.land/std@0.119.0/testing/asserts.ts";
-import { _eq_ as equal } from "../../../src/CodeGen/Js/core.js";
+import { _eq_ as equal } from "../../../app/CodeGen/Js/core.js";
 
 Deno.test("equals", () => {
   const uniqThings = [

@@ -31,7 +31,7 @@ dependencies:
   - QuickCheck == 2.14.2
 
 library:
-  source-dirs: src
+  source-dirs: app
 
 executables:
   portcullis-exe:
