@@ -49,13 +49,13 @@ save _ dest (Right js)
 save src _ (Left err) = putStrLn ("!\t" ++ src ++ " " ++ show err)
 
 toJsFile :: Module -> String
-toJsFile mod = unlines' [BSU.toString $(embedFile "app/CodeGen/Js/core.js"), toJs mod]
+toJsFile mod = unlines' [BSU.toString $(embedFile "src/CodeGen/Js/core.js"), toJs mod]
 
 toPyFile :: Module -> String
-toPyFile mod = unlines' [BSU.toString $(embedFile "app/CodeGen/Py/core.py"), toPy mod]
+toPyFile mod = unlines' [BSU.toString $(embedFile "src/CodeGen/Py/core.py"), toPy mod]
 
 toLuaFile :: Module -> String
-toLuaFile mod = unlines' [BSU.toString $(embedFile "app/CodeGen/Lua/core.lua"), toLua mod]
+toLuaFile mod = unlines' [BSU.toString $(embedFile "src/CodeGen/Lua/core.lua"), toLua mod]
 
 runCompilation :: String -> String -> IO ()
 runCompilation src dest = do

@@ -30,7 +30,6 @@ library
       CodeGen.Py.TargetPy
       CodeGen.Util
       Compile
-      Main
       MiniParser
       Parser
       Syntax
@@ -39,7 +38,7 @@ library
   other-modules:
       Paths_portcullis
   hs-source-dirs:
-      app
+      src
   build-depends:
       QuickCheck ==2.14.2
     , base >=4.7 && <5
@@ -54,16 +53,6 @@ library
 executable portcullis-exe
   main-is: Main.hs
   other-modules:
-      CodeGen.Js.TargetJs
-      CodeGen.Lua.TargetLua
-      CodeGen.Py.TargetPy
-      CodeGen.Util
-      Compile
-      MiniParser
-      Parser
-      Syntax
-      Typecheck
-      Util
       Paths_portcullis
   hs-source-dirs:
       app
