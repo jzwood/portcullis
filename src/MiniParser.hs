@@ -8,7 +8,7 @@ import Util hiding (paren)
 
 -- APPLICATIVE PARSER
 
-data Cursor = Cursor { line :: Integer, col :: Integer}
+data Cursor = Cursor { line :: !Integer, col :: !Integer}
   deriving (Show, Eq)
 
 newtype ParseError = ParseError Cursor
