@@ -145,7 +145,7 @@ typeofExpr :: Map Name Function -> Function -> Expr -> Either TypeError (Map Nam
 typeofExpr m f (Val p) =
   case p of
     Number n -> Right (Map.empty, NumType)
-    Character c -> Right (Map.empty, CharType)
+    Byte c -> Right (Map.empty, ByteType)
     Atom a -> Right (Map.empty, AtomType)
     Tuple expr1 expr2 -> sequence (typeofExpr m f <$> [expr1, expr2])
       <&> \[(m1, e1), (m2, e2)] -> (m1 `Map.union` m2, TupType e1 e2)

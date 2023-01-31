@@ -36,7 +36,7 @@ instance Py Function where
 
 instance Py TypeExpr where
   toPy NumType = "Num"
-  toPy CharType = "Char"
+  toPy ByteType = "Byte"
   toPy AtomType = "Atom"
   toPy (Unspecified t) = t
   toPy (ListType t)
@@ -50,7 +50,7 @@ instance Py TypeExpr where
 
 instance Py Value where
   toPy (Number n) = show n
-  toPy (Character c) = ['\'', c, '\'']
+  toPy (Byte b) = show b
   toPy (Atom n) = toUpper <$> n
   toPy (List t xs) = showList $ toPy <$> xs
   toPy (Tuple e1 e2)

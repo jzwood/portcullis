@@ -71,7 +71,7 @@ parseTypeExpr :: Parser TypeExpr
 parseTypeExpr
    =  trimLeft
    $  NumType <$ word "Num"
-  <|> CharType <$ word "Char"
+  <|> ByteType <$ word "Byte"
   <|> AtomType <$ word "Atom"
   <|> Unspecified <$> camel
   <|> ListType <$> brack (trim parseTypeExpr)
@@ -112,8 +112,8 @@ parseBinOp = optionalParens $ liftA3 BinOp parseBop parseExpr parseExpr
 parseTernOp :: Parser Expr
 parseTernOp = optionalParens $ TernOp <$> parseTop <*> parseExpr <*> parseExpr <*> parseExpr
 
-parseChar :: Parser Char
-parseChar = wrap '\'' '\'' anyChar
+parseByte :: Parser Integer
+parseByte = integer
 
 parseList :: Parser Value
 parseList =  List <$> parseTypeExpr <*> (trim (char ':') *> (brack . trim $ zeroOrMore parseExpr))
@@ -125,7 +125,7 @@ parseValue :: Parser Value
 parseValue
   =  trimLeft
   $  Number <$> number
- <|> Character <$> parseChar
+ <|> Byte <$> parseByte
  <|> parseList
  <|> Atom <$> pascal
  <|> parseTuple

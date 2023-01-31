@@ -39,7 +39,7 @@ instance Lua Function where
 
 instance Lua TypeExpr where
   toLua NumType = "Num"
-  toLua CharType = "Char"
+  toLua ByteType = "Byte"
   toLua AtomType = "Atom"
   toLua (Unspecified t) = t
   toLua (ListType t)
@@ -53,7 +53,7 @@ instance Lua TypeExpr where
 
 instance Lua Value where
   toLua (Number n) = show n
-  toLua (Character c) = ['\'', c, '\'']
+  toLua (Byte b) = show b
   toLua (Atom n) = toUpper <$> n
   toLua (List t []) = "{}"
   toLua (List t (x:xs)) = concat ["{ head = ", toLua x, ", tail = ", toLua (List t xs), " }"]

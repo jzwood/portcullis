@@ -5,10 +5,8 @@ module Syntax where
 import Data.Functor
 import Data.Function
 import Control.Applicative
-import Data.Char
-import Data.List (intercalate, nub)
 import Data.Map (Map)
-import qualified Data.Map as Map
+--import qualified Data.Map as Map
 import Util
 
 type Name = String
@@ -33,7 +31,7 @@ data Stmt = F Function | S Stream | P Pipe | C Comment deriving (Eq, Show)
 
 data TypeExpr
   = NumType
-  | CharType
+  | ByteType
   | AtomType
   | Unspecified Name
   | TupType TypeExpr TypeExpr
@@ -49,7 +47,7 @@ applyTypeExpr _ t = t
 
 data Value
   = Number Double -- 34.23
-  | Character Char -- 'b'
+  | Byte Integer -- 'b'
   | Atom Name -- Apple
   | Tuple Expr Expr --- [1 'a']
   | List TypeExpr [Expr] --- num [1, 2, 3]

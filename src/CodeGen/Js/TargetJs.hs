@@ -41,7 +41,7 @@ instance Js Function where
 
 instance Js TypeExpr where
   toJs NumType = "Num"
-  toJs CharType = "Char"
+  toJs ByteType = "Byte"
   toJs AtomType = "Atom"
   toJs (Unspecified t) = t
   toJs (ListType t)
@@ -55,7 +55,7 @@ instance Js TypeExpr where
 
 instance Js Value where
   toJs (Number n) = show n
-  toJs (Character c) = ['\'', c, '\'']
+  toJs (Byte b) = show b
   toJs (Atom n) = n
   toJs (List (Unspecified "") xs) = showList $ toJs <$> xs -- so uncons displays nicely
   toJs (List t xs) = unwords ["/*", toJs $ ListType t, "*/", showList $ toJs <$> xs]
