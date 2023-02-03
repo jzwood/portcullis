@@ -113,7 +113,7 @@ parseTernOp :: Parser Expr
 parseTernOp = optionalParens $ TernOp <$> parseTop <*> parseExpr <*> parseExpr <*> parseExpr
 
 parseByte :: Parser Integer
-parseByte = integer
+parseByte = integer >>= byte
 
 parseList :: Parser Value
 parseList =  List <$> parseTypeExpr <*> (trim (char ':') *> (brack . trim $ zeroOrMore parseExpr))

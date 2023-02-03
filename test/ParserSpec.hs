@@ -45,6 +45,12 @@ spec = do
       let result = runp number "123.456abc"
       success result `shouldBe` Just (123.456, "abc")
 
+    it "byte" $ do
+      let result = runp (integer >>= byte) "123abc"
+      success result `shouldBe` Just (123, "abc")
+      let result = runp (integer >>= byte) "789abc"
+      success result `shouldBe` Nothing
+
     it "parse Func" $ do
       let result = runp parseFunc "divide ->   -> Num Num   Num   \n divide   num den   = /   num den  "
           expected = Function "divide" (Arrow (Arrow NumType NumType) NumType) ["num","den"] (BinOp Divide (Ident "num") (Ident "den"))

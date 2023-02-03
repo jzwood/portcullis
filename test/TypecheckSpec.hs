@@ -89,7 +89,7 @@ spec = do
 
     it "expect DuplicateStream pipe errors" $ do
       let bad0 = "&a1 Num \
-                 \&a1 Char"
+                 \&a1 Atom"
       errorOf bad0 `shouldBe` DuplicateStreamError (unsafeStream bad0)
 
     it "expect StreamNotFound pipe errors" $ do

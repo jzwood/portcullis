@@ -53,9 +53,9 @@ instance Functor Parser where
 
 instance Applicative Parser where
   pure a = Parser (\c s -> Right (a, c, s))
-  (<*>) (Parser fp) p = Parser $ \c s ->
-    case fp c s of
-      Left cu -> Left cu
+  (<*>) (Parser rp) p = Parser $ \c s ->
+    case rp c s of
+      Left c' -> Left c'
       Right (f, c', s') -> runParser (f <$> p) c' s'
 
 instance Alternative Parser where
@@ -64,6 +64,13 @@ instance Alternative Parser where
     case rp1 c s of
       Left c' -> rp2 c s
       Right acs -> Right acs
+
+instance Monad Parser where
+  (>>=) (Parser rp) mf = Parser $ \c s ->
+    case rp c s of
+      Left c' -> Left c'
+      Right (a, c', s') -> runParser (mf a) c' s'
+  return a = Parser (\c s -> Right (a, c, s))
 
 -- PARSER UTILS
 
@@ -92,6 +99,11 @@ decimal = (\s1 s2 -> read $ s1 ++ '.' : s2) <$> int <*> (dot *> int)
 
 integer :: Parser Integer
 integer = read <$> oneOrMore (satisfy isDigit)
+
+byte :: Integer -> Parser Integer
+byte b
+  | b >= 0 && b <= 256 = return b
+  | otherwise = empty
 
 number :: Parser Double
 number = decimal <|> (fromIntegral <$> integer)
