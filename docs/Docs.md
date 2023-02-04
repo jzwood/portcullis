@@ -5,22 +5,22 @@
 | Name        | Grammar                 | Example                            |
 | ----------- | ----------------------- | ---------------------------------- |
 | Number      | `"Num"`                 | `Num`                              |
-| Character   | `"Char"`                | `Char`                             |
+| Byte        | `"Byte"`                | `Byte`                             |
 | Atom        | `"Atom"`                | `Atom`                             |
-| 2-Tuple     | `"{" type type "}"`     | `{Num Char}`                       |
+| 2-Tuple     | `"{" type type "}"`     | `{Num Byte}`                       |
 | Array       | `"[" type "]"`          | `[ Atom ]`                         |
 | Unspecified | `alphanum { alphanum }` | `a`, `name`                        |
 | Arrow       | `"->" type type`        | `-> Num Num`, `-> (-> a b) -> a b` |
 
 ## Values
 
-| Name      | Grammer                           | Example                                   |
-| --------- | --------------------------------- | ----------------------------------------- |
-| Number    | decimal                           | `2.3`                                     |
-| Character | char                              | `'c'`                                     |
-| Atom      | pascal-word                       | `One`, `True`                             |
-| 2-Tuple   | `"{" expression expression "}"`   | `{'A' True}`                              |
-| Array     | `type ":" "[" { expression } "]"` | `Num:[1 2 3 4]`, `Char:['j' 'a' 'k' 'e']` |
+| Name    | Grammer                           | Example                                     |
+| ------- | --------------------------------- | ------------------------------------------- |
+| Number  | decimal                           | `2.3`                                       |
+| Byte    | Byte                              | `100`                                       |
+| Atom    | pascal-word                       | `One`, `True`                               |
+| 2-Tuple | `"{" expression expression "}"`   | `{35 True}`                                 |
+| Array   | `type ":" "[" { expression } "]"` | `Num:[1.1 2 3 400]`, `Byte:[74 97 107 101]` |
 
 ## Operators
 
@@ -99,7 +99,7 @@ stream-identifier = "&" alphanum { alphanum }
 
 ```haskell
 &counter Num
-&todo [[Char]]
+&todo [[Byte]]
 ```
 
 ## Pipes

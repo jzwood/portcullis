@@ -1,16 +1,15 @@
 module Main where
 
 import Compile (runCompilation)
-import System.Environment ( getArgs, getProgName )
+import System.Environment (getArgs, getProgName)
+
+exts = [".js", ".py", ".lua"]
 
 main :: IO ()
 main = do
-  argv <- getArgs
-  progName <- getProgName
-  case argv of
-    [src, dest] -> runCompilation src dest
-    _ -> putStrLn $ unlines [ "Usage:"
-                            , "  " ++ unwords [ progName, "<src.po>", "<dest.js>" ]
-                            , "  " ++ unwords [progName, "<src.po>", "<dest.py>" ]
-                            ]
-  return ()
+    argv <- getArgs
+    progName <- getProgName
+    case argv of
+        [src, dest] -> runCompilation src dest
+        _usage -> putStrLn $ unlines ("Usage:" : fmap (\ext -> unwords [progName, "<src.po>", concat ["<dest", ext, ">"]]) exts)
+    return ()
