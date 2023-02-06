@@ -1,9 +1,9 @@
 # streams #
 &score Num
-&coin Char
-&guess Char
+&coin Byte
+&guess Byte
 &win Atom
-&newCoin Char
+&newCoin Byte
 
 # pipes #
 | id   [ &guess 99 ] &newCoin

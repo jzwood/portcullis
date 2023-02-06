@@ -1,8 +1,8 @@
 # streams #
-&todo [[Char]]
-&update {Atom [Char]}
-&append [Char]
-&done [Char]
+&todo [[Byte]]
+&update {Atom [Byte]}
+&append [Byte]
+&done [Byte]
 
 # pipes #
 | update [ &update 100 &todo 1 ] &todo
@@ -10,7 +10,7 @@
 | done [ &done 50 ] &update
 
 # pure functions #
-update -> {Atom [Char]} -> [[Char]] [[Char]]
+update -> {Atom [Byte]} -> [[Byte]] [[Byte]]
 update tup todos =
   ? == Append @1 tup
     +> @2 tup todos
@@ -18,10 +18,10 @@ update tup todos =
     (remove @2 tup todos)
   todos
 
-append -> [Char] {Atom [Char]}
+append -> [Byte] {Atom [Byte]}
 append todo = { Append todo }
 
-done -> [Char] {Atom [Char]}
+done -> [Byte] {Atom [Byte]}
 done done = { Done done }
 
 push -> [a] -> a -> [a] [a]
@@ -46,7 +46,7 @@ filter f xs =
 neg -> a -> b Atom
 neg a b = == False == a b
 
-remove -> [Char] -> [[Char]] [[Char]]
+remove -> [Byte] -> [[Byte]] [[Byte]]
 remove todo todos = (filter (neg todo) todos)
 
 

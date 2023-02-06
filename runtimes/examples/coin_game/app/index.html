@@ -22,7 +22,7 @@
       const winElem = document.getElementById('win')
 
       document.addEventListener('&newCoin', () => {
-        sendEvent('&coin', Math.random() > 0.5 ? 'H' : 'T')
+        sendEvent('&coin', Math.random() > 0.5 ? 0 : 1)
       })
 
       document.addEventListener('&coin', ({detail: value}) => {
@@ -38,8 +38,8 @@
         scoreElem.textContent = `${score} points`
       })
 
-      document.getElementById('heads').addEventListener('click', sendEvent.bind(null, '&guess', 'H'))
-      document.getElementById('tails').addEventListener('click', sendEvent.bind(null, '&guess', 'T'))
+      document.getElementById('heads').addEventListener('click', sendEvent.bind(null, '&guess', 0))
+      document.getElementById('tails').addEventListener('click', sendEvent.bind(null, '&guess', 1))
 
       sendEvent('&score', 0)
     </script>
