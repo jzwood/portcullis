@@ -30,3 +30,6 @@ push ys x xs = +> x (concat xs ys)
 concat -> [a] -> [a] [a]
 concat xs ys =
   <+ xs ys (push ys)
+
+lid -> a [a]
+lid x = a:[x]
