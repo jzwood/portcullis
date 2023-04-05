@@ -90,7 +90,6 @@ typeEqual m te1@(Unspecified a) te2@(Unspecified b) =
   case Map.lookup a m of
     Nothing -> Left $ TypeMismatch te1 te2 m
     Just t -> typeEqual m t te2
-  -- Right te1  -- TODO what is up with this?????
 typeEqual m (ListType te1) (ListType te2) = ListType <$> typeEqual m te1 te2
 typeEqual m (TupType te1 te2) (TupType te3 te4) = liftA2 TupType (typeEqual m te1 te3) (typeEqual m te2 te4)
 typeEqual m te1 te2 = if te1 == te2 then Right te1 else Left $ TypeMismatch te1 te2 m

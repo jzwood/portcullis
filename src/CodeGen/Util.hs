@@ -16,4 +16,3 @@ findAtoms (Call n [es]) = flatFindAtoms [es]
 findAtoms (BinOp _ e1 e2) = flatFindAtoms [e1, e2]
 findAtoms (TernOp _ e1 e2 e3) = flatFindAtoms [e1, e2, e3]
 findAtoms _ = []
-

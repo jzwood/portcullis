@@ -19,6 +19,9 @@ alphaConversion :: Name -> TypeExpr -> TypeExpr
 alphaConversion fname (Unspecified name) = Unspecified (fname ++ "." ++ name)
 alphaConversion fname t = applyTypeExpr (alphaConversion fname) t
 
+alphaConvertFunction :: Function -> Function
+alphaConvertFunction = undefined
+
 moduleAlg :: Stmt -> Module -> Module
 moduleAlg (F func@Function { name = fname , signature }) mod@Module { functions, functionMap } =
   mod { functions = function : functions, functionMap = Map.insert (name function) function functionMap }
