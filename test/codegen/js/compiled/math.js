@@ -112,14 +112,14 @@ export function drop(xs) {
 // signature: (Num -> (_take.f -> ([_take.f] -> [_take.f])))
 export function _take(n) {
   return (x) => (xs) => (
-    _lte_(n)(0.0) ? /* [f] */ [] : _cons_(x)(take(xs)(_minus_(n)(1.0)))
+    _lte_(n)(0.0) ? /* [_take.f] */ [] : _cons_(x)(take(xs)(_minus_(n)(1.0)))
   );
 }
 
 // signature: ([take.k] -> (Num -> [take.k]))
 export function take(xs) {
   return (n) => (
-    _eq_(xs)([]) ? /* [k] */ [] : _take(n)(xs.at(0))(xs.slice(1))
+    _eq_(xs)([]) ? /* [take.k] */ [] : _take(n)(xs.at(0))(xs.slice(1))
   );
 }
 
@@ -131,7 +131,7 @@ export function slice(xs) {
 // signature: ((filter2.x -> Atom) -> (filter2.x -> ([filter2.x] -> [filter2.x])))
 export function filter2(g) {
   return (w) => (ws) => concat((
-    g(w) ? /* [x] */ [w] : /* [x] */ []
+    g(w) ? /* [filter2.x] */ [w] : /* [filter2.x] */ []
   ))(filter(g)(ws));
 }
 

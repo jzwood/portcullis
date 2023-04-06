@@ -59,23 +59,36 @@ function _cons_(a) {
 
 // USER CODE
 
-// signature: ([Atom [Byte]] -> ([[Byte]] -> [[Byte]]))
-export function update(tup) {
-  return (todos) => (
-    _eq_(Append)(tup[0]) ? _cons_(tup[1])(todos) : (
-      _eq_(Done)(tup[0]) ? remove(tup[1])(todos) : todos
-    )
+// signature: (cons.a -> ([cons.a] -> [cons.a]))
+export function cons(x) {
+  return (xs) => _cons_(x)(_cons_(x)(_cons_(x)(xs)));
+}
+
+// signature: (count.a -> ([count.a] -> Num))
+export function count(x) {
+  return (xs) => _plus_(1.0)(length(xs));
+}
+
+// signature: ([uncons.a] -> (uncons.b -> ((uncons.a -> ([uncons.a] -> uncons.b)) -> uncons.b)))
+export function uncons(as) {
+  return (b) => (f) => b;
+}
+
+// signature: ((tail2.w -> ([tail2.w] -> [tail2.w])) -> ([tail2.f] -> [tail2.f]))
+export function tail2(f) {
+  return (ns) => uncons(ns)(ns)(f);
+}
+
+// signature: (_length.a -> ([_length.a] -> Num))
+export function _length(x) {
+  return (xs) => _plus_(1.0)(length(xs));
+}
+
+// signature: ([length.a] -> Num)
+export function length(xs) {
+  return (
+    _eq_(xs)([]) ? 0.0 : _length(xs.at(0))(xs.slice(1))
   );
-}
-
-// signature: ([Byte] -> [Atom [Byte]])
-export function append(todo) {
-  return [Append, todo];
-}
-
-// signature: ([Byte] -> [Atom [Byte]])
-export function done(done) {
-  return [Done, done];
 }
 
 // signature: ([push.a] -> (push.a -> ([push.a] -> [push.a])))
@@ -90,38 +103,13 @@ export function concat(xs) {
   );
 }
 
-// signature: ((_filter.a -> Atom) -> (_filter.a -> ([_filter.a] -> [_filter.a])))
-export function _filter(f) {
-  return (x) => (xs) => concat((
-    f(x) ? /* [_filter.a] */ [x] : /* [_filter.a] */ []
-  ))(filter(f)(xs));
-}
-
-// signature: ((filter.j -> Atom) -> ([filter.j] -> [filter.j]))
-export function filter(f) {
-  return (xs) => (
-    _eq_(xs)([]) ? xs : _filter(f)(xs.at(0))(xs.slice(1))
-  );
-}
-
-// signature: (neg.a -> (neg.b -> Atom))
-export function neg(a) {
-  return (b) => _eq_(False)(_eq_(a)(b));
-}
-
-// signature: ([Byte] -> ([[Byte]] -> [[Byte]]))
-export function remove(todo) {
-  return (todos) => filter(neg(todo))(todos);
+// signature: (lid.a -> [lid.a])
+export function lid(x) {
+  return /* [lid.a] */ [x];
 }
 
 const False = 0;
 const True = 1;
-const Append = 2;
-const Done = 3;
 
 
-export const pipes = [
-  [update, [["&update", 100], ["&todo", 1]], "&todo"],
-  [append, [["&append", 50]], "&update"],
-  [done, [["&done", 50]], "&update"]
-]
+export const pipes = [];

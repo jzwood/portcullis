@@ -93,7 +93,7 @@ export function concat(xs) {
 // signature: ((_filter.x -> Atom) -> (_filter.x -> ([_filter.x] -> [_filter.x])))
 export function _filter(f) {
   return (x) => (xs) => concat((
-    f(x) ? /* [x] */ [x] : /* [x] */ []
+    f(x) ? /* [_filter.x] */ [x] : /* [_filter.x] */ []
   ))(filter(f)(xs));
 }
 

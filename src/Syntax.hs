@@ -50,7 +50,7 @@ applyExpr f (Call n es) = Call n (fmap f es)
 applyExpr f (UnOp u e) = UnOp u (f e)
 applyExpr f (BinOp b e1 e2) = BinOp b (f e1) (f e2)
 applyExpr f (TernOp t e1 e2 e3) = TernOp t (f e1) (f e2) (f e3)
-applyExpr f e = f e
+applyExpr f e = e
 
 data Value
   = Number Double -- 34.23

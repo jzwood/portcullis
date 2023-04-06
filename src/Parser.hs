@@ -19,15 +19,26 @@ alphaConversion :: Name -> TypeExpr -> TypeExpr
 alphaConversion fname (Unspecified name) = Unspecified (fname ++ "." ++ name)
 alphaConversion fname t = applyTypeExpr (alphaConversion fname) t
 
+alphaConvertExpr :: Name -> Expr -> Expr
+alphaConvertExpr _ ident@(Ident _) = ident
+alphaConvertExpr fname (Val val) =
+  case val of
+    Tuple e1 e2 -> Val $ Tuple (alphaConvertExpr fname e1) (alphaConvertExpr fname e2)
+    List te es -> Val $ List (alphaConversion fname te) (fmap (alphaConvertExpr fname) es)
+    _val -> Val val
+alphaConvertExpr fname e = applyExpr (alphaConvertExpr fname) e
+
 alphaConvertFunction :: Function -> Function
-alphaConvertFunction = undefined
+alphaConvertFunction func@Function { name, signature, body }
+  = func { signature = alphaConversion name signature, body = alphaConvertExpr name body }
 
 moduleAlg :: Stmt -> Module -> Module
-moduleAlg (F func@Function { name = fname , signature }) mod@Module { functions, functionMap } =
-  mod { functions = function : functions, functionMap = Map.insert (name function) function functionMap }
-    where function = func { signature = alphaConversion fname signature }
+moduleAlg (F func) mod@Module { functions, functionMap }
+  = mod { functions = function : functions, functionMap = Map.insert (name function) function functionMap }
+    where function = alphaConvertFunction func
 moduleAlg (C comment) mod@Module { comments } = mod { comments = comment : comments}
-moduleAlg (S stream@Stream { streamName }) mod@Module{ streams, streamMap } = mod { streams = stream : streams, streamMap = Map.insert streamName stream streamMap}
+moduleAlg (S stream@Stream { streamName }) mod@Module{ streams, streamMap }
+  = mod { streams = stream : streams, streamMap = Map.insert streamName stream streamMap}
 moduleAlg (P pipe) mod@Module{ pipes } = mod { pipes = pipe : pipes}
 
 stmtsToModule:: [Stmt] -> Module

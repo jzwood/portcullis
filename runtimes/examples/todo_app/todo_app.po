@@ -31,12 +31,12 @@ concat -> [a] -> [a] [a]
 concat xs ys =
   <+ xs ys (push ys)
 
-_filter -> -> x Atom -> x -> [x] [x]
+_filter -> -> a Atom -> a -> [a] [a]
 _filter f x xs =
   (concat
     ? (f x)
-      x [x]
-      x []
+      a:[x]
+      a:[]
     (filter f xs))
 
 filter -> -> j Atom -> [j] [j]

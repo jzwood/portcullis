@@ -67,7 +67,7 @@ export function _map(f) {
 // signature: ((map.a -> map.b) -> ([map.a] -> [map.b]))
 export function map(f) {
   return (xs) => (
-    _eq_(xs)([]) ? /* [b] */ [] : _map(f)(xs.at(0))(xs.slice(1))
+    _eq_(xs)([]) ? /* [map.b] */ [] : _map(f)(xs.at(0))(xs.slice(1))
   );
 }
 

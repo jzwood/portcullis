@@ -67,7 +67,7 @@ export function _map(f) {
 // signature: ((map.t -> map.g) -> ([map.t] -> [map.g]))
 export function map(f) {
   return (xs) => (
-    _eq_(xs)([]) ? /* [g] */ [] : _map(f)(xs.at(0))(xs.slice(1))
+    _eq_(xs)([]) ? /* [map.g] */ [] : _map(f)(xs.at(0))(xs.slice(1))
   );
 }
 
@@ -142,7 +142,7 @@ export function push(x) {
 
 // signature: ([reverse.a] -> [reverse.a])
 export function reverse(xs) {
-  return foldr(push)(/* [a] */ [])(xs);
+  return foldr(push)(/* [reverse.a] */ [])(xs);
 }
 
 // signature: (Num -> [Num])
