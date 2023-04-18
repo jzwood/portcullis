@@ -1,0 +1,16 @@
+*.po linguist-language=Portcullis
+
+# generated
+test/codegen/js/compiled/*.js linguist-generated
+test/codegen/lua/compiled/*.lua linguist-generated
+test/codegen/py/compiled/*.py linguist-generated
+dest/*
+
+# vendor
+runtimes/* linguist-vendored
+playground/highlight/* linguist-vendored
+
+# show/hide
+archived/* -linguist-detectable
+experiment/* -linguist-detectable
+notes/* -linguist-detectable
