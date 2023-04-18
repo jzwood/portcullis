@@ -4,7 +4,7 @@
 test/codegen/js/compiled/*.js linguist-generated
 test/codegen/lua/compiled/*.lua linguist-generated
 test/codegen/py/compiled/*.py linguist-generated
-dest/*
+dest/* linguist-generated
 
 # vendor
 runtimes/* linguist-vendored
