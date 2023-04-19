@@ -1,6 +1,3 @@
-*.po linguist-language=Portcullis
-*.po linguist-detectable
-
 # generated
 test/codegen/js/compiled/*.js linguist-generated
 test/codegen/lua/compiled/*.lua linguist-generated
