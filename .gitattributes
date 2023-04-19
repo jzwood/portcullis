@@ -1,4 +1,5 @@
 *.po linguist-language=Portcullis
+*.po linguist-detectable
 
 # generated
 test/codegen/js/compiled/*.js linguist-generated
