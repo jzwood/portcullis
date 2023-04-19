@@ -7,8 +7,8 @@ test/codegen/py/compiled/*.py linguist-generated
 dest/* linguist-generated
 
 # vendor
-runtimes/* linguist-vendored
-playground/highlight/* linguist-vendored
+runtimes/** linguist-vendored
+playground/highlight/** linguist-vendored
 
 # show/hide
 archived/* -linguist-detectable
