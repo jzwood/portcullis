@@ -15,6 +15,7 @@ import Parser
 import CodeGen.Js.TargetJs
 import CodeGen.Py.TargetPy
 import CodeGen.Lua.TargetLua
+import CodeGen.Po.TargetPo
 import qualified Typecheck
 import Typecheck (typecheckModule)
 import Util (mapLeft, unlines')
@@ -57,6 +58,9 @@ toPyFile mod = unlines' [BSU.toString $(embedFile "src/CodeGen/Py/core.py"), toP
 toLuaFile :: Module -> String
 toLuaFile mod = unlines' [BSU.toString $(embedFile "src/CodeGen/Lua/core.lua"), toLua mod]
 
+toPoFile :: Module -> String
+toPoFile mod = unlines' [toPo mod]
+
 runCompilation :: String -> String -> IO ()
 runCompilation src dest = do
   code <- readFile src <&> compile
@@ -64,4 +68,5 @@ runCompilation src dest = do
     ".js" -> save src dest $ toJsFile <$> code
     ".lua" -> save src dest $ toLuaFile <$> code
     ".py" -> save src dest $ toPyFile <$> code
+    ".po" -> save src dest $ toPoFile <$> code
     ext -> putStrLn $ unwords [ "Unrecognized extension:", ext ]
