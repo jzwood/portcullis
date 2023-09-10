@@ -57,10 +57,7 @@ instance Po Value where
   toPo (Number n) = if fromInteger (round n) == n then show $ fromInteger $ round n else show n
   toPo (Byte b) = show b
   toPo (Atom n) = n
-  toPo (List t xs) = unwords [
-    "<???>" ,
-  --toPo $ ListType t,
-    showList $ toPo <$> xs]
+  toPo (List t xs) = concat [ toPo t , ":" , showList $ toPo <$> xs ]
   toPo (Tuple e1 e2)
     = toPo <$> [e1, e2]
     & curly . unwords
