@@ -25,7 +25,8 @@ done -> [Byte] {Atom [Byte]}
 done done = { Done done }
 
 push -> [a] -> a -> [a] [a]
-push ys x xs = +> x (concat xs ys)
+push ys x xs =
+  +> x (concat xs ys)
 
 concat -> [a] -> [a] [a]
 concat xs ys =
