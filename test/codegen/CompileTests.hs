@@ -19,6 +19,7 @@ pathify = intercalate "/"
 
 testCodeGen :: String -> IO ()
 testCodeGen ext = do
+  putStrLn "\tCLEANING PREVIOUS RUN…"
   removePathForcibly $ pathify ["test", "codegen", ext, "compiled"]
   createDirectory $ pathify ["test", "codegen", ext, "compiled"]
   putStrLn $ unwords ["\tCOMPILING", toUpper <$> ext ]

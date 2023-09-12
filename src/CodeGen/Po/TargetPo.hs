@@ -19,7 +19,7 @@ class Po ast where
 
 instance Po Module where
   toPo Module { functions, comments, streamMap, pipes }
-    = unlines [ss, ps, fns]
+    = (unlines . filter (not . null)) [ss, ps, fns]
       where
         ss = unlines $ toPo <$> Map.elems streamMap
         ps = unlines $ toPo <$> pipes
@@ -67,7 +67,7 @@ instance Po Expr where
   toPo (Ident name) = name
   toPo (Call name exprs) = (paren . unwords) [ name, unwords $ toPo <$> exprs]
   toPo (UnOp unop e) = toPo e ++ toPo unop
-  toPo (BinOp bop e1 e2) = toPo $ Call (toPo bop) [e1, e2]
+  toPo (BinOp bop e1 e2) = unwords [toPo bop, toPo e1, toPo e2]
   toPo (TernOp If p e1 e2)
     = unlines' [ unwords ["?", toPo p] , indent $ toPo e1 , toPo e2 ]
   toPo (TernOp Uncons xs b fb)
