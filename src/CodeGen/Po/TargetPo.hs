@@ -18,12 +18,13 @@ class Po ast where
   toPo :: ast -> String
 
 instance Po Module where
-  toPo Module { functions, comments, streamMap, pipes }
-    = (unlines . filter (not . null)) [ss, ps, fns]
-      where
-        ss = unlines $ toPo <$> Map.elems streamMap
-        ps = unlines $ toPo <$> pipes
-        fns = unlines $ toPo <$> functions
+  toPo Module { stmts } = unlines' $ toPo <$> stmts
+
+instance Po Stmt where
+  toPo (F f) = toPo f
+  toPo (S s) = toPo s
+  toPo (P p) = toPo p
+  toPo (C c) = toPo c
 
 instance Po Function where
   toPo (Function name tExpr vars expr)
@@ -38,6 +39,9 @@ instance Po Pipe where
 
 instance Po Stream where
   toPo Stream { streamName, streamSig } = unwords [ streamName, toPo streamSig ]
+
+instance Po Comment where
+  toPo (Comment comment) = concat ["#", comment, "#"]
 
 instance Po TypeExpr where
   toPo NumType = "Num"
