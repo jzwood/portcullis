@@ -3,22 +3,32 @@
 module CodeGen.Po.TargetPo where
 
 import Prelude hiding (showList)
-import Syntax
 import Data.Functor
 import Data.Bifunctor
 import Data.Function
 import Control.Applicative
 import Data.Char
-import Data.List (intercalate, intersperse, nub, dropWhileEnd)
-import Util
+import Data.List (intercalate, intersperse, nub, dropWhileEnd, groupBy)
 import Data.Map (Map, (!))
 import qualified Data.Map as Map
+
+import Syntax
+import Util
 
 class Po ast where
   toPo :: ast -> String
 
+groupStmt :: Stmt -> Stmt -> Bool
+groupStmt (S _) (S _) = True
+groupStmt (P _) (P _) = True
+groupStmt (C _) (C _) = True
+groupStmt _ _ = False
+
 instance Po Module where
-  toPo Module { stmts } = unlines' $ toPo <$> stmts
+  toPo Module { stmts }
+    =   groupBy groupStmt stmts
+   <&>  (unlines . fmap toPo)
+    &   unlines'
 
 instance Po Stmt where
   toPo (F f) = toPo f
@@ -28,10 +38,10 @@ instance Po Stmt where
 
 instance Po Function where
   toPo (Function name tExpr vars expr)
-    = unlines [ unwords [ name, toPo tExpr]
-              , unwords [name, unwords vars, "="]
-              , indent $ toPo expr
-              ]
+    = unlines' [ unwords [ name, toPo tExpr]
+               , unwords [name, unwords vars, "="]
+               , indent $ toPo expr
+               ]
 
 instance Po Pipe where
   toPo Pipe { funcName, inStreams, outStreamName } =

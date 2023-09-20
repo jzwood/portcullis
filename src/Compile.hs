@@ -59,7 +59,7 @@ toLuaFile :: Module -> String
 toLuaFile mod = unlines' [BSU.toString $(embedFile "src/CodeGen/Lua/core.lua"), toLua mod]
 
 toPoFile :: Module -> String
-toPoFile mod = unlines' [toPo mod]
+toPoFile = toPo
 
 runCompilation :: String -> String -> IO ()
 runCompilation src dest = do

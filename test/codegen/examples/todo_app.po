@@ -1,3 +1,5 @@
+# TODO APP #
+
 # streams #
 &todo [[Byte]]
 &update {Atom [Byte]}
@@ -44,6 +46,7 @@ filter -> -> j Atom -> [j] [j]
 filter f xs =
   <+ xs xs (_filter f)
 
+# not equal #
 neq -> a -> b Atom
 neq a b = == False == a b
 
