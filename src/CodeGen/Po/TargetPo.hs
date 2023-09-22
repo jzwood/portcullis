@@ -45,7 +45,7 @@ instance Po Function where
 
 instance Po Pipe where
   toPo Pipe { funcName, inStreams, outStreamName } =
-    unwords ["|", funcName, (bracket . pad. unwords) $ (\(a, b) -> unwords [a, show b]) <$> inStreams]
+    unwords ["|", funcName, (bracket . pad. unwords) $ (\(a, b) -> unwords [a, show b]) <$> inStreams, outStreamName]
 
 instance Po Stream where
   toPo Stream { streamName, streamSig } = unwords [ streamName, toPo streamSig ]
@@ -71,7 +71,7 @@ instance Po Value where
   toPo (Number n) = if fromInteger (round n) == n then show $ fromInteger $ round n else show n
   toPo (Byte b) = show b
   toPo (Atom n) = n
-  toPo (List t xs) = concat [ toPo t , ":" , showList $ toPo <$> xs ]
+  toPo (List t xs) = concat [ toPo t , ":" , (bracket . unwords) $ toPo <$> xs ]
   toPo (Tuple e1 e2)
     = toPo <$> [e1, e2]
     & curly . unwords
@@ -79,8 +79,8 @@ instance Po Value where
 instance Po Expr where
   toPo (Val p) = toPo p
   toPo (Ident name) = name
-  toPo (Call name exprs) = (paren . unwords) [ name, unwords $ toPo <$> exprs]
-  toPo (UnOp unop e) = toPo e ++ toPo unop
+  toPo (Call name exprs) = (paren . unwords . filter (not . null)) [ name, unwords $ toPo <$> exprs]
+  toPo (UnOp unop e) = unwords [ toPo unop, toPo e]
   toPo (BinOp bop e1 e2) = unwords [toPo bop, toPo e1, toPo e2]
   toPo (TernOp If p e1 e2)
     = unlines' [ unwords ["?", toPo p] , indent $ toPo e1 , toPo e2 ]
