@@ -1,10 +1,12 @@
-hm1 -> w -> (-> w w) w
-hm1 z f = (f z)
+_map -> -> q t -> q -> [q] [t]
+_map f x xs = +> (f x) (map f xs)
 
-id -> z z
-id x = x
+map -> -> t g -> [t] [g]
+map f xs =
+  <+ xs g:[] (_map f)
 
-test -> q q
-test x = (hm1 x id)
+add1 -> Num Num
+add1 x = + x 1
 
-| id [&a] &a
+list [Num]
+list = (map add1 Num:[1 2 3 4])

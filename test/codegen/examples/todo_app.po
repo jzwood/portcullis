@@ -1,3 +1,5 @@
+# TODO APP #
+
 # streams #
 &todo [[Byte]]
 &update {Atom [Byte]}
@@ -25,7 +27,8 @@ done -> [Byte] {Atom [Byte]}
 done done = { Done done }
 
 push -> [a] -> a -> [a] [a]
-push ys x xs = +> x (concat xs ys)
+push ys x xs =
+  +> x (concat xs ys)
 
 concat -> [a] -> [a] [a]
 concat xs ys =
@@ -43,6 +46,7 @@ filter -> -> j Atom -> [j] [j]
 filter f xs =
   <+ xs xs (_filter f)
 
+# not equal #
 neq -> a -> b Atom
 neq a b = == False == a b
 

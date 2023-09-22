@@ -32,6 +32,9 @@ alphaConvertFunction :: Function -> Function
 alphaConvertFunction func@Function { name, signature, body }
   = func { signature = alphaConversion name signature, body = alphaConvertExpr name body }
 
+stmtAlg :: Stmt -> Module -> Module
+stmtAlg stmt mod@Module{ stmts } = mod { stmts = stmt : stmts }
+
 moduleAlg :: Stmt -> Module -> Module
 moduleAlg (F func) mod@Module { functions, functionMap }
   = mod { functions = function : functions, functionMap = Map.insert (name function) function functionMap }
@@ -42,7 +45,7 @@ moduleAlg (S stream@Stream { streamName }) mod@Module{ streams, streamMap }
 moduleAlg (P pipe) mod@Module{ pipes } = mod { pipes = pipe : pipes}
 
 stmtsToModule:: [Stmt] -> Module
-stmtsToModule = foldr moduleAlg (Module { functions = [], functionMap = Map.empty, comments = [], streams = [], streamMap = Map.empty, pipes = [] })
+stmtsToModule = foldr (\stmt mod -> moduleAlg stmt (stmtAlg stmt mod)) (Module { stmts = [], functions = [], functionMap = Map.empty, comments = [], streams = [], streamMap = Map.empty, pipes = [] })
 
 parseModule :: Parser Module
 parseModule =  stmtsToModule <$> oneOrMore parseStmt

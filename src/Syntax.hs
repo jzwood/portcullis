@@ -11,7 +11,7 @@ import Util
 
 type Name = String
 
-data Module = Module { functions :: [Function], functionMap :: Map Name Function, comments :: [Comment], streams :: [Stream], streamMap :: Map Name Stream, pipes :: [Pipe] } deriving (Eq, Ord, Show)
+data Module = Module { stmts :: [Stmt], functions :: [Function], functionMap :: Map Name Function, comments :: [Comment], streams :: [Stream], streamMap :: Map Name Stream, pipes :: [Pipe] } deriving (Eq, Ord, Show)
 
 data Stream = Stream { streamName :: Name, streamSig :: TypeExpr }
   deriving (Eq, Ord, Show)
@@ -27,7 +27,7 @@ data Function = Function
   , body :: Expr
   } deriving (Eq, Ord, Show)
 
-data Stmt = F Function | S Stream | P Pipe | C Comment deriving (Eq, Show)
+data Stmt = F Function | S Stream | P Pipe | C Comment deriving (Ord, Eq, Show)
 
 data TypeExpr
   = NumType
