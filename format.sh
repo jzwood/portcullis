@@ -6,5 +6,5 @@ if [ "$base" = "" ]; then
 fi
 
 for po in $(find $base -name "*.po" -type f); do
-    portcullis-exe "$po" "$po"
+    portcullis-exe "$po" "$po" &
 done
