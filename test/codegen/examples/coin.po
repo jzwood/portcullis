@@ -10,10 +10,10 @@
 | cmp  [ &guess 99 &coin 99 ] &win
 | incr [ &win 99 &score 99 ] &score
 
-id -> a a
+id -> Byte Byte
 id x = x
 
-cmp -> x -> x Atom
+cmp -> Byte -> Byte Atom
 cmp a b = == a b
 
 incr -> Atom -> Num Num

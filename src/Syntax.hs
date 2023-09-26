@@ -39,6 +39,12 @@ data TypeExpr
   | Arrow TypeExpr TypeExpr
   deriving (Eq, Ord, Show)
 
+foldTypeExpr :: (b -> TypeExpr -> b) -> b -> TypeExpr -> b
+foldTypeExpr alg acc (TupType t1 t2) = alg (alg acc t1) t2
+foldTypeExpr alg acc (ListType t) = alg acc t
+foldTypeExpr alg acc (Arrow tl tr) = alg (alg acc tl) tr
+foldTypeExpr alg acc te = alg acc te
+
 applyTypeExpr :: (TypeExpr -> TypeExpr) -> TypeExpr -> TypeExpr
 applyTypeExpr f (TupType t1 t2) = TupType (f t1) (f t2)
 applyTypeExpr f (ListType t) = ListType (f t)

@@ -1,0 +1,12 @@
+# MAKE A TEST WHERE THIS BREAKS #
+bad0 -> (-> t Atom) -> [t] Atom
+bad0 f xs = (f xs)
+
+id -> Atom Atom
+id a = a
+
+bad1 Atom
+bad1 = (bad0 id 23)
+
+bad2 -> -> t Atom -> [t] Num
+bad2 f xs = ? (f xs) 1 2
