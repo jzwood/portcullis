@@ -90,7 +90,6 @@ typecheckFunc funcMap func@Function {name, body, args, signature} =
     checkForall name typeMap >> typeEqual typeMap expectedTypeOfBody typeofBody
     & mapLeft (FunctionError func)
 
--- I THINK THIS NEEDS TO BE UPDATED TO NOT INCLUDE SITUATIONS WHERE type is mapped to another Unspecified...
 checkForall :: Name -> Map Name TypeExpr -> Either TypeError TypeExpr
 checkForall name m =
   Map.toList m
