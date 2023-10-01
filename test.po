@@ -1,0 +1,71 @@
+id1 -> x x
+id1 x = x
+
+#
+filter ...
+#
+
+compose -> -> b c -> -> a b -> a c
+compose f g x = (f (g x))
+
+double -> Num Num
+double x = * 2 x
+
+quadruple -> Num Num
+quadruple n = (compose double double n)
+
+id2 -> x x
+id2 x = (compose id1 id1 x)
+
+one1 Num
+one1 = 1
+
+one2 Num
+one2 = (compose id1 id1 (one1))
+
+id3 -> z -> [z] [z]
+id3 x xs = xs
+
+tail -> [t] [t]
+tail xs =
+  <+ xs xs (id3)
+
+a -> -> h h -> h  h
+a fx x = (fx x)
+
+b -> q q
+b w = w
+
+c -> p p
+c y = (a b y)
+
+push -> [h] -> h -> [h] [h]
+push ys x xs = +> x (concat xs ys)
+
+concat -> [a] -> [a] [a]
+concat xs ys =
+  <+ xs ys (push ys)
+
+filter2 -> -> x Atom -> x -> [x] [x]
+filter2 g w ws =
+  (concat
+    ? (g w)
+      x:[w]
+      x:[]
+    (filter g ws))
+
+filter -> -> j Atom -> [j] [j]
+filter f xs =
+  <+ xs xs (filter2 f)
+
+eq -> a -> a Atom
+eq x y = == x y
+
+seven -> [Num] [Num]
+seven xs = (filter (eq 7) xs)
+
+eight Num
+eight = + 3 5
+
+atoms [Atom]
+atoms = Atom : [One Two Three Four Five]

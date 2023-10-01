@@ -1,4 +1,5 @@
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE LambdaCase #-}
 
 module CodeGen.Html.Target where
 
@@ -10,6 +11,7 @@ import Control.Applicative
 import Data.Char
 import Data.List (intercalate, intersperse, nub, dropWhileEnd, groupBy)
 import Data.Map (Map, (!))
+import CodeGen.Po.Target (toPo)
 import qualified Data.Map as Map
 
 import Syntax
@@ -18,17 +20,17 @@ import Util
 class Html ast where
   toHtml :: ast -> String
 
-groupStmt :: Stmt -> Stmt -> Bool
-groupStmt (S _) (S _) = True
-groupStmt (P _) (P _) = True
-groupStmt (C _) (C _) = True
-groupStmt _ _ = False
+escapeHtml :: String -> String
+escapeHtml content = content >>= (\case '&' -> "&amp;"; '<' -> "&lt;"; '>' -> "&gt;"; char -> [char])
+
+tag :: String -> String -> String -> String
+tag element className content = concat [ "<", element, " class=\"", className, "\"", ">"
+                                       , escapeHtml content
+                                       , "</", element, ">"
+                                       ]
 
 instance Html Module where
-  toHtml Module { stmts }
-    =   groupBy groupStmt stmts
-   <&>  (unlines . fmap toHtml)
-    &   unlines'
+  toHtml Module { stmts } = unlines' $ toHtml <$> stmts
 
 instance Html Stmt where
   toHtml (F f) = toHtml f
@@ -38,7 +40,7 @@ instance Html Stmt where
 
 instance Html Function where
   toHtml (Function name tExpr vars expr)
-    = unlines' [ unwords [ name, toHtml tExpr]
+    = tag "code" "function" $ unlines' [ unwords [ name, toHtml tExpr]
                , unwords [name, unwords vars, "="]
                , indent $ toHtml expr
                ]

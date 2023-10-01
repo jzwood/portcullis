@@ -1,0 +1,65 @@
+<code class="function">id1 -&gt; x x
+id1 x =
+  x</code>
+#
+filter ...
+#
+<code class="function">compose -&gt; -&gt; b c -&gt; -&gt; a b -&gt; a c
+compose f g x =
+  (f (g x))</code>
+<code class="function">double -&gt; Num Num
+double x =
+  * 2 x</code>
+<code class="function">quadruple -&gt; Num Num
+quadruple n =
+  (compose double double n)</code>
+<code class="function">id2 -&gt; x x
+id2 x =
+  (compose id1 id1 x)</code>
+<code class="function">one1 Num
+one1  =
+  1</code>
+<code class="function">one2 Num
+one2  =
+  (compose id1 id1 (one1))</code>
+<code class="function">id3 -&gt; z -&gt; [z] [z]
+id3 x xs =
+  xs</code>
+<code class="function">tail -&gt; [t] [t]
+tail xs =
+  &lt;+ xs xs (id3)</code>
+<code class="function">a -&gt; -&gt; h h -&gt; h h
+a fx x =
+  (fx x)</code>
+<code class="function">b -&gt; q q
+b w =
+  w</code>
+<code class="function">c -&gt; p p
+c y =
+  (a b y)</code>
+<code class="function">push -&gt; [h] -&gt; h -&gt; [h] [h]
+push ys x xs =
+  +&gt; x (concat xs ys)</code>
+<code class="function">concat -&gt; [a] -&gt; [a] [a]
+concat xs ys =
+  &lt;+ xs ys (push ys)</code>
+<code class="function">filter2 -&gt; -&gt; x Atom -&gt; x -&gt; [x] [x]
+filter2 g w ws =
+  (concat ? (g w)
+    x:[w]
+  x:[] (filter g ws))</code>
+<code class="function">filter -&gt; -&gt; j Atom -&gt; [j] [j]
+filter f xs =
+  &lt;+ xs xs (filter2 f)</code>
+<code class="function">eq -&gt; a -&gt; a Atom
+eq x y =
+  == x y</code>
+<code class="function">seven -&gt; [Num] [Num]
+seven xs =
+  (filter (eq 7) xs)</code>
+<code class="function">eight Num
+eight  =
+  + 3 5</code>
+<code class="function">atoms [Atom]
+atoms  =
+  Atom:[One Two Three Four Five]</code>
