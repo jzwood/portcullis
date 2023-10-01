@@ -73,7 +73,12 @@ spec = do
     it "expect RecursiveType" $ do
       let bad0 = "bad0 -> -> t Atom -> [t] Num \
                  \bad0 f xs = ? (f xs) 1 2"
-      errorOf bad0 `shouldBe` FunctionError (unsafeFunc bad0) (RecursiveType [("bad0.t",ListType (Unspecified "bad0.t"))])
+      errorOf bad0 `shouldBe` FunctionError (unsafeFunc bad0) (RecursiveType ["bad0.t"])
+
+    it "expect BadForall" $ do
+      let bad0 = "bad0 -> (-> t Atom) -> Num Atom\
+                 \bad0 f xs = (f xs)"
+      errorOf bad0 `shouldBe` FunctionError (unsafeFunc bad0) (BadForall ["bad0.t"])
 
   describe "Typecheck Pipe TypeErrors" $ do
     it "expect NotFunction pipe errors" $ do

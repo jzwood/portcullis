@@ -105,12 +105,12 @@ end
 
 -- USER CODE
 
--- signature: (id.a -> id.a)
+-- signature: (Byte -> Byte)
 function id(x)
   return x
 end
 
--- signature: (cmp.x -> (cmp.x -> Atom))
+-- signature: (Byte -> (Byte -> Atom))
 function cmp(a)
   return function (b)
     return _eq_(a)(b)

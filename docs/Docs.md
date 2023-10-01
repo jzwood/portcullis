@@ -17,7 +17,7 @@
 | Name    | Grammer                           | Example                                     |
 | ------- | --------------------------------- | ------------------------------------------- |
 | Number  | decimal                           | `2.3`                                       |
-| Byte    | Byte                              | `100`                                       |
+| Byte    | byte                              | `100`                                       |
 | Atom    | pascal-word                       | `One`, `True`                               |
 | 2-Tuple | `"{" expression expression "}"`   | `{35 True}`                                 |
 | Array   | `type ":" "[" { expression } "]"` | `Num:[1.1 2 3 400]`, `Byte:[74 97 107 101]` |
