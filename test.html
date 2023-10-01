@@ -1,65 +1,80 @@
-<code class="function">id1 -&gt; x x
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+    <style>
+.function {
+  white-space: pre;
+    display: block;
+}
+    </style>
+</head>
+<body>
+<code class="function">id1 <span class="type-expr">-&gt; x x</span>
 id1 x =
-  x</code>
-#
+  <var class="ident">x</var></code>
+<p class="comment">#
 filter ...
-#
-<code class="function">compose -&gt; -&gt; b c -&gt; -&gt; a b -&gt; a c
+#</p>
+<code class="function">compose <span class="type-expr">-&gt; -&gt; b c -&gt; -&gt; a b -&gt; a c</span>
 compose f g x =
-  (f (g x))</code>
-<code class="function">double -&gt; Num Num
+  <span class="call">(f <span class="call">(g <var class="ident">x</var>)</span>)</span></code>
+<code class="function">double <span class="type-expr">-&gt; Num Num</span>
 double x =
-  * 2 x</code>
-<code class="function">quadruple -&gt; Num Num
+  <span class="op">*</span> <span class="num">2</span> <var class="ident">x</var></code>
+<code class="function">quadruple <span class="type-expr">-&gt; Num Num</span>
 quadruple n =
-  (compose double double n)</code>
-<code class="function">id2 -&gt; x x
+  <span class="call">(compose <var class="ident">double</var> <var class="ident">double</var> <var class="ident">n</var>)</span></code>
+<code class="function">id2 <span class="type-expr">-&gt; x x</span>
 id2 x =
-  (compose id1 id1 x)</code>
-<code class="function">one1 Num
+  <span class="call">(compose <var class="ident">id1</var> <var class="ident">id1</var> <var class="ident">x</var>)</span></code>
+<code class="function">one1 <span class="type-expr">Num</span>
 one1  =
-  1</code>
-<code class="function">one2 Num
+  <span class="num">1</span></code>
+<code class="function">one2 <span class="type-expr">Num</span>
 one2  =
-  (compose id1 id1 (one1))</code>
-<code class="function">id3 -&gt; z -&gt; [z] [z]
+  <span class="call">(compose <var class="ident">id1</var> <var class="ident">id1</var> <span class="call">(one1)</span>)</span></code>
+<code class="function">id3 <span class="type-expr">-&gt; z -&gt; [z] [z]</span>
 id3 x xs =
-  xs</code>
-<code class="function">tail -&gt; [t] [t]
+  <var class="ident">xs</var></code>
+<code class="function">tail <span class="type-expr">-&gt; [t] [t]</span>
 tail xs =
-  &lt;+ xs xs (id3)</code>
-<code class="function">a -&gt; -&gt; h h -&gt; h h
+  <span class="op">&lt;+</span> <var class="ident">xs</var> <var class="ident">xs</var> <span class="call">(id3)</span></code>
+<code class="function">a <span class="type-expr">-&gt; -&gt; h h -&gt; h h</span>
 a fx x =
-  (fx x)</code>
-<code class="function">b -&gt; q q
+  <span class="call">(fx <var class="ident">x</var>)</span></code>
+<code class="function">b <span class="type-expr">-&gt; q q</span>
 b w =
-  w</code>
-<code class="function">c -&gt; p p
+  <var class="ident">w</var></code>
+<code class="function">c <span class="type-expr">-&gt; p p</span>
 c y =
-  (a b y)</code>
-<code class="function">push -&gt; [h] -&gt; h -&gt; [h] [h]
+  <span class="call">(a <var class="ident">b</var> <var class="ident">y</var>)</span></code>
+<code class="function">push <span class="type-expr">-&gt; [h] -&gt; h -&gt; [h] [h]</span>
 push ys x xs =
-  +&gt; x (concat xs ys)</code>
-<code class="function">concat -&gt; [a] -&gt; [a] [a]
+  <span class="op">+&gt;</span> <var class="ident">x</var> <span class="call">(concat <var class="ident">xs</var> <var class="ident">ys</var>)</span></code>
+<code class="function">concat <span class="type-expr">-&gt; [a] -&gt; [a] [a]</span>
 concat xs ys =
-  &lt;+ xs ys (push ys)</code>
-<code class="function">filter2 -&gt; -&gt; x Atom -&gt; x -&gt; [x] [x]
+  <span class="op">&lt;+</span> <var class="ident">xs</var> <var class="ident">ys</var> <span class="call">(push <var class="ident">ys</var>)</span></code>
+<code class="function">filter2 <span class="type-expr">-&gt; -&gt; x Atom -&gt; x -&gt; [x] [x]</span>
 filter2 g w ws =
-  (concat ? (g w)
-    x:[w]
-  x:[] (filter g ws))</code>
-<code class="function">filter -&gt; -&gt; j Atom -&gt; [j] [j]
+  <span class="call">(concat <span class="op">?</span> <span class="call">(g <var class="ident">w</var>)</span>
+    x:[<var class="ident">w</var>]
+  x:[] <span class="call">(filter <var class="ident">g</var> <var class="ident">ws</var>)</span>)</span></code>
+<code class="function">filter <span class="type-expr">-&gt; -&gt; j Atom -&gt; [j] [j]</span>
 filter f xs =
-  &lt;+ xs xs (filter2 f)</code>
-<code class="function">eq -&gt; a -&gt; a Atom
+  <span class="op">&lt;+</span> <var class="ident">xs</var> <var class="ident">xs</var> <span class="call">(filter2 <var class="ident">f</var>)</span></code>
+<code class="function">eq <span class="type-expr">-&gt; a -&gt; a Atom</span>
 eq x y =
-  == x y</code>
-<code class="function">seven -&gt; [Num] [Num]
+  <span class="op">==</span> <var class="ident">x</var> <var class="ident">y</var></code>
+<code class="function">seven <span class="type-expr">-&gt; [Num] [Num]</span>
 seven xs =
-  (filter (eq 7) xs)</code>
-<code class="function">eight Num
+  <span class="call">(filter <span class="call">(eq <span class="num">7</span>)</span> <var class="ident">xs</var>)</span></code>
+<code class="function">eight <span class="type-expr">Num</span>
 eight  =
-  + 3 5</code>
-<code class="function">atoms [Atom]
+  <span class="op">+</span> <span class="num">3</span> <span class="num">5</span></code>
+<code class="function">atoms <span class="type-expr">[Atom]</span>
 atoms  =
-  Atom:[One Two Three Four Five]</code>
+  Atom:[<span class="atom">One</span> <span class="atom">Two</span> <span class="atom">Three</span> <span class="atom">Four</span> <span class="atom">Five</span>]</code>
+</body>
+</html>
