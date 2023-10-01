@@ -12,10 +12,11 @@ import Syntax
 import qualified MiniParser as ParseLib
 import MiniParser (runParser, Parser, Cursor)
 import Parser
-import CodeGen.Js.TargetJs
-import CodeGen.Py.TargetPy
-import CodeGen.Lua.TargetLua
-import CodeGen.Po.TargetPo
+import CodeGen.Js.Target
+import CodeGen.Py.Target
+import CodeGen.Lua.Target
+import CodeGen.Po.Target
+import CodeGen.Html.Target
 import qualified Typecheck
 import Typecheck (typecheckModule)
 import Util (mapLeft, unlines')
@@ -61,6 +62,9 @@ toLuaFile mod = unlines' [BSU.toString $(embedFile "src/CodeGen/Lua/core.lua"), 
 toPoFile :: Module -> String
 toPoFile = toPo
 
+toHtmlFile :: Module -> String
+toHtmlFile = toHtml
+
 runCompilation :: String -> String -> IO ()
 runCompilation src dest = do
   code <- readFile src <&> compile
@@ -69,4 +73,5 @@ runCompilation src dest = do
     ".lua" -> save src dest $ toLuaFile <$> code
     ".py" -> save src dest $ toPyFile <$> code
     ".po" -> save src dest $ toPoFile <$> code
+    ".html" -> save src dest $ toHtmlFile <$> code
     ext -> putStrLn $ unwords [ "Unrecognized extension:", ext ]

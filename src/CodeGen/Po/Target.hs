@@ -1,6 +1,6 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
-module CodeGen.Po.TargetPo where
+module CodeGen.Po.Target where
 
 import Prelude hiding (showList)
 import Data.Functor
