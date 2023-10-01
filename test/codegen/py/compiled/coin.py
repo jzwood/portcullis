@@ -34,11 +34,11 @@ def _cons_(a):
 
 # USER CODE
 
-# signature: (id.a -> id.a)
+# signature: (Byte -> Byte)
 def id(x):
   return x
 
-# signature: (cmp.x -> (cmp.x -> Atom))
+# signature: (Byte -> (Byte -> Atom))
 def cmp(a):
   return lambda b: _eq_(a)(b)
 

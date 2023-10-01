@@ -59,12 +59,12 @@ function _cons_(a) {
 
 // USER CODE
 
-// signature: (id.a -> id.a)
+// signature: (Byte -> Byte)
 export function id(x) {
   return x;
 }
 
-// signature: (cmp.x -> (cmp.x -> Atom))
+// signature: (Byte -> (Byte -> Atom))
 export function cmp(a) {
   return (b) => _eq_(a)(b);
 }
