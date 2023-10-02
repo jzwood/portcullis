@@ -1,80 +1,113 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html><head>
   <meta charset="UTF-8">
-  <title></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Portcullis Doc</title>
     <style>
-.function {
-  white-space: pre;
-    display: block;
-}
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: black;
+        display: flex;
+        flex-direction: column;
+        row-gap: 1rem;
+        color: white;
+        margin: 1rem;
+      }
+      code {
+        font-family: courier;
+      }
+      .comment {
+        font-style: normal;
+        color: white;
+        font-family: courier;
+      }
+      .function {
+        white-space: pre;
+        display: block;
+      }
+      .type {
+        color: #FFC8C8;
+      }
+      .param, .ident {
+        color: #9575DE;
+        font-style: normal;
+      }
+      .function-name {
+        color: #FF3FA4;
+      }
+      .op {
+        color: #FF9B82;
+      }
+      .val {
+        color: #FFC8C8;
+      }
+
     </style>
 </head>
-<body>
-<code class="function">id1 <span class="type-expr">-&gt; x x</span>
-id1 x =
+<body><code class="function"><span class="function-name">id1</span> <span class="type">-&gt; x x</span>
+<span class="function-name">id1</span> <var class="param">x</var> =
   <var class="ident">x</var></code>
 <p class="comment">#
 filter ...
 #</p>
-<code class="function">compose <span class="type-expr">-&gt; -&gt; b c -&gt; -&gt; a b -&gt; a c</span>
-compose f g x =
-  <span class="call">(f <span class="call">(g <var class="ident">x</var>)</span>)</span></code>
-<code class="function">double <span class="type-expr">-&gt; Num Num</span>
-double x =
-  <span class="op">*</span> <span class="num">2</span> <var class="ident">x</var></code>
-<code class="function">quadruple <span class="type-expr">-&gt; Num Num</span>
-quadruple n =
-  <span class="call">(compose <var class="ident">double</var> <var class="ident">double</var> <var class="ident">n</var>)</span></code>
-<code class="function">id2 <span class="type-expr">-&gt; x x</span>
-id2 x =
-  <span class="call">(compose <var class="ident">id1</var> <var class="ident">id1</var> <var class="ident">x</var>)</span></code>
-<code class="function">one1 <span class="type-expr">Num</span>
-one1  =
-  <span class="num">1</span></code>
-<code class="function">one2 <span class="type-expr">Num</span>
-one2  =
-  <span class="call">(compose <var class="ident">id1</var> <var class="ident">id1</var> <span class="call">(one1)</span>)</span></code>
-<code class="function">id3 <span class="type-expr">-&gt; z -&gt; [z] [z]</span>
-id3 x xs =
+<code class="function"><span class="function-name">compose</span> <span class="type">-&gt; -&gt; b c -&gt; -&gt; a b -&gt; a c</span>
+<span class="function-name">compose</span> <var class="param">f</var> <var class="param">g</var> <var class="param">x</var> =
+  <span class="call">(<span class="function-name">f</span> <span class="call">(<span class="function-name">g</span> <var class="ident">x</var>)</span>)</span></code>
+<code class="function"><span class="function-name">double</span> <span class="type">-&gt; Num Num</span>
+<span class="function-name">double</span> <var class="param">x</var> =
+  <span class="op">*</span> <span class="val num">2</span> <var class="ident">x</var></code>
+<code class="function"><span class="function-name">quadruple</span> <span class="type">-&gt; Num Num</span>
+<span class="function-name">quadruple</span> <var class="param">n</var> =
+  <span class="call">(<span class="function-name">compose</span> <var class="ident">double</var> <var class="ident">double</var> <var class="ident">n</var>)</span></code>
+<code class="function"><span class="function-name">id2</span> <span class="type">-&gt; x x</span>
+<span class="function-name">id2</span> <var class="param">x</var> =
+  <span class="call">(<span class="function-name">compose</span> <var class="ident">id1</var> <var class="ident">id1</var> <var class="ident">x</var>)</span></code>
+<code class="function"><span class="function-name">one1</span> <span class="type">Num</span>
+<span class="function-name">one1</span>  =
+  <span class="val num">1</span></code>
+<code class="function"><span class="function-name">one2</span> <span class="type">Num</span>
+<span class="function-name">one2</span>  =
+  <span class="call">(<span class="function-name">compose</span> <var class="ident">id1</var> <var class="ident">id1</var> <span class="call">(<span class="function-name">one1</span>)</span>)</span></code>
+<code class="function"><span class="function-name">id3</span> <span class="type">-&gt; z -&gt; [z] [z]</span>
+<span class="function-name">id3</span> <var class="param">x</var> <var class="param">xs</var> =
   <var class="ident">xs</var></code>
-<code class="function">tail <span class="type-expr">-&gt; [t] [t]</span>
-tail xs =
-  <span class="op">&lt;+</span> <var class="ident">xs</var> <var class="ident">xs</var> <span class="call">(id3)</span></code>
-<code class="function">a <span class="type-expr">-&gt; -&gt; h h -&gt; h h</span>
-a fx x =
-  <span class="call">(fx <var class="ident">x</var>)</span></code>
-<code class="function">b <span class="type-expr">-&gt; q q</span>
-b w =
+<code class="function"><span class="function-name">tail</span> <span class="type">-&gt; [t] [t]</span>
+<span class="function-name">tail</span> <var class="param">xs</var> =
+  <span class="op">&lt;+</span> <var class="ident">xs</var> <var class="ident">xs</var> <span class="call">(<span class="function-name">id3</span>)</span></code>
+<code class="function"><span class="function-name">a</span> <span class="type">-&gt; -&gt; h h -&gt; h h</span>
+<span class="function-name">a</span> <var class="param">fx</var> <var class="param">x</var> =
+  <span class="call">(<span class="function-name">fx</span> <var class="ident">x</var>)</span></code>
+<code class="function"><span class="function-name">b</span> <span class="type">-&gt; q q</span>
+<span class="function-name">b</span> <var class="param">w</var> =
   <var class="ident">w</var></code>
-<code class="function">c <span class="type-expr">-&gt; p p</span>
-c y =
-  <span class="call">(a <var class="ident">b</var> <var class="ident">y</var>)</span></code>
-<code class="function">push <span class="type-expr">-&gt; [h] -&gt; h -&gt; [h] [h]</span>
-push ys x xs =
-  <span class="op">+&gt;</span> <var class="ident">x</var> <span class="call">(concat <var class="ident">xs</var> <var class="ident">ys</var>)</span></code>
-<code class="function">concat <span class="type-expr">-&gt; [a] -&gt; [a] [a]</span>
-concat xs ys =
-  <span class="op">&lt;+</span> <var class="ident">xs</var> <var class="ident">ys</var> <span class="call">(push <var class="ident">ys</var>)</span></code>
-<code class="function">filter2 <span class="type-expr">-&gt; -&gt; x Atom -&gt; x -&gt; [x] [x]</span>
-filter2 g w ws =
-  <span class="call">(concat <span class="op">?</span> <span class="call">(g <var class="ident">w</var>)</span>
-    x:[<var class="ident">w</var>]
-  x:[] <span class="call">(filter <var class="ident">g</var> <var class="ident">ws</var>)</span>)</span></code>
-<code class="function">filter <span class="type-expr">-&gt; -&gt; j Atom -&gt; [j] [j]</span>
-filter f xs =
-  <span class="op">&lt;+</span> <var class="ident">xs</var> <var class="ident">xs</var> <span class="call">(filter2 <var class="ident">f</var>)</span></code>
-<code class="function">eq <span class="type-expr">-&gt; a -&gt; a Atom</span>
-eq x y =
+<code class="function"><span class="function-name">c</span> <span class="type">-&gt; p p</span>
+<span class="function-name">c</span> <var class="param">y</var> =
+  <span class="call">(<span class="function-name">a</span> <var class="ident">b</var> <var class="ident">y</var>)</span></code>
+<code class="function"><span class="function-name">push</span> <span class="type">-&gt; [h] -&gt; h -&gt; [h] [h]</span>
+<span class="function-name">push</span> <var class="param">ys</var> <var class="param">x</var> <var class="param">xs</var> =
+  <span class="op">+&gt;</span> <var class="ident">x</var> <span class="call">(<span class="function-name">concat</span> <var class="ident">xs</var> <var class="ident">ys</var>)</span></code>
+<code class="function"><span class="function-name">concat</span> <span class="type">-&gt; [a] -&gt; [a] [a]</span>
+<span class="function-name">concat</span> <var class="param">xs</var> <var class="param">ys</var> =
+  <span class="op">&lt;+</span> <var class="ident">xs</var> <var class="ident">ys</var> <span class="call">(<span class="function-name">push</span> <var class="ident">ys</var>)</span></code>
+<code class="function"><span class="function-name">filter2</span> <span class="type">-&gt; -&gt; x Atom -&gt; x -&gt; [x] [x]</span>
+<span class="function-name">filter2</span> <var class="param">g</var> <var class="param">w</var> <var class="param">ws</var> =
+  <span class="call">(<span class="function-name">concat</span> <span class="op">?</span> <span class="call">(<span class="function-name">g</span> <var class="ident">w</var>)</span>
+    <span class="type">x</span>:[<var class="ident">w</var>]
+  <span class="type">x</span>:[] <span class="call">(<span class="function-name">filter</span> <var class="ident">g</var> <var class="ident">ws</var>)</span>)</span></code>
+<code class="function"><span class="function-name">filter</span> <span class="type">-&gt; -&gt; j Atom -&gt; [j] [j]</span>
+<span class="function-name">filter</span> <var class="param">f</var> <var class="param">xs</var> =
+  <span class="op">&lt;+</span> <var class="ident">xs</var> <var class="ident">xs</var> <span class="call">(<span class="function-name">filter2</span> <var class="ident">f</var>)</span></code>
+<code class="function"><span class="function-name">eq</span> <span class="type">-&gt; a -&gt; a Atom</span>
+<span class="function-name">eq</span> <var class="param">x</var> <var class="param">y</var> =
   <span class="op">==</span> <var class="ident">x</var> <var class="ident">y</var></code>
-<code class="function">seven <span class="type-expr">-&gt; [Num] [Num]</span>
-seven xs =
-  <span class="call">(filter <span class="call">(eq <span class="num">7</span>)</span> <var class="ident">xs</var>)</span></code>
-<code class="function">eight <span class="type-expr">Num</span>
-eight  =
-  <span class="op">+</span> <span class="num">3</span> <span class="num">5</span></code>
-<code class="function">atoms <span class="type-expr">[Atom]</span>
-atoms  =
-  Atom:[<span class="atom">One</span> <span class="atom">Two</span> <span class="atom">Three</span> <span class="atom">Four</span> <span class="atom">Five</span>]</code>
-</body>
-</html>
+<code class="function"><span class="function-name">seven</span> <span class="type">-&gt; [Num] [Num]</span>
+<span class="function-name">seven</span> <var class="param">xs</var> =
+  <span class="call">(<span class="function-name">filter</span> <span class="call">(<span class="function-name">eq</span> <span class="val num">7</span>)</span> <var class="ident">xs</var>)</span></code>
+<code class="function"><span class="function-name">eight</span> <span class="type">Num</span>
+<span class="function-name">eight</span>  =
+  <span class="op">+</span> <span class="val num">3</span> <span class="val num">5</span></code>
+<code class="function"><span class="function-name">atoms</span> <span class="type">[Atom]</span>
+<span class="function-name">atoms</span>  =
+  <span class="type">Atom</span>:[<span class="val atom">One</span> <span class="val atom">Two</span> <span class="val atom">Three</span> <span class="val atom">Four</span> <span class="val atom">Five</span>]</code></body></html>
