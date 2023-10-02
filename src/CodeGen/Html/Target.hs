@@ -49,7 +49,8 @@ instance Html Module where
                     tag "main" [] $ aside ++ section
             ]
       where
-        aside = tag "aside" [] $ sortOn name functions >>= \fun -> tag "a" [("href", '#' : name fun)] (name fun)
+        funs = sortOn name functions >>= \fun -> tag "a" [("href", '#' : name fun)] (name fun)
+        aside = tag "aside" [] $ (tag "h2" [] "Functions") ++ funs
         section = tag "section" [] $ unlines' $ toHtml <$> stmts
 
 instance Html Stmt where
