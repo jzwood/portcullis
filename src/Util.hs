@@ -44,6 +44,14 @@ unlines' :: [String] -> String
 unlines' [] = ""
 unlines' xs = init . unlines $ xs
 
+-- |
+-- >>> unwords' ["cat", "", "mouse"]
+-- "cat mouse"
+-- >>> unlines' []
+-- ""
+unwords' :: [String] -> String
+unwords' = unwords . filter (not . null)
+
 indent :: String -> String
 indent = unlines' . fmap ("  "++) . lines
 

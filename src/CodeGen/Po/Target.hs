@@ -79,7 +79,7 @@ instance Po Value where
 instance Po Expr where
   toPo (Val p) = toPo p
   toPo (Ident name) = name
-  toPo (Call name exprs) = (paren . unwords . filter (not . null)) [ name, unwords $ toPo <$> exprs]
+  toPo (Call name exprs) = (paren . unwords') [ name, unwords $ toPo <$> exprs]
   toPo (UnOp unop e) = unwords [ toPo unop, toPo e]
   toPo (BinOp bop e1 e2) = unwords [toPo bop, toPo e1, toPo e2]
   toPo (TernOp If p e1 e2)

@@ -19,6 +19,17 @@
       }
       main {
         display: flex;
+        column-gap: 2rem;
+      }
+      aside {
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: 1rem;
+        height: min-content;
+      }
+      section {
+        display: flex;
         flex-direction: column;
         row-gap: 1rem;
       }
@@ -34,9 +45,6 @@
         white-space: pre;
         display: block;
       }
-      .type {
-        color: #FFC8C8;
-      }
       .param, .ident {
         color: #9575DE;
         font-style: normal;
@@ -47,9 +55,8 @@
       .op {
         color: #FF9B82;
       }
-      .val {
-        color: #FFC8C8;
+      .val, .type {
+        color: #ff9d46;
       }
-
     </style>
 </head>

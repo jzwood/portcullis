@@ -24,18 +24,6 @@ import Util
 class Html ast where
     toHtml :: ast -> String
 
-embody :: String -> String
-embody content =
-    concat
-        [ "<!DOCTYPE html>"
-        , "<html>"
-        , BSU.toString $(embedFile "src/CodeGen/Html/head.html")
-        , "<body>"
-        , content
-        , "</body>"
-        , "</html>"
-        ]
-
 esc :: String -> String
 esc content = content >>= (\case '&' -> "&amp;"; '<' -> "&lt;"; '>' -> "&gt;"; char -> [char])
 
@@ -53,14 +41,16 @@ tag element attrs content =
 
 instance Html Module where
     toHtml Module{stmts, functions} =
-        (embody . concat)
-            [ "<aside>"
-            , sortOn name functions >>= \fun -> tag "a" [("href", '#' : name fun)] (name fun)
-            , "</aside>"
-            , "<main>"
-            , unlines' $ toHtml <$> stmts
-            , "</main>"
+        concat
+            [ "<!DOCTYPE html>"
+            , BSU.toString $(embedFile "src/CodeGen/Html/head.html")
+            , tag "html" [] $
+                tag "body" [] $
+                    tag "main" [] $ aside ++ section
             ]
+      where
+        aside = tag "aside" [] $ sortOn name functions >>= \fun -> tag "a" [("href", '#' : name fun)] (name fun)
+        section = tag "section" [] $ unlines' $ toHtml <$> stmts
 
 instance Html Stmt where
     toHtml (F f) = toHtml f
@@ -73,7 +63,7 @@ instance Html Function where
         tag "code" [("id", name), ("class", "function")] $
             unlines'
                 [ unwords [tag "span" [("class", "function-name")] name, toHtml tExpr]
-                , unwords [tag "span" [("class", "function-name")] name, unwords $ tag "var" [("class", "param")] <$> vars, "="]
+                , unwords' [tag "span" [("class", "function-name")] name, unwords $ tag "var" [("class", "param")] <$> vars, "="]
                 , indent $ toHtml expr
                 ]
 
@@ -101,7 +91,7 @@ instance Html Value where
 instance Html Expr where
     toHtml (Val p) = toHtml p
     toHtml (Ident name) = tag "var" [("class", "ident")] name
-    toHtml (Call name exprs) = tag "span" [("class", "call")] $ (paren . unwords . filter (not . null)) [tag "span" [("class", "function-name")] name, unwords $ toHtml <$> exprs]
+    toHtml (Call name exprs) = tag "span" [("class", "call")] $ (paren . unwords') [tag "span" [("class", "function-name")] name, unwords $ toHtml <$> exprs]
     toHtml (UnOp unop e) = unwords [toHtml unop, toHtml e]
     toHtml (BinOp bop e1 e2) = unwords [toHtml bop, toHtml e1, toHtml e2]
     toHtml (TernOp If p e1 e2) =
