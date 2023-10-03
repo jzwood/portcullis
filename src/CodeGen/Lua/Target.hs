@@ -1,6 +1,6 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
-module CodeGen.Lua.TargetLua where
+module CodeGen.Lua.Target where
 
 import Syntax
 import CodeGen.Util (findAtoms)

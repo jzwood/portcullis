@@ -1,6 +1,6 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
-module CodeGen.Js.TargetJs where
+module CodeGen.Js.Target where
 
 import Prelude hiding (showList)
 import Syntax

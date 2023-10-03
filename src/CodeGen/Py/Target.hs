@@ -1,6 +1,6 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
-module CodeGen.Py.TargetPy where
+module CodeGen.Py.Target where
 
 import Prelude hiding (showList)
 import Syntax
