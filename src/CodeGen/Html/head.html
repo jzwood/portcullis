@@ -9,7 +9,7 @@
       }
       body {
         font-family: courier;
-        background: black;
+        background: #000000;
         color: white;
         margin: 1rem 2rem;
       }
@@ -28,6 +28,14 @@
         top: 1rem;
         height: min-content;
       }
+      aside > h3 {
+        margin-top: 2rem;
+        margin-bottom: 0;
+        color: #9575DE;
+      }
+      aside > h3:first-child {
+        margin-top: 1rem;
+      }
       section {
         display: flex;
         flex-direction: column;
@@ -37,8 +45,7 @@
         font-family: courier;
       }
       .comment {
-        font-style: normal;
-        color: white;
+        color: #FFFFFF;
         font-family: courier;
       }
       .function {
@@ -47,15 +54,17 @@
       }
       .param, .ident {
         color: #9575DE;
-        font-style: normal;
       }
-      .function-name {
+      .function-name, .stream-name, .pipe-name {
         color: #FF3FA4;
       }
       .op {
-        color: #FF9B82;
+        color: #FFF782
       }
-      .val, .type {
+      .type {
+        color: #ff46e2;
+      }
+      .val {
         color: #ff9d46;
       }
     </style>

@@ -16,7 +16,7 @@ import Data.Functor
 import Data.List (dropWhileEnd, groupBy, intercalate, intersperse, nub, sortOn)
 import Data.Map (Map, (!))
 import qualified Data.Map as Map
-import Prelude hiding (showList)
+import Prelude hiding (showList, span)
 
 import Syntax
 import Util
@@ -39,8 +39,11 @@ tag element attrs content =
         , ">"
         ]
 
+span :: [(String, String)] -> String -> String
+span = tag "span"
+
 instance Html Module where
-    toHtml Module{stmts, functions} =
+    toHtml Module{stmts, functions, pipes, streams} =
         concat
             [ "<!DOCTYPE html>"
             , BSU.toString $(embedFile "src/CodeGen/Html/head.html")
@@ -49,8 +52,14 @@ instance Html Module where
                     tag "main" [] $ aside ++ section
             ]
       where
-        funs = sortOn name functions >>= \fun -> tag "a" [("href", '#' : name fun)] (name fun)
-        aside = tag "aside" [] $ (tag "h2" [] "Functions") ++ funs
+        aside = tag "aside" [] $
+            unlines [ tag "h3" [] "functions"
+                    , sortOn name functions >>= \fun -> tag "a" [("href", '#' : name fun)] (name fun)
+                    , tag "h3" [] "pipes"
+                    , sortOn funcName pipes >>= \pipe -> tag "a" [("href", '#' : funcName pipe)] (funcName pipe)
+                    , tag "h3" [] "streams"
+                    , sortOn streamName streams >>= \stream -> tag "a" [("href", '#' : streamName stream)] (streamName stream)
+                    ]
         section = tag "section" [] $ unlines' $ toHtml <$> stmts
 
 instance Html Stmt where
@@ -63,27 +72,28 @@ instance Html Function where
     toHtml (Function name tExpr vars expr) =
         tag "code" [("id", name), ("class", "function")] $
             unlines'
-                [ unwords [tag "span" [("class", "function-name")] name, toHtml tExpr]
-                , unwords' [tag "span" [("class", "function-name")] name, unwords $ tag "var" [("class", "param")] <$> vars, "="]
+                [ unwords [span [("class", "function-name")] name, toHtml tExpr]
+                , unwords' [span [("class", "function-name")] name, unwords $ span [("class", "param")] <$> vars, "="]
                 , indent $ toHtml expr
                 ]
 
 instance Html Pipe where
-    toHtml pipe = tag "span" [("class", "pipe")] (toPo pipe)
+    toHtml Pipe{funcName, inStreams, outStreamName} =
+        tag "code" [("id", funcName), ("class", "pipe")] $ unwords ["<strong>|</strong>", span [("class", "pipe-name")] funcName, (bracket . pad . unwords) $ (\(a, b) -> unwords [span [("class", "function-name")] a, span [("class", "val")] $ show b]) <$> inStreams, span [("class", "function-name")] outStreamName]
 
 instance Html Stream where
-    toHtml Stream{streamName, streamSig} = tag "code" [("class", "stream")] $ unwords [streamName, toHtml streamSig]
+    toHtml Stream{streamName, streamSig} = tag "code" [("id", streamName), ("class", "stream")] $ unwords [span [("class", "stream-name")] streamName, toHtml streamSig]
 
 instance Html Comment where
     toHtml comment@(Comment _) = tag "p" [("class", "comment")] $ esc . toPo $ comment
 
 instance Html TypeExpr where
-    toHtml te = tag "span" [("class", "type")] $ esc . toPo $ te
+    toHtml te = span [("class", "type")] $ esc . toPo $ te
 
 instance Html Value where
-    toHtml num@(Number _) = tag "span" [("class", "val num")] (toPo num)
-    toHtml byte@(Byte _) = tag "span" [("class", "val byte")] (toPo byte)
-    toHtml atom@(Atom _) = tag "span" [("class", "val atom")] (toPo atom)
+    toHtml num@(Number _) = span [("class", "val num")] (toPo num)
+    toHtml byte@(Byte _) = span [("class", "val byte")] (toPo byte)
+    toHtml atom@(Atom _) = span [("class", "val atom")] (toPo atom)
     toHtml (List t xs) = concat [toHtml t, ":", (bracket . unwords) $ toHtml <$> xs]
     toHtml (Tuple e1 e2) =
         toHtml <$> [e1, e2]
@@ -91,17 +101,17 @@ instance Html Value where
 
 instance Html Expr where
     toHtml (Val p) = toHtml p
-    toHtml (Ident name) = tag "var" [("class", "ident")] name
-    toHtml (Call name exprs) = tag "span" [("class", "call")] $ (paren . unwords') [tag "span" [("class", "function-name")] name, unwords $ toHtml <$> exprs]
+    toHtml (Ident name) = span [("class", "ident")] name
+    toHtml (Call name exprs) = span [("class", "call")] $ (paren . unwords') [span [("class", "function-name")] name, unwords $ toHtml <$> exprs]
     toHtml (UnOp unop e) = unwords [toHtml unop, toHtml e]
     toHtml (BinOp bop e1 e2) = unwords [toHtml bop, toHtml e1, toHtml e2]
     toHtml (TernOp If p e1 e2) =
-        unlines' [unwords [tag "span" [("class", "op")] "?", toHtml p], indent $ toHtml e1, toHtml e2]
+        unlines' [unwords [span [("class", "op")] "?", toHtml p], indent $ toHtml e1, toHtml e2]
     toHtml (TernOp Uncons xs b fb) =
-        unwords [tag "span" [("class", "op")] (esc "<+"), toHtml xs, toHtml b, toHtml fb]
+        unwords [span [("class", "op")] (esc "<+"), toHtml xs, toHtml b, toHtml fb]
 
 instance Html UnOp where
-    toHtml op = tag "span" [("class", "op")] (toPo op)
+    toHtml op = span [("class", "op")] (toPo op)
 
 instance Html Bop where
-    toHtml op = tag "span" [("class", "op")] (esc . toPo $ op)
+    toHtml op = span [("class", "op")] (esc . toPo $ op)
