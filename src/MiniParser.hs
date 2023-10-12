@@ -58,19 +58,18 @@ instance Applicative Parser where
       Left c' -> Left c'
       Right (f, c', s') -> runParser (f <$> p) c' s'
 
+instance Monad Parser where
+  (>>=) (Parser rp) mf = Parser $ \c s ->
+    case rp c s of
+      Left c' -> Left c'
+      Right (a, c', s') -> runParser (mf a) c' s'
+
 instance Alternative Parser where
   empty = Parser (\c _ -> Left $ ParseError c)
   Parser rp1 <|> Parser rp2 = Parser $ \c s ->
     case rp1 c s of
       Left c' -> rp2 c s
       Right acs -> Right acs
-
-instance Monad Parser where
-  (>>=) (Parser rp) mf = Parser $ \c s ->
-    case rp c s of
-      Left c' -> Left c'
-      Right (a, c', s') -> runParser (mf a) c' s'
-  return a = Parser (\c s -> Right (a, c, s))
 
 -- PARSER UTILS
 
@@ -102,7 +101,7 @@ integer = read <$> oneOrMore (satisfy isDigit)
 
 byte :: Integer -> Parser Integer
 byte b
-  | b >= 0 && b <= 256 = return b
+  | b >= 0 && b <= 256 = pure b
   | otherwise = empty
 
 number :: Parser Double
