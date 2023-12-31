@@ -118,6 +118,12 @@ qsort -> [Num] [Num]
 qsort xs =
   <+ xs xs qsortp
 
+concatLists -> [[Num]] -> [[Num]] [[Num]]
+concatLists l1 l2 = (concat l1 l2)
+
+nums [[Atom]]
+num = [Byte]:[1]
+
 # end comment #
 
 

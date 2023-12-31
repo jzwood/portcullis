@@ -55,8 +55,11 @@ spec = do
                  \bad0 x = x"
           bad1 = "bad1 -> Num -> Num Num\
                  \bad1 p = p"
+          bad2 = "bad2 [Num]\
+                 \bad2 = Num:[SomeAtom]"
       errorOf bad0 `shouldBe` FunctionError (unsafeFunc bad0) (TypeMismatch {expected = NumType, actual = Unspecified "bad0.z", typeMap = Map.empty})
       errorOf bad1 `shouldBe` FunctionError (unsafeFunc bad1) (TypeMismatch {expected = Arrow NumType NumType, actual = NumType, typeMap = Map.empty})
+      errorOf bad2 `shouldBe` FunctionError (unsafeFunc bad2) (TypeMismatch {expected = NumType, actual = AtomType, typeMap = Map.empty})
 
     it "expect DuplicateFunction" $ do
       let bad0 = "good -> Atom Num \

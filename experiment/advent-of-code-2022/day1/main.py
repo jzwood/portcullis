@@ -4,7 +4,7 @@
 import sys
 from day1 import *
 
-sys.setrecursionlimit(21000)  # required to prevent stackoverflow b/c python doesn't do tail recursion
+# sys.setrecursionlimit(21000)  # required to prevent stackoverflow b/c python doesn't do tail recursion
 
 file = open('food.txt', 'rb')
 food = file.read()

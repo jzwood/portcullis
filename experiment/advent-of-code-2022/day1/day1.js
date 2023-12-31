@@ -1,3 +1,4 @@
+// PORTCULLIS INTERNAL
 function _plus_(a) {
   return (b) => a + b;
 }
@@ -55,6 +56,8 @@ export function _eq_(a) {
 function _cons_(a) {
   return (b) => [a].concat(b);
 }
+
+// USER CODE
 
 // signature: (Num -> Num)
 export function asciiDecToChar(dec) {
@@ -122,7 +125,7 @@ export function _map(f) {
 // signature: ((map.t -> map.g) -> ([map.t] -> [map.g]))
 export function map(f) {
   return (xs) => (
-    _eq_(xs)([]) ? /* [g] */ [] : _map(f)(xs.at(0))(xs.slice(1))
+    _eq_(xs)([]) ? /* [map.g] */ [] : _map(f)(xs.at(0))(xs.slice(1))
   );
 }
 
@@ -171,13 +174,13 @@ export function curryCons(tup) {
 // signature: (_splitOn.z -> (_splitOn.z -> ([[_splitOn.z] [[_splitOn.z]]] -> [[_splitOn.z] [[_splitOn.z]]])))
 export function _splitOn(on) {
   return (x) => (acc) => (
-    _not(x)(on) ? [_cons_(x)(acc[0]), acc[1]] : [/* [z] */ [], curryCons(acc)]
+    _not(x)(on) ? [_cons_(x)(acc[0]), acc[1]] : [/* [_splitOn.z] */ [], curryCons(acc)]
   );
 }
 
 // signature: (splitOn.a -> ([splitOn.a] -> [[splitOn.a]]))
 export function splitOn(on) {
-  return (xs) => curryCons(foldl(_splitOn(on))([/* [a] */ [], /* [[a]] */ []])(xs));
+  return (xs) => curryCons(foldl(_splitOn(on))([/* [splitOn.a] */ [], /* [[splitOn.a]] */ []])(xs));
 }
 
 // signature: ([Num] -> [Num])
