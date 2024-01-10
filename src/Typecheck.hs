@@ -172,7 +172,7 @@ typeofExpr m f (Val p) =
     Tuple expr1 expr2 ->
       sequence (typeofExpr m f <$> [expr1, expr2])
         <&> \[(m1, e1), (m2, e2)] -> (m1 `Map.union` m2, TupType e1 e2)
-    List typeExpr exprs -> Right (Map.empty, ListType typeExpr)
+    List typeExpr exprs -> Right (Map.empty, ListType typeExpr) -- TODO: this is WRONG. assert typeExpr matches type of all exprs
 typeofExpr m f@Function {signature = sig, args} e =
   case e of
     Ident name ->
