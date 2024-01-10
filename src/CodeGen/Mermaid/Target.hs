@@ -2,28 +2,28 @@
 
 module CodeGen.Mermaid.Target where
 
-import Control.Applicative
-import Data.Bifunctor
-import Data.Char
 import Data.Function
 import Data.Functor
-import Data.Map (Map)
 import Syntax
-import Util
+import Util (indent, paren)
+
+-- explore sequence diagram too
 
 class Mermaid ast where
     toMermaid :: ast -> String
 
 instance Mermaid Module where
-    toMermaid Module{streamMap, pipes} = showTopology streamMap pipes
+    toMermaid Module{pipes} = (("flowchart TD\n" ++) . indent) (pipes >>= toMermaid)
 
-showTopology :: Map Name Stream -> [Pipe] -> String
-showTopology _ [] = ""
-showTopology streamMap pipes =
-    (("stateDiagram-v2\n" ++) . indent) (pipes >>= showPipe streamMap)
+instance Mermaid Pipe where
+    toMermaid Pipe{funcName, inStreams, outStreamName} =
+        inStreams
+            <&> (\(name, _) -> arrow (roundLabel name) fname)
+            & (arrow fname (roundLabel outStreamName) :)
+            & unlines
+      where
+        roundLabel n = n ++ paren n
+        fname = "λ." ++ funcName
 
-showPipe :: Map Name Stream -> Pipe -> String
-showPipe streamMap Pipe{funcName, inStreams, outStreamName} =
-    inStreams
-        <&> (\(name, buffer) -> unwords [name, "-->", outStreamName, ":", funcName])
-        & unlines
+arrow :: String -> String -> String
+arrow a b = unwords [a, "-->", b]
