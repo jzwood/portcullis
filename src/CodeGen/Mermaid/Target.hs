@@ -7,9 +7,7 @@ import Data.Bifunctor
 import Data.Char
 import Data.Function
 import Data.Functor
-import Data.List (intercalate, intersperse, nub)
-import Data.Map (Map, (!))
-import qualified Data.Map as Map
+import Data.Map (Map)
 import Syntax
 import Util
 
