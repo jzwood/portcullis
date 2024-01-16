@@ -4,7 +4,7 @@ module MiniParser where
 
 import Control.Applicative
 import Data.Char
-import Util hiding (paren)
+import Utils hiding (paren)
 
 -- APPLICATIVE PARSER
 

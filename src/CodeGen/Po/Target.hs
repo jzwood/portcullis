@@ -13,7 +13,7 @@ import Data.Map (Map, (!))
 import qualified Data.Map as Map
 
 import Syntax
-import Util
+import Utils
 
 class Po ast where
   toPo :: ast -> String

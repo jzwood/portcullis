@@ -1,4 +1,4 @@
-module Util where
+module Utils where
 
 import Data.List
 import Data.Tuple (swap)

@@ -10,7 +10,7 @@ import Data.Char
 import Data.List
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Util hiding (paren)
+import Utils hiding (paren)
 
 parseProgram :: Parser Module
 parseProgram = parseModule <* spaces

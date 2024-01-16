@@ -5,7 +5,7 @@ module CodeGen.Mermaid.Target where
 import Data.Function
 import Data.Functor
 import Syntax
-import Util (indent, paren)
+import Utils (indent, paren)
 
 -- explore sequence diagram too
 

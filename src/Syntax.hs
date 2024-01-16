@@ -6,8 +6,7 @@ import Data.Functor
 import Data.Function
 import Control.Applicative
 import Data.Map (Map)
---import qualified Data.Map as Map
-import Util
+import Utils
 
 type Name = String
 

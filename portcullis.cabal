@@ -37,7 +37,7 @@ library
       Parser
       Syntax
       Typecheck
-      Util
+      Utils
   other-modules:
       Paths_portcullis
   hs-source-dirs:

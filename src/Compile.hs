@@ -20,7 +20,7 @@ import CodeGen.Html.Target
 import CodeGen.Mermaid.Target
 import qualified Typecheck
 import Typecheck (typecheckModule)
-import Util (mapLeft, unlines')
+import Utils (mapLeft, unlines')
 
 data CompileError = ParseError ParseLib.ParseError | TypecheckError [Typecheck.TypecheckError]
   deriving (Eq, Show)

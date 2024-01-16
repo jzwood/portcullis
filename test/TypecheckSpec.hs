@@ -12,7 +12,7 @@ import qualified Data.Set as Set
 import Typecheck hiding (TypecheckError)
 import qualified Typecheck as T
 import qualified Compile as C
-import Util
+import Utils
 
 compile :: String -> Either String String
 compile program = mapLeft show (C.compile program <&> show)  -- we don't actually care about actual output codegen for these tests

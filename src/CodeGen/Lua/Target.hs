@@ -10,7 +10,7 @@ import Data.Function
 import Control.Applicative
 import Data.Char
 import Data.List (intercalate, intersperse, nub)
-import Util
+import Utils
 import Data.Map (Map, (!))
 import qualified Data.Map as Map
 

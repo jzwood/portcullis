@@ -19,7 +19,7 @@ import qualified Data.Map as Map
 import Prelude hiding (showList, span)
 
 import Syntax
-import Util
+import Utils
 
 class Html ast where
     toHtml :: ast -> String

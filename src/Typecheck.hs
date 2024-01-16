@@ -15,7 +15,7 @@ import Data.Maybe (fromMaybe, listToMaybe, mapMaybe, maybe)
 import Data.Traversable
 import Parser
 import Syntax
-import Util
+import Utils
 
 data TypeError
     = NotFunction Name
@@ -172,32 +172,17 @@ typeofExpr m f (Val p) =
         Tuple expr1 expr2 ->
             mapM (typeofExpr m f) [expr1, expr2]
                 <&> \[(m1, e1), (m2, e2)] -> (m1 `Map.union` m2, TupType e1 e2)
-        --List typeExpr exprs -> check exprs typeExpr
-        -- get type of all expressionss
-        -- compare for equality between typeExpr and all expres
-        --List typeExpr exprs -> Right (Map.empty, ListType typeExpr) -- TODO: this is WRONG. assert typeExpr matches type of all exprs
-        --List typeExpr exprs -> do
-            --tes <- mapM (typeofExpr m f) exprs
-            --if all ((== typeExpr) . snd) tes
-                --then return (Map.empty, ListType typeExpr)
-                --else return (Map.empty, ListType typeExpr)
         List typeExpr exprs ->
             mapM (typeofExpr m f) exprs
                 <&> filter ((/= typeExpr) . snd)
                 & \case
-                Left err -> Left err
-                Right [] -> Right (Map.empty, ListType typeExpr)
-                Right ((m, te):_) ->  Left $ TypeMismatch typeExpr te m
+                    Left err -> Left err
+                    Right [] -> Right (Map.empty, ListType typeExpr)
+                    Right ((m, te) : _) -> Left $ TypeMismatch typeExpr te m
 typeofExpr m f@Function{signature = sig, args} e =
     case e of
-        Ident name ->
-            maybeSig name
-                <&> Right . (Map.empty,)
-                    & fromMaybe (Left $ NotFunction name)
-        Call name exprs ->
-            maybeSig name
-                <&> check exprs
-                    & fromMaybe (Left $ NotFunction name)
+        Ident name -> maybe (Left $ NotFunction name) (Right . (Map.empty,)) (maybeSig name)
+        Call name exprs -> maybe (Left $ NotFunction name) (check exprs) (maybeSig name)
         UnOp unop expr1 -> check [expr1] (typeofUnOp unop)
         BinOp bop expr1 expr2 -> check [expr1, expr2] (typeofBop bop)
         TernOp top expr1 expr2 expr3 -> check [expr1, expr2, expr3] (typeofTop top)
