@@ -28,6 +28,7 @@ library
       CodeGen.Html.Target
       CodeGen.Js.Target
       CodeGen.Lua.Target
+      CodeGen.Mermaid.Target
       CodeGen.Po.Target
       CodeGen.Py.Target
       CodeGen.Util

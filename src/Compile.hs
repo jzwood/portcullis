@@ -17,6 +17,7 @@ import CodeGen.Py.Target
 import CodeGen.Lua.Target
 import CodeGen.Po.Target
 import CodeGen.Html.Target
+import CodeGen.Mermaid.Target
 import qualified Typecheck
 import Typecheck (typecheckModule)
 import Util (mapLeft, unlines')
@@ -65,6 +66,9 @@ toPoFile = toPo
 toHtmlFile :: Module -> String
 toHtmlFile = toHtml
 
+toMermaidFile :: Module -> String
+toMermaidFile = toMermaid
+
 runCompilation :: String -> String -> IO ()
 runCompilation src dest = do
   code <- readFile src <&> compile
@@ -74,4 +78,5 @@ runCompilation src dest = do
     ".py" -> save src dest $ toPyFile <$> code
     ".po" -> save src dest $ toPoFile <$> code
     ".html" -> save src dest $ toHtmlFile <$> code
+    ".mmd" -> save src dest $ toMermaidFile <$> code
     ext -> putStrLn $ unwords [ "Unrecognized extension:", ext ]

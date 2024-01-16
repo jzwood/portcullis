@@ -1,4 +1,5 @@
 # CHAR UTILS #
+# asciiDecToChar dec = - dec 48 #
 asciiDecToChar -> Num Num
 asciiDecToChar dec =
   ? == dec 48 0

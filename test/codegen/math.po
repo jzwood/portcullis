@@ -118,6 +118,9 @@ qsort -> [Num] [Num]
 qsort xs =
   <+ xs xs qsortp
 
+concatLists -> [[Num]] -> [[Num]] [[Num]]
+concatLists l1 l2 = (concat l1 l2)
+
 # end comment #
 
 
