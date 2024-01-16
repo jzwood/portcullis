@@ -317,6 +317,13 @@ function qsort(xs)
   return (_eq_(xs)({}) > 0 and xs or qsortp(xs.head)(xs.tail))
 end
 
+-- signature: ([[Num]] -> ([[Num]] -> [[Num]]))
+function concatLists(l1)
+  return function (l2)
+    return concat(l1)(l2)
+  end
+end
+
 FALSE = 0;
 TRUE = 1;
 CHIPMUNK = 2;

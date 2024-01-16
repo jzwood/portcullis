@@ -154,6 +154,10 @@ def qsortp(x):
 def qsort(xs):
   return (xs if _eq_(xs)([]) else qsortp(xs[0])(xs[1:]))
 
+# signature: ([[Num]] -> ([[Num]] -> [[Num]]))
+def concatLists(l1):
+  return lambda l2: concat(l1)(l2)
+
 FALSE = 0;
 TRUE = 1;
 CHIPMUNK = 2;

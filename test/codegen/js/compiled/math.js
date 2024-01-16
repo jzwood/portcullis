@@ -241,6 +241,11 @@ export function qsort(xs) {
   );
 }
 
+// signature: ([[Num]] -> ([[Num]] -> [[Num]]))
+export function concatLists(l1) {
+  return (l2) => concat(l1)(l2);
+}
+
 const False = 0;
 const True = 1;
 const Chipmunk = 2;
