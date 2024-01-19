@@ -36,8 +36,8 @@ instance Erl Function where
     ]
       where
         docstring = unwords ["%% signature:", toErl tExpr]
-        header = concat [ if null vars then "function $" else "export function " , name , (paren . head' "") vars ]
-        body = (indent . concat) [ "return " , concatMap ((++ " -> ") . paren) (tail' vars) , toErl expr , "." ]
+        header = concat [ if null vars then "$" else "", name , (paren . head' "") vars, "->" ]
+        body = (indent . concat) [ "fun" , concatMap ((++ " -> ") . paren) (tail' vars) , toErl expr , "." ]
 
 instance Erl TypeExpr where
   toErl NumType = "Num"
@@ -72,8 +72,7 @@ instance Erl Expr where
       _ -> concatMap (paren . toErl) exprs
   toErl (UnOp unop e) = toErl e ++ toErl unop
   toErl (BinOp bop e1 e2) = toErl $ Call (toErl bop) [e1, e2]
-  toErl (TernOp If p e1 e2) = toErl $ Call "if_" [p, e1, e2]
-  toErl (TernOp Uncons xs b fht) = toErl $ Call "uncons_" [xs, b, fht]
+  toErl (TernOp top e1 e2 e3) = toErl $ Call (toErl top) [e1, e2, e3]
 
 instance Erl UnOp where
   toErl Fst = "[0]"
@@ -93,6 +92,10 @@ instance Erl Bop where
   toErl Rem = "rem_"
   toErl Equal = "eq_"
   toErl Cons = "cons_"
+
+instance Erl Top where
+  toErl If = "if_"
+  toErl Uncons = "uncons_"
 
 showAtoms :: [Function] -> [String]
 showAtoms funcs
