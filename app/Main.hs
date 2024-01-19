@@ -3,7 +3,7 @@ module Main where
 import Compile (runCompilation)
 import System.Environment (getArgs, getProgName)
 
-exts = [".js", ".py", ".lua", ".po", ".html", ".mmd"]
+exts = [".js", ".py", ".lua", ".po", ".html", ".mmd", ".erl"]
 
 main :: IO ()
 main = do

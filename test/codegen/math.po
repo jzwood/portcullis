@@ -121,6 +121,9 @@ qsort xs =
 concatLists -> [[Num]] -> [[Num]] [[Num]]
 concatLists l1 l2 = (concat l1 l2)
 
+listnums -> a -> b -> -> b a [a]
+listnum x y f = a : [x (f y)]
+
 # end comment #
 
 

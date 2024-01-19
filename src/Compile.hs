@@ -4,8 +4,9 @@ module Compile where
 
 import Data.Functor
 import Data.Function
+import Data.Char (toLower)
 import Control.Applicative
-import System.FilePath (takeExtension)
+import System.FilePath (takeExtension, takeBaseName)
 import qualified Data.ByteString.UTF8 as BSU
 import Data.FileEmbed (embedFile)
 import Syntax
@@ -13,6 +14,7 @@ import qualified MiniParser as ParseLib
 import MiniParser (runParser, Parser, Cursor)
 import Parser
 import CodeGen.Js.Target
+import CodeGen.Erl.Target
 import CodeGen.Py.Target
 import CodeGen.Lua.Target
 import CodeGen.Po.Target
@@ -20,7 +22,7 @@ import CodeGen.Html.Target
 import CodeGen.Mermaid.Target
 import qualified Typecheck
 import Typecheck (typecheckModule)
-import Utils (mapLeft, unlines')
+import Utils (mapLeft, unlines', paren)
 
 data CompileError = ParseError ParseLib.ParseError | TypecheckError [Typecheck.TypecheckError]
   deriving (Eq, Show)
@@ -60,6 +62,9 @@ toPyFile mod = unlines' [BSU.toString $(embedFile "src/CodeGen/Py/core.py"), toP
 toLuaFile :: Module -> String
 toLuaFile mod = unlines' [BSU.toString $(embedFile "src/CodeGen/Lua/core.lua"), toLua mod]
 
+toErlFile :: String -> Module -> String
+toErlFile src mod = unlines' [concat ["-module", paren src, "."], "", BSU.toString $(embedFile "src/CodeGen/Erl/core.erl"), toErl mod]
+
 toPoFile :: Module -> String
 toPoFile = toPo
 
@@ -76,6 +81,7 @@ runCompilation src dest = do
     ".js" -> save src dest $ toJsFile <$> code
     ".lua" -> save src dest $ toLuaFile <$> code
     ".py" -> save src dest $ toPyFile <$> code
+    ".erl" -> save src dest $ toErlFile (takeBaseName src <&> toLower) <$> code
     ".po" -> save src dest $ toPoFile <$> code
     ".html" -> save src dest $ toHtmlFile <$> code
     ".mmd" -> save src dest $ toMermaidFile <$> code
