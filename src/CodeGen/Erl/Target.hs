@@ -35,9 +35,9 @@ instance Erl Function where
     , "}"
     ]
       where
-        docstring = unwords ["// signature:", toErl tExpr]
+        docstring = unwords ["%% signature:", toErl tExpr]
         header = concat [ if null vars then "function $" else "export function " , name , (paren . head' "") vars ]
-        body = (indent . concat) [ "return " , concatMap ((++ " => ") . paren) (tail' vars) , toErl expr , ";" ]
+        body = (indent . concat) [ "return " , concatMap ((++ " -> ") . paren) (tail' vars) , toErl expr , "." ]
 
 instance Erl TypeExpr where
   toErl NumType = "Num"
@@ -72,14 +72,8 @@ instance Erl Expr where
       _ -> concatMap (paren . toErl) exprs
   toErl (UnOp unop e) = toErl e ++ toErl unop
   toErl (BinOp bop e1 e2) = toErl $ Call (toErl bop) [e1, e2]
-  toErl (TernOp If p e1 e2)
-    = (paren . ('\n':) . (++"\n") . indent . unwords)
-    [ toErl p ++ " ?"
-    , toErl e1 ++ " :"
-    , toErl e2
-    ]
-  toErl (TernOp Uncons xs b fb) =
-    toErl $ TernOp If (BinOp Equal xs (Val $ List (Unspecified "") [])) b (Call (toErl fb) [UnOp Head xs, UnOp Tail xs])
+  toErl (TernOp If p e1 e2) = toErl $ Call "if_" [p, e1, e2]
+  toErl (TernOp Uncons xs b fht) = toErl $ Call "uncons_" [xs, b, fht]
 
 instance Erl UnOp where
   toErl Fst = "[0]"
@@ -88,17 +82,17 @@ instance Erl UnOp where
   toErl Tail = ".slice(1)"
 
 instance Erl Bop where
-  toErl Plus = "_plus_"
-  toErl Minus = "_minus_"
-  toErl Times = "_mult_"
-  toErl Divide = "_div_"
-  toErl GreaterThan = "_gt_"
-  toErl GreaterThanOrEqual = "_gte_"
-  toErl LessThan = "_lt_"
-  toErl LessThanOrEqual = "_lte_"
-  toErl Rem = "_rem_"
-  toErl Equal = "_eq_"
-  toErl Cons = "_cons_"
+  toErl Plus = "plus_"
+  toErl Minus = "minus_"
+  toErl Times = "mult_"
+  toErl Divide = "div_"
+  toErl GreaterThan = "gt_"
+  toErl GreaterThanOrEqual = "gte_"
+  toErl LessThan = "lt_"
+  toErl LessThanOrEqual = "lte_"
+  toErl Rem = "rem_"
+  toErl Equal = "eq_"
+  toErl Cons = "cons_"
 
 showAtoms :: [Function] -> [String]
 showAtoms funcs

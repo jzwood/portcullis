@@ -1,15 +1,22 @@
-% PORTCULLIS INTERNAL
+-compile(export_all).
 
-_plus_ = fun(A) -> fun(B) -> A + B end end.
-_minus_ = fun(A) -> fun(B) -> A - B end end.
-_mult_ = fun(A) -> fun(B) -> A * B end end.
-_div_ = fun(A) -> fun(B) -> A / B end end.
-_rem_ = fun(A) -> fun(B) -> A rem B end end.
-_gt_ = fun(A) -> fun(B) -> A > B end end.
-_gte_ = fun(A) -> fun(B) -> A >= B end end.
-_lt_ = fun(A) -> fun(B) -> A < B end end.
-_lte_ = fun(A) -> fun(B) -> A <= B end end.
-_eq_ = fun(A) -> fun(B) -> A == B end end .
-_cons_ = fun(A) -> fun(B) -> [A | B].
+% PORTCULLIS INTERNAL
+plus_(A) -> fun(B) -> A + B end.
+minus_(A) -> fun(B) -> A - B end.
+mult_(A) -> fun(B) -> A * B end.
+div_(A) -> fun(B) -> A / B end.
+rem_(A) -> fun(B) -> A rem B end.
+gt_(A) -> fun(B) -> A > B end.
+gte_(A) -> fun(B) -> A >= B end.
+lt_(A) -> fun(B) -> A < B end.
+lte_(A) -> fun(B) -> A =< B end.
+eq_(A) -> fun(B) -> A == B end.
+cons_(A) -> fun(B) -> [A | B] end.
+
+if_(true) -> fun(E) -> fun(_) -> E end end;
+if_(false) -> fun(_) -> fun(E) -> E end end.
+
+uncons_([]) -> fun(B) -> fun(_) -> B end end;
+uncons_([H, T]) -> fun(_) -> fun(F) -> (F(H))(T) end end.
 
 % USER CODE
