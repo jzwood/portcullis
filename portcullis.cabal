@@ -6,7 +6,7 @@ cabal-version: 1.12
 
 name:           portcullis
 version:        0.1.0.0
-description:    A minimal programming language
+description:    A minimalist, functional, dataflow programming language
 homepage:       https://github.com/git@github.com:jzwood/portcullis.git#readme
 bug-reports:    https://github.com/git@github.com:jzwood/portcullis.git/issues
 author:         Jake Wood
@@ -18,6 +18,11 @@ build-type:     Simple
 extra-source-files:
     README.md
     ChangeLog.md
+    src/CodeGen/Html/head.html
+    src/CodeGen/Js/core.js
+    src/CodeGen/Lua/core.lua
+    src/CodeGen/Py/core.py
+    src/CodeGen/Erl/core.erl
 
 source-repository head
   type: git

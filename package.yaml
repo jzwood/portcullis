@@ -10,6 +10,11 @@ copyright: "2021 Jake Wood"
 extra-source-files:
   - README.md
   - ChangeLog.md
+  - src/CodeGen/Html/head.html
+  - src/CodeGen/Js/core.js
+  - src/CodeGen/Lua/core.lua
+  - src/CodeGen/Py/core.py
+  - src/CodeGen/Erl/core.erl
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -18,7 +23,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description: A minimal programming language
+description: A minimalist, functional, dataflow programming language
 
 dependencies:
   - base >= 4.7 && < 5
