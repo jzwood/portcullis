@@ -8,7 +8,6 @@ import Data.Char (toLower)
 import Control.Applicative
 import System.FilePath (takeExtension, takeBaseName)
 import qualified Data.ByteString.UTF8 as BSU
-import Data.FileEmbed (embedFile)
 import Syntax
 import qualified MiniParser as ParseLib
 import MiniParser (runParser, Parser, Cursor)
@@ -58,41 +57,34 @@ save _ dest (Right js)
   >> putStrLn ("✓\t" ++ dest ++ " Successfully Compiled")
 save src _ (Left err) = putStrLn ("!\t" ++ src ++ " " ++ show err)
 
-toJsFileX :: Module -> IO String
-toJsFileX mod = readCore "src/CodeGen/Js/core.js"
-  <&> (\x -> unlines' [x, toJs mod])
+toJsFile :: String -> Module -> String
+toJsFile core mod = unlines' [core, toJs mod]
 
-toJsFile :: Module -> String
-toJsFile mod = unlines' [BSU.toString $(embedFile "src/CodeGen/Js/core.js"), toJs mod]
+toPyFile :: String -> Module -> String
+toPyFile core mod = unlines' [core, toPy mod]
 
-toPyFile :: Module -> String
-toPyFile mod = unlines' [BSU.toString $(embedFile "src/CodeGen/Py/core.py"), toPy mod]
+toLuaFile :: String -> Module -> String
+toLuaFile core mod = unlines' [core, toLua mod]
 
-toLuaFile :: Module -> String
-toLuaFile mod = unlines' [BSU.toString $(embedFile "src/CodeGen/Lua/core.lua"), toLua mod]
+--toErlFile :: String -> Module -> String
+--toErlFile src mod = unlines' [concat ["-module", paren src, "."], "", BSU.toString $(embedFile "src/CodeGen/Erl/core.erl"), toErl mod]
 
-toErlFile :: String -> Module -> String
-toErlFile src mod = unlines' [concat ["-module", paren src, "."], "", BSU.toString $(embedFile "src/CodeGen/Erl/core.erl"), toErl mod]
-
-toPoFile :: Module -> String
-toPoFile = toPo
-
-toHtmlFile :: Module -> String
-toHtmlFile = toHtml
-
-toMermaidFile :: Module -> String
-toMermaidFile = toMermaid
+toHtmlFile :: String -> Module -> String
+toHtmlFile head mod = "<!DOCTYPE html>" ++ tag "html" [] (head ++ toHtml mod)
 
 runCompilation :: String -> String -> IO ()
 runCompilation src dest = do
   code <- readFile src <&> compile
+  jsCore <- readCore "src/CodeGen/Js/core.js"
+  luaCore <- readCore "src/CodeGen/Lua/core.lua"
+  pyCore <- readCore "src/CodeGen/Py/core.py"
   let writeFile = save src dest
   case takeExtension dest of
-    ".js" -> writeFile $ toJsFile <$> code
-    ".lua" -> writeFile $ toLuaFile <$> code
-    ".py" -> writeFile $ toPyFile <$> code
-    ".erl" -> writeFile $ toErlFile (takeBaseName src <&> toLower) <$> code
-    ".po" -> writeFile $ toPoFile <$> code
-    ".html" -> writeFile $ toHtmlFile <$> code
-    ".mmd" -> writeFile $ toMermaidFile <$> code
+    ".js" -> writeFile $ toJsFile jsCore <$> code
+    ".lua" -> writeFile $ toLuaFile luaCore <$> code
+    ".py" -> writeFile $ toPyFile pyCore <$> code
+    --".erl" -> writeFile $ toErlFile (takeBaseName src <&> toLower) <$> code
+    ".po" -> writeFile $ toPo <$> code
+    ".html" -> writeFile $ toHtml <$> code
+    ".mmd" -> writeFile $ toMermaid <$> code
     ext -> putStrLn $ unwords [ "Unrecognized extension:", ext ]

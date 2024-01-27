@@ -10,7 +10,6 @@ import Control.Applicative
 import Data.Bifunctor
 import qualified Data.ByteString.UTF8 as BSU
 import Data.Char
-import Data.FileEmbed (embedFile)
 import Data.Function
 import Data.Functor
 import Data.List (dropWhileEnd, groupBy, intercalate, intersperse, nub, sortOn)
@@ -44,13 +43,7 @@ span = tag "span"
 
 instance Html Module where
     toHtml Module{stmts, functions, pipes, streams} =
-        concat
-            [ "<!DOCTYPE html>"
-            , BSU.toString $(embedFile "src/CodeGen/Html/head.html")
-            , tag "html" [] $
-                tag "body" [] $
-                    tag "main" [] $ aside ++ section
-            ]
+        tag "body" [] $ tag "main" [] $ aside ++ section
       where
         aside = tag "aside" [] $
             unlines [ tag "h3" [] "functions"
