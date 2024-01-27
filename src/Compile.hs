@@ -23,6 +23,7 @@ import CodeGen.Mermaid.Target
 import qualified Typecheck
 import Typecheck (typecheckModule)
 import Utils (mapLeft, unlines', paren)
+import Paths_portcullis
 
 data CompileError = ParseError ParseLib.ParseError | TypecheckError [Typecheck.TypecheckError]
   deriving (Eq, Show)
@@ -30,6 +31,10 @@ data CompileError = ParseError ParseLib.ParseError | TypecheckError [Typecheck.T
 -- testing util
 runp :: Parser a -> String -> Either ParseLib.ParseError (a, Cursor, String)
 runp p = runParser p mempty
+
+
+readCore :: String -> IO String
+readCore path = getDataFileName path >>= readFile
 
 parse :: String -> Either CompileError Module
 parse program =
@@ -52,6 +57,10 @@ save _ dest (Right js)
   =  writeFile dest js
   >> putStrLn ("✓\t" ++ dest ++ " Successfully Compiled")
 save src _ (Left err) = putStrLn ("!\t" ++ src ++ " " ++ show err)
+
+toJsFileX :: Module -> IO String
+toJsFileX mod = readCore "src/CodeGen/Js/core.js"
+  <&> (\x -> unlines' [x, toJs mod])
 
 toJsFile :: Module -> String
 toJsFile mod = unlines' [BSU.toString $(embedFile "src/CodeGen/Js/core.js"), toJs mod]
@@ -77,12 +86,13 @@ toMermaidFile = toMermaid
 runCompilation :: String -> String -> IO ()
 runCompilation src dest = do
   code <- readFile src <&> compile
+  let writeFile = save src dest
   case takeExtension dest of
-    ".js" -> save src dest $ toJsFile <$> code
-    ".lua" -> save src dest $ toLuaFile <$> code
-    ".py" -> save src dest $ toPyFile <$> code
-    ".erl" -> save src dest $ toErlFile (takeBaseName src <&> toLower) <$> code
-    ".po" -> save src dest $ toPoFile <$> code
-    ".html" -> save src dest $ toHtmlFile <$> code
-    ".mmd" -> save src dest $ toMermaidFile <$> code
+    ".js" -> writeFile $ toJsFile <$> code
+    ".lua" -> writeFile $ toLuaFile <$> code
+    ".py" -> writeFile $ toPyFile <$> code
+    ".erl" -> writeFile $ toErlFile (takeBaseName src <&> toLower) <$> code
+    ".po" -> writeFile $ toPoFile <$> code
+    ".html" -> writeFile $ toHtmlFile <$> code
+    ".mmd" -> writeFile $ toMermaidFile <$> code
     ext -> putStrLn $ unwords [ "Unrecognized extension:", ext ]

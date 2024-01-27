@@ -16,6 +16,13 @@ extra-source-files:
   - src/CodeGen/Py/core.py
   - src/CodeGen/Erl/core.erl
 
+data-files:
+  - src/CodeGen/Html/head.html
+  - src/CodeGen/Js/core.js
+  - src/CodeGen/Lua/core.lua
+  - src/CodeGen/Py/core.py
+  - src/CodeGen/Erl/core.erl
+
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
 # category:            Web

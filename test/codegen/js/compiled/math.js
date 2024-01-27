@@ -246,6 +246,11 @@ export function concatLists(l1) {
   return (l2) => concat(l1)(l2);
 }
 
+// signature: (listnums.a -> (listnums.b -> ((listnums.b -> listnums.a) -> [listnums.a])))
+export function listnums(x) {
+  return (y) => (f) => /* [listnums.a] */ [x, f(y)];
+}
+
 const False = 0;
 const True = 1;
 const Chipmunk = 2;

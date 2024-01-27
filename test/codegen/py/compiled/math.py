@@ -158,6 +158,10 @@ def qsort(xs):
 def concatLists(l1):
   return lambda l2: concat(l1)(l2)
 
+# signature: (listnums.a -> (listnums.b -> ((listnums.b -> listnums.a) -> [listnums.a])))
+def listnums(x):
+  return lambda y: lambda f: [x, f(y)]
+
 FALSE = 0;
 TRUE = 1;
 CHIPMUNK = 2;

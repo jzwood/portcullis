@@ -4,7 +4,6 @@ module CodeGen.Erl.Target where
 
 import Prelude hiding (showList)
 import Syntax
-import CodeGen.Util (findAtoms)
 import Data.Functor
 import Data.Bifunctor
 import Data.Function
@@ -20,24 +19,18 @@ class Erl ast where
 
 instance Erl Module where
   toErl Module { functions, comments, streamMap, pipes }
-    = unlines $ (toErl <$> functions) ++ [atoms, zeroArityFuncs, topology]
+    = unlines $ (toErl <$> functions) ++ [zeroArityFuncs, topology]
       where
-        atoms = unlines $ showAtoms functions
         zeroArityFuncs = unlines $ showZeroArityFunctions functions
         topology = showTopology streamMap pipes
 
 instance Erl Function where
   toErl (Function name tExpr vars expr)
-    = unlines
-    [ docstring
-    , unwords [header, "{"]
-    , body
-    , "}"
-    ]
+    = unlines [ docstring , header ++ body ++ "." ]
       where
         docstring = unwords ["%% signature:", toErl tExpr]
-        header = concat [ if null vars then "$" else "", name , (paren . head' "") vars, "->" ]
-        body = (indent . concat) [ "fun" , concatMap ((++ " -> ") . paren) (tail' vars) , toErl expr , "." ]
+        header = concat [ if null vars then "$" else "", name , (paren . head' "") vars, " ->" ]
+        body = (indent . concat) [ "fun" , concatMap ((++ " -> ") . paren) (tail' vars) , toErl expr , " end " ]
 
 instance Erl TypeExpr where
   toErl NumType = "Num"
@@ -58,7 +51,7 @@ instance Erl Value where
   toErl (Byte b) = show b
   toErl (Atom n) = n
   toErl (List (Unspecified "") xs) = showList $ toErl <$> xs -- so uncons displays nicely
-  toErl (List t xs) = unwords ["/*", toErl $ ListType t, "*/", showList $ toErl <$> xs]
+  toErl (List t xs) = unwords [showList $ toErl <$> xs]
   toErl (Tuple e1 e2)
     =  toErl <$> [e1, e2]
     &  showList
@@ -69,7 +62,7 @@ instance Erl Expr where
   toErl (Call name exprs) = name ++
     case exprs of
       [] -> ""  -- functions without arguments are interpreted as values
-      _ -> concatMap (paren . toErl) exprs
+      _ -> paren (concatMap (paren . toErl) exprs)
   toErl (UnOp unop e) = toErl e ++ toErl unop
   toErl (BinOp bop e1 e2) = toErl $ Call (toErl bop) [e1, e2]
   toErl (TernOp top e1 e2 e3) = toErl $ Call (toErl top) [e1, e2, e3]
@@ -96,12 +89,6 @@ instance Erl Bop where
 instance Erl Top where
   toErl If = "if_"
   toErl Uncons = "uncons_"
-
-showAtoms :: [Function] -> [String]
-showAtoms funcs
-  =  concatMap (findAtoms . body) funcs
-  &  zip [0..] . nub . ("False" :) . ("True" :)
- <&> (\(i, atom) -> unwords ["const", atom, "=", show i] ++ ";")
 
 showZeroArityFunctions :: [Function] -> [String]
 showZeroArityFunctions funcs

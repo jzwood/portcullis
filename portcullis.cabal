@@ -23,6 +23,12 @@ extra-source-files:
     src/CodeGen/Lua/core.lua
     src/CodeGen/Py/core.py
     src/CodeGen/Erl/core.erl
+data-files:
+    src/CodeGen/Html/head.html
+    src/CodeGen/Js/core.js
+    src/CodeGen/Lua/core.lua
+    src/CodeGen/Py/core.py
+    src/CodeGen/Erl/core.erl
 
 source-repository head
   type: git

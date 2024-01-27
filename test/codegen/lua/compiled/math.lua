@@ -324,6 +324,15 @@ function concatLists(l1)
   end
 end
 
+-- signature: (listnums.a -> (listnums.b -> ((listnums.b -> listnums.a) -> [listnums.a])))
+function listnums(x)
+  return function (y)
+    return function (f)
+      return { head = x, tail = { head = f(y), tail = {} } }
+    end
+  end
+end
+
 FALSE = 0;
 TRUE = 1;
 CHIPMUNK = 2;
