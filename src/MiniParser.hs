@@ -8,20 +8,20 @@ import Utils hiding (paren)
 
 -- APPLICATIVE PARSER
 
-data Cursor = Cursor { line :: !Integer, col :: !Integer}
-  deriving (Show, Eq)
+data Cursor = Cursor {line :: !Integer, col :: !Integer}
+    deriving (Show, Eq)
 
 newtype ParseError = ParseError Cursor
-  deriving (Eq)
+    deriving (Eq)
 
 instance Show ParseError where
-  show (ParseError Cursor { line, col}) = concat ["Parse Error at line: ", show line, ", column: ", show col]
+    show (ParseError Cursor{line, col}) = concat ["Parse Error at line: ", show line, ", column: ", show col]
 
 instance Semigroup Cursor where
-  (<>) (Cursor l1 c1) (Cursor l2 c2) = Cursor (l1 + l2) (c1 + c2)
+    (<>) (Cursor l1 c1) (Cursor l2 c2) = Cursor (l1 + l2) (c1 + c2)
 
 instance Monoid Cursor where
-  mempty = Cursor 1 1 -- text editors typically start indexs at 1
+    mempty = Cursor 1 1 -- text editors typically start indexs at 1
 
 nextLine :: Cursor -> Cursor
 nextLine (Cursor line col) = Cursor (line + 1) 1
@@ -29,15 +29,15 @@ nextLine (Cursor line col) = Cursor (line + 1) 1
 nextChar :: Cursor -> Cursor
 nextChar (Cursor line col) = Cursor line (col + 1)
 
-newtype Parser a = Parser { runParser :: Cursor -> String -> Either ParseError (a, Cursor, String) }
+newtype Parser a = Parser {runParser :: Cursor -> String -> Either ParseError (a, Cursor, String)}
 
 satisfy :: (Char -> Bool) -> Parser Char
 satisfy p = Parser f
   where
     f cursor [] = Left $ ParseError cursor
-    f cursor (c:cs)
-      | p c = Right (c, nextCursor, cs)
-      | otherwise = Left $ ParseError cursor
+    f cursor (c : cs)
+        | p c = Right (c, nextCursor, cs)
+        | otherwise = Left $ ParseError cursor
       where
         nextCursor = if c == '\n' then nextLine cursor else nextChar cursor
 
@@ -48,28 +48,28 @@ ffst :: (a -> b) -> (a, c, d) -> (b, c, d)
 ffst f (x, y, z) = (f x, y, z)
 
 instance Functor Parser where
- --fmap f (Parser rp) = Parser $ curry $ fmap (ffst f) . uncurry rp
- fmap f (Parser rp) = Parser (\c s -> fmap (ffst f) (rp c s))
+    --fmap f (Parser rp) = Parser $ curry $ fmap (ffst f) . uncurry rp
+    fmap f (Parser rp) = Parser (\c s -> fmap (ffst f) (rp c s))
 
 instance Applicative Parser where
-  pure a = Parser (\c s -> Right (a, c, s))
-  (<*>) (Parser rp) p = Parser $ \c s ->
-    case rp c s of
-      Left c' -> Left c'
-      Right (f, c', s') -> runParser (f <$> p) c' s'
+    pure a = Parser (\c s -> Right (a, c, s))
+    (<*>) (Parser rp) p = Parser $ \c s ->
+        case rp c s of
+            Left c' -> Left c'
+            Right (f, c', s') -> runParser (f <$> p) c' s'
 
 instance Monad Parser where
-  (>>=) (Parser rp) mf = Parser $ \c s ->
-    case rp c s of
-      Left c' -> Left c'
-      Right (a, c', s') -> runParser (mf a) c' s'
+    (>>=) (Parser rp) mf = Parser $ \c s ->
+        case rp c s of
+            Left c' -> Left c'
+            Right (a, c', s') -> runParser (mf a) c' s'
 
 instance Alternative Parser where
-  empty = Parser (\c _ -> Left $ ParseError c)
-  Parser rp1 <|> Parser rp2 = Parser $ \c s ->
-    case rp1 c s of
-      Left c' -> rp2 c s
-      Right acs -> Right acs
+    empty = Parser (\c _ -> Left $ ParseError c)
+    Parser rp1 <|> Parser rp2 = Parser $ \c s ->
+        case rp1 c s of
+            Left c' -> rp2 c s
+            Right acs -> Right acs
 
 -- PARSER UTILS
 
@@ -87,8 +87,8 @@ optionalModifier m p = m p <|> p
 
 occurN :: Integer -> Parser a -> Parser [a]
 occurN n p
-   | n < 1 = pure []
-   | otherwise = liftA2 (:) p (occurN (n - 1) p)
+    | n < 1 = pure []
+    | otherwise = liftA2 (:) p (occurN (n - 1) p)
 
 decimal :: Parser Double
 decimal = (\s1 s2 -> read $ s1 ++ '.' : s2) <$> int <*> (dot *> int)
@@ -101,8 +101,8 @@ integer = read <$> oneOrMore (satisfy isDigit)
 
 byte :: Integer -> Parser Integer
 byte b
-  | b >= 0 && b <= 256 = pure b
-  | otherwise = empty
+    | b >= 0 && b <= 256 = pure b
+    | otherwise = empty
 
 number :: Parser Double
 number = decimal <|> (fromIntegral <$> integer)

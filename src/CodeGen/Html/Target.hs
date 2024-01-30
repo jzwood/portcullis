@@ -1,7 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell #-}
 
 module CodeGen.Html.Target where
 
@@ -45,8 +44,10 @@ instance Html Module where
     toHtml Module{stmts, functions, pipes, streams} =
         tag "body" [] $ tag "main" [] $ aside ++ section
       where
-        aside = tag "aside" [] $
-            unlines [ tag "h3" [] "functions"
+        aside =
+            tag "aside" [] $
+                unlines
+                    [ tag "h3" [] "functions"
                     , sortOn name functions >>= \fun -> tag "a" [("href", '#' : name fun)] (name fun)
                     , tag "h3" [] "pipes"
                     , sortOn funcName pipes >>= \pipe -> tag "a" [("href", '#' : funcName pipe)] (funcName pipe)
