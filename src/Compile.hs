@@ -2,7 +2,7 @@
 
 module Compile where
 
-import CodeGen.Erl.Target
+import CodeGen.Ex.Target
 import CodeGen.Html.Target
 import CodeGen.Js.Target
 import CodeGen.Lua.Target
@@ -11,7 +11,7 @@ import CodeGen.Po.Target
 import CodeGen.Py.Target
 import Control.Applicative
 import qualified Data.ByteString.UTF8 as BSU
-import Data.Char (toLower)
+import Data.Char (toUpper)
 import Data.Function
 import Data.Functor
 import MiniParser (Cursor, Parser, runParser)
@@ -65,8 +65,8 @@ toPyFile core mod = unlines' [core, toPy mod]
 toLuaFile :: String -> Module -> String
 toLuaFile core mod = unlines' [core, toLua mod]
 
---toErlFile :: String -> Module -> String
---toErlFile src mod = unlines' [concat ["-module", paren src, "."], "", BSU.toString $(embedFile "src/CodeGen/Erl/core.erl"), toErl mod]
+toExFile :: String -> String -> Module -> String
+toExFile dest core mod = unlines' [unwords ["defmodule", pathToModuleName $ takeBaseName dest, "do"], "", core, toEx mod, "end"]
 
 toHtmlFile :: String -> Module -> String
 toHtmlFile head mod = "<!DOCTYPE html>" ++ tag "html" [] (head ++ toHtml mod)
@@ -75,6 +75,7 @@ runCompilation :: String -> String -> IO ()
 runCompilation src dest = do
     code <- readFile src <&> compile
     jsCore <- readCore "src/CodeGen/Js/core.js"
+    exCore <- readCore "src/CodeGen/Ex/core.ex"
     luaCore <- readCore "src/CodeGen/Lua/core.lua"
     pyCore <- readCore "src/CodeGen/Py/core.py"
     htmlHead <- readCore "src/CodeGen/Html/head.html"
@@ -83,7 +84,7 @@ runCompilation src dest = do
         ".js" -> writeFile $ toJsFile jsCore <$> code
         ".lua" -> writeFile $ toLuaFile luaCore <$> code
         ".py" -> writeFile $ toPyFile pyCore <$> code
-        --".erl" -> writeFile $ toErlFile (takeBaseName src <&> toLower) <$> code
+        ".ex" -> writeFile $ toExFile dest exCore <$> code
         ".po" -> writeFile $ toPo <$> code
         ".html" -> writeFile $ toHtmlFile htmlHead <$> code
         ".mmd" -> writeFile $ toMermaid <$> code

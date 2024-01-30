@@ -22,13 +22,13 @@ extra-source-files:
     src/CodeGen/Js/core.js
     src/CodeGen/Lua/core.lua
     src/CodeGen/Py/core.py
-    src/CodeGen/Erl/core.erl
+    src/CodeGen/Ex/core.ex
 data-files:
     src/CodeGen/Html/head.html
     src/CodeGen/Js/core.js
     src/CodeGen/Lua/core.lua
     src/CodeGen/Py/core.py
-    src/CodeGen/Erl/core.erl
+    src/CodeGen/Ex/core.ex
 
 source-repository head
   type: git
@@ -36,7 +36,7 @@ source-repository head
 
 library
   exposed-modules:
-      CodeGen.Erl.Target
+      CodeGen.Ex.Target
       CodeGen.Html.Target
       CodeGen.Js.Target
       CodeGen.Lua.Target

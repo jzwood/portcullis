@@ -14,14 +14,14 @@ extra-source-files:
   - src/CodeGen/Js/core.js
   - src/CodeGen/Lua/core.lua
   - src/CodeGen/Py/core.py
-  - src/CodeGen/Erl/core.erl
+  - src/CodeGen/Ex/core.ex
 
 data-files:
   - src/CodeGen/Html/head.html
   - src/CodeGen/Js/core.js
   - src/CodeGen/Lua/core.lua
   - src/CodeGen/Py/core.py
-  - src/CodeGen/Erl/core.erl
+  - src/CodeGen/Ex/core.ex
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
