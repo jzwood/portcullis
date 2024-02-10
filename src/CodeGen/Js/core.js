@@ -57,4 +57,10 @@ function _cons_(a) {
   return (b) => [a].concat(b);
 }
 
+// _if_ must be inlined
+
+function _uncons_([h, ...t]) {
+  return (b) => (f) => h == null ? b : f(h)(t);
+}
+
 // USER CODE

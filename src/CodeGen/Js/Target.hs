@@ -78,8 +78,7 @@ instance Js Expr where
     , toJs e1 ++ " :"
     , toJs e2
     ]
-  toJs (TernOp Uncons xs b fb) =
-    toJs $ TernOp If (BinOp Equal xs (Val $ List (Unspecified "") [])) b (Call (toJs fb) [UnOp Head xs, UnOp Tail xs])
+  toJs (TernOp top e1 e2 e3) = toJs $ Call (toJs top) [e1, e2, e3]
 
 instance Js UnOp where
   toJs Fst = "[0]"
@@ -99,6 +98,10 @@ instance Js Bop where
   toJs Rem = "_rem_"
   toJs Equal = "_eq_"
   toJs Cons = "_cons_"
+
+instance Js Top where
+  toJs If = "_if_"
+  toJs Uncons = "_uncons_"
 
 showAtoms :: [Function] -> [String]
 showAtoms funcs
